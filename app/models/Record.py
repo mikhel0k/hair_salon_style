@@ -9,10 +9,10 @@ from .Base import BaseModel
 class Record(BaseModel):
     __tablename__ = 'records'
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    Date: Mapped[date] = Column(Date, nullable=False, index=True)
-    Time: Mapped[time] = Column(Time, nullable=False)
+    date: Mapped[date] = Column(Date, nullable=False, index=True)
+    time: Mapped[time] = Column(Time, nullable=False)
     status: Mapped[str] = Column(String(30), nullable=False, index=True, default='created')
-    price: Mapped[float] = Column(Numeric(10, 2), nullable=False)
+    price: Mapped[float] = Column(Numeric(10, 2), nullable=False, default=0.0)
     notes: Mapped[str | None] = Column(Text, nullable=True)
 
     user_id: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)

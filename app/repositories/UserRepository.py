@@ -26,16 +26,15 @@ async def create_user(
     return UserResponse.model_validate(user_info)
 
 
-async def get_user_by_phone(
+async def read_user_by_phone(
         user: UserFind,
         session: AsyncSession,
-) -> UserResponse:
+) -> UserResponse | None:
     stmt = select(User).where(User.phone_number == user.phone_number)
     answ = await session.execute(stmt)
     user_info = answ.scalar_one_or_none()
+
     if not user_info:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+        return None
+    
     return UserResponse.model_validate(user_info)

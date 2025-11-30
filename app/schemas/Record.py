@@ -9,8 +9,8 @@ ALLOWED_STATUSES = ["created", "confirmed", "rejected", "cancelled"]
 class RecordSchema(BaseModel):
     date: Annotated[date, Field(..., description="Date of record", examples=[date.today()])]
     time: Annotated[time, Field(..., description="Time of record", examples=[time(14, 30)])]
-    status: Annotated[str, Field(..., max_length=30, description="Status of record", examples=ALLOWED_STATUSES)]
-    price: Annotated[float, Field(..., description="Price of record", examples=[500, 1500, 1410.10])]
+    status: Annotated[Optional[str], Field(None, max_length=30, description="Status of record", examples=ALLOWED_STATUSES)]
+    price: Annotated[Optional[float], Field(None, description="Price of record", examples=[500, 1500, 1410.10])]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",
@@ -20,7 +20,7 @@ class RecordSchema(BaseModel):
     @field_validator("price")
     @classmethod
     def validate_price(cls, v):
-        if v <= 0:
+        if v < 0:
             raise ValueError("Price must be greater than 0")
         return v
 
