@@ -31,3 +31,7 @@ class UserResponse(UserSchema):
     id: Annotated[int, Field(..., description="User id")]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserFind(UserSchema):
+    pass
