@@ -31,17 +31,16 @@ class RecordSchema(BaseModel):
             raise ValueError(f"Status must be one of {ALLOWED_STATUSES}")
         return v
 
+
+class RecordCreate(RecordSchema):
+    user_id: Annotated[int, Field(..., description="User id of record")]
+
     @field_validator("date")
     @classmethod
     def validate_date(cls, v):
         if v < date.today():
             raise ValueError("Date must be in the future")
         return v
-
-
-
-class RecordCreate(RecordSchema):
-    user_id: Annotated[int, Field(..., description="User id of record")]
 
 
 class RecordResponse(RecordSchema):

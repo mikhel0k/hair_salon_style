@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas import MakeRecord, RecordResponse, UserCreate, UserFind, RecordCreate
@@ -21,3 +21,15 @@ async def user_create_record(
     )
     return await RecordRepository.create_record(session=session, record=created_record)
 
+
+async def user_find_record(
+        user: UserFind,
+        session: AsyncSession
+) -> list[RecordResponse]:
+    phone_number = user.phone_number
+    user = await UserRepository.read_user_by_phone(session=session, user=user)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    records = await RecordRepository.read_record_by_user_id(session=session, user_id=user.id)
+    return records
