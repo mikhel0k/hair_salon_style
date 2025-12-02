@@ -1,5 +1,5 @@
 from .User import UserCreate, UserResponse, UserFind
-from .Record import RecordCreate, RecordUpdate, RecordResponse
+from .Record import RecordCreate, RecordUpdate, RecordResponse, EditRecordStatus
 from .UserFlow import MakeRecord
 
 
@@ -10,5 +10,6 @@ __all__ = [
     "RecordCreate",
     "RecordUpdate",
     "RecordResponse",
-    "MakeRecord"
+    "MakeRecord",
+    "EditRecordStatus",
 ]

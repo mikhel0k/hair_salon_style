@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from datetime import date, time
 
 import phonenumbers
@@ -10,6 +10,11 @@ class MakeRecord(BaseModel):
         examples=["+79161234567", "+78005553535", "+74951234567"])]
     date: Annotated[date, Field(..., description="Date of record", examples=[date.today()])]
     time: Annotated[time, Field(..., description="Time of record", examples=[time(14, 30)])]
+    notes: Annotated[Optional[str], Field(
+        None,
+        description="Notes of record",
+        examples=["Customer requested morning appointment", "Special requirements"]
+    )]
 
     @field_validator("phone_number", mode="before")
     @classmethod

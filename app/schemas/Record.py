@@ -81,3 +81,16 @@ class RecordUpdate(BaseModel):
         if v is not None and v < date.today():
             raise ValueError("Date must be in the future")
         return v
+
+
+class EditRecordStatus(BaseModel):
+    id: Annotated[int, Field(..., description="ID of record")]
+    status: Annotated[Optional[str], Field(None, description="Status of record", examples=ALLOWED_STATUSES)]
+
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, v):
+        if v is not None and v not in ALLOWED_STATUSES:
+            raise ValueError(f"Status must be one of {ALLOWED_STATUSES}")
+        return v
+

@@ -9,7 +9,7 @@ from app.models.User import User
 async def create_user(
         session: AsyncSession,
         user: UserCreate
-) -> UserResponse:
+) -> User:
     stmt = select(User).where(User.phone_number == user.phone_number)
     answ = await session.execute(stmt)
     check_info = answ.scalar_one_or_none()
@@ -23,13 +23,13 @@ async def create_user(
     session.add(user_info)
     await session.commit()
     await session.refresh(user_info)
-    return UserResponse.model_validate(user_info)
+    return user_info
 
 
 async def read_user_by_phone(
         user: UserFind,
         session: AsyncSession,
-) -> UserResponse | None:
+) -> User:
     stmt = select(User).where(User.phone_number == user.phone_number)
     answ = await session.execute(stmt)
     user_info = answ.scalar_one_or_none()
@@ -37,4 +37,4 @@ async def read_user_by_phone(
     if not user_info:
         return None
     
-    return UserResponse.model_validate(user_info)
+    return user_info

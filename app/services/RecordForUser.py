@@ -1,9 +1,8 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas import MakeRecord, RecordResponse, UserCreate, UserFind, RecordCreate
+from app.schemas import MakeRecord, RecordResponse, UserCreate, UserFind, RecordCreate, EditRecordStatus
 from app.repositories import RecordRepository, UserRepository
-
 
 
 async def user_create_record(
@@ -18,8 +17,10 @@ async def user_create_record(
         user_id=user.id,
         date=record.date,
         time=record.time,
+        notes=record.notes,
     )
-    return await RecordRepository.create_record(session=session, record=created_record)
+    record = await RecordRepository.create_record(session=session, record=created_record)
+    return RecordResponse.model_validate(record)
 
 
 async def user_find_record(
@@ -32,4 +33,20 @@ async def user_find_record(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     records = await RecordRepository.read_record_by_user_id(session=session, user_id=user.id)
-    return records
+    return [RecordResponse.model_validate(record) for record in records]
+
+
+async def switch_status_of_record(
+        info_record: EditRecordStatus,
+        session: AsyncSession,
+) -> RecordResponse:
+    record = await RecordRepository.read_record_by_id(session=session, record_id=info_record.id)
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    record.status = info_record.status
+    await session.commit()
+    await session.refresh(record)
+    return RecordResponse.model_validate(record)

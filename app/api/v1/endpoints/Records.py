@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
-from app.schemas import MakeRecord, RecordResponse, UserFind
-from app.services import user_create_record, user_find_record
+from app.schemas import MakeRecord, RecordResponse, UserFind, EditRecordStatus
+from app.services import user_create_record, user_find_record, switch_status_of_record
 
 
 router = APIRouter()
@@ -26,3 +26,11 @@ async def read_records(
 ):
     user = UserFind(phone_number=phone_number)
     return await user_find_record(session=session, user=user)
+
+
+@router.patch("/status", response_model=RecordResponse)
+async def update_record(
+        record: EditRecordStatus,
+        session: AsyncSession = Depends(get_session)
+):
+    return await switch_status_of_record(record, session)
