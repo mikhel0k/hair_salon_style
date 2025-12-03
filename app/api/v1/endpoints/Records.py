@@ -28,9 +28,10 @@ async def read_records(
     return await user_find_record(session=session, user=user)
 
 
-@router.patch("/status", response_model=RecordResponse)
+@router.patch("/{record_id}/status/{new_status}", response_model=RecordResponse)
 async def update_record(
-        record: EditRecordStatus,
+        record_id: int,
+        new_status: str,
         session: AsyncSession = Depends(get_session)
 ):
-    return await switch_status_of_record(record, session)
+    return await switch_status_of_record(EditRecordStatus(id=record_id, status=new_status), session)
