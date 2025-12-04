@@ -18,7 +18,7 @@ async def create_record(
     return await user_create_record(session=session, record=record)
 
 
-@router.get("/records/{phone_number}", response_model=List[RecordResponse])
+@router.get("/by_phone/{phone_number}", response_model=List[RecordResponse])
 async def read_records(
         phone_number: str,
         session: AsyncSession = Depends(get_session)
@@ -26,7 +26,7 @@ async def read_records(
     return await user_find_record(session=session, user=UserFind(phone_number=phone_number))
 
 
-@router.patch("/{record_id}/status/{new_status}", response_model=RecordResponse)
+@router.patch("/status/", response_model=RecordResponse)
 async def update_record(
         record:EditRecordStatus,
         session: AsyncSession = Depends(get_session)

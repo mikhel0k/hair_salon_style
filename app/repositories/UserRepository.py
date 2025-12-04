@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,13 +9,6 @@ async def create_user(
         session: AsyncSession,
         user: UserCreate
 ) -> User:
-    stmt = select(User).where(User.phone_number == user.phone_number)
-    answ = await session.execute(stmt)
-    check_info = answ.scalar_one_or_none()
-
-    if check_info:
-        raise ValueError("User already exists")
-
     user_info = User(**user.model_dump())
     session.add(user_info)
     await session.flush()

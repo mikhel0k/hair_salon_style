@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas import RecordCreate, RecordUpdate
+from app.schemas import RecordCreate
 from app.models import Record
 
 
