@@ -43,3 +43,14 @@ async def update_record_status(
     await session.flush()
     await session.refresh(record)
     return record
+
+
+async def update_record_note(
+        session: AsyncSession,
+        record: Record,
+        new_note: str,
+):
+    record.notes = new_note
+    await session.flush()
+    await session.refresh(record)
+    return record

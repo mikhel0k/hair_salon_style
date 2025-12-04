@@ -4,9 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
-from app.schemas import MakeRecord, RecordResponse, UserFind, EditRecordStatus
-from app.services import user_create_record, user_find_record, switch_status_of_record
-
+from app.schemas import MakeRecord, RecordResponse, UserFind, EditRecordStatus, EditRecordNote
+from app.services import user_create_record, user_find_record, switch_status_of_record, change_note_of_record
 
 router = APIRouter()
 
@@ -29,17 +28,15 @@ async def read_records(
 
 @router.patch("/{record_id}/status/{new_status}", response_model=RecordResponse)
 async def update_record(
-        record_id: int,
-        new_status: str,
+        record:EditRecordStatus,
         session: AsyncSession = Depends(get_session)
 ):
-    return await switch_status_of_record(EditRecordStatus(id=record_id, status=new_status), session)
+    return await switch_status_of_record(record, session)
 
 
-# @router.patch("/{record_id}/note", response_model=RecordResponse)
-# async def edit_nout_record(
-#         record_id: int,
-#         note: str,
-#         session: AsyncSession = Depends(get_session)
-# ):
-#     return await
+@router.patch("/note", response_model=RecordResponse)
+async def edit_note_record(
+        record: EditRecordNote,
+        session: AsyncSession = Depends(get_session)
+):
+    return await change_note_of_record(record, session)

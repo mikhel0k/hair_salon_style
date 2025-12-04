@@ -94,3 +94,12 @@ class EditRecordStatus(BaseModel):
             raise ValueError(f"Status must be one of {ALLOWED_STATUSES}")
         return v
 
+
+class EditRecordNote(BaseModel):
+    id: Annotated[int, Field(..., description="ID of record")]
+    notes: Annotated[Optional[str], Field(
+        None,
+        description="Notes of record",
+        examples=["Customer requested morning appointment", "Special requirements"]
+    )]
+

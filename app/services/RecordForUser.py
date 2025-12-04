@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas import MakeRecord, RecordResponse, UserCreate, UserFind, RecordCreate, EditRecordStatus
+from app.schemas import MakeRecord, RecordResponse, UserCreate, UserFind, RecordCreate, EditRecordStatus, EditRecordNote
 from app.repositories import RecordRepository, UserRepository
 
 
@@ -54,3 +54,21 @@ async def switch_status_of_record(
         )
     return RecordResponse.model_validate(updated_record)
 
+
+async def change_note_of_record(
+        info_record: EditRecordNote,
+        session: AsyncSession,
+):
+    async with session.begin():
+        record = await RecordRepository.read_record_by_id(session=session, record_id=info_record.id)
+        if not record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Record not found"
+            )
+        updated_record = await RecordRepository.update_record_note(
+            session=session,
+            record=record,
+            new_note=info_record.notes,
+        )
+    return RecordResponse.model_validate(updated_record)
