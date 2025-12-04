@@ -24,8 +24,7 @@ async def read_records(
         phone_number: str,
         session: AsyncSession = Depends(get_session)
 ):
-    user = UserFind(phone_number=phone_number)
-    return await user_find_record(session=session, user=user)
+    return await user_find_record(session=session, user=UserFind(phone_number=phone_number))
 
 
 @router.patch("/{record_id}/status/{new_status}", response_model=RecordResponse)
@@ -35,3 +34,12 @@ async def update_record(
         session: AsyncSession = Depends(get_session)
 ):
     return await switch_status_of_record(EditRecordStatus(id=record_id, status=new_status), session)
+
+
+# @router.patch("/{record_id}/note", response_model=RecordResponse)
+# async def edit_nout_record(
+#         record_id: int,
+#         note: str,
+#         session: AsyncSession = Depends(get_session)
+# ):
+#     return await

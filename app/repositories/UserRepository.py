@@ -13,15 +13,13 @@ async def create_user(
     stmt = select(User).where(User.phone_number == user.phone_number)
     answ = await session.execute(stmt)
     check_info = answ.scalar_one_or_none()
+
     if check_info:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="User already exists"
-        )
+        raise ValueError("User already exists")
 
     user_info = User(**user.model_dump())
     session.add(user_info)
-    await session.commit()
+    await session.flush()
     await session.refresh(user_info)
     return user_info
 

@@ -9,25 +9,25 @@ async def user_create_record(
         record: MakeRecord,
         session: AsyncSession
 ) -> RecordResponse:
-    phone_number = record.phone_number
-    user = await UserRepository.read_user_by_phone(session=session, user=UserFind(phone_number=phone_number))
-    if not user:
-        user = await UserRepository.create_user(session=session, user=UserCreate(phone_number=phone_number))
-    created_record = RecordCreate(
-        user_id=user.id,
-        date=record.date,
-        time=record.time,
-        notes=record.notes,
-    )
-    record = await RecordRepository.create_record(session=session, record=created_record)
-    return RecordResponse.model_validate(record)
+    async with session.begin():
+        phone_number = record.phone_number
+        user = await UserRepository.read_user_by_phone(session=session, user=UserFind(phone_number=phone_number))
+        if not user:
+            user = await UserRepository.create_user(session=session, user=UserCreate(phone_number=phone_number))
+        created_record = RecordCreate(
+            user_id=user.id,
+            date=record.date,
+            time=record.time,
+            notes=record.notes,
+        )
+        created_record = await RecordRepository.create_record(session=session, record=created_record)
+    return RecordResponse.model_validate(created_record)
 
 
 async def user_find_record(
         user: UserFind,
         session: AsyncSession
 ) -> list[RecordResponse]:
-    phone_number = user.phone_number
     user = await UserRepository.read_user_by_phone(session=session, user=user)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -40,13 +40,17 @@ async def switch_status_of_record(
         info_record: EditRecordStatus,
         session: AsyncSession,
 ) -> RecordResponse:
-    record = await RecordRepository.read_record_by_id(session=session, record_id=info_record.id)
-    if not record:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Record not found"
+    async with session.begin():
+        record = await RecordRepository.read_record_by_id(session=session, record_id=info_record.id)
+        if not record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Record not found"
+            )
+        updated_record = await RecordRepository.update_record_status(
+            session=session,
+            record=record,
+            new_status=info_record.status,
         )
-    record.status = info_record.status
-    await session.commit()
-    await session.refresh(record)
-    return RecordResponse.model_validate(record)
+    return RecordResponse.model_validate(updated_record)
+
