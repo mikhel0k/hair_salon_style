@@ -42,7 +42,6 @@ class TestUserCreateRecord:
         test_record.price = 0
         test_record.notes = notes
         test_record.user_id = user_id
-        test_record.phone_number = phone_number
 
         test_user_find = UserFind(phone_number=phone_number)
         test_user_create = UserCreate(phone_number=phone_number)
@@ -125,10 +124,8 @@ class TestUserCreateRecord:
         test_record.price = 0
         test_record.notes = notes
         test_record.user_id = user_id
-        test_record.phone_number = phone_number
 
         test_user_find = UserFind(phone_number=phone_number)
-        test_user_create = UserCreate(phone_number=phone_number)
         test_record_create = RecordCreate(
             user_id=user_id,
             date=date_record,

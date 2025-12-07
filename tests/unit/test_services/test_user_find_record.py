@@ -31,7 +31,6 @@ class TestUserFindRecord:
             MockUserRepository.read_user_by_phone.assert_called_once_with(
                 session=mock_session,
                 user=test_user_find,
-
             )
             MockRecordRepository.read_record_by_user_id.assert_not_called()
 
