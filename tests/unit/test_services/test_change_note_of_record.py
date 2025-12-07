@@ -8,7 +8,7 @@ from app.schemas import RecordResponse, EditRecordNote
 from app.services import change_note_of_record
 
 
-class TestSwitchStatusOfRecord:
+class TestChangeNoteOfRecord:
     @pytest.mark.asyncio
     async def test_change_notes(self):
         mock_session = MagicMock()
@@ -30,14 +30,14 @@ class TestSwitchStatusOfRecord:
         test_record.time = time_record
         test_record.status = "created"
         test_record.price = 0
-        test_record.notes = "notes"
+        test_record.notes = "old notes"
         test_record.user_id = user_id
 
         test_record_rejected = MagicMock()
         test_record_rejected.id = 1
         test_record_rejected.date = date_record
         test_record_rejected.time = time_record
-        test_record_rejected.status = "rejected"
+        test_record_rejected.status = "created"
         test_record_rejected.price = 0
         test_record_rejected.notes = notes
         test_record_rejected.user_id = user_id
