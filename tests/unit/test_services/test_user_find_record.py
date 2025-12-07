@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import HTTPException
 from starlette import status
 
-from app.models import User, Record
 from app.services.RecordForUser import user_find_record
 from app.schemas import UserFind, RecordResponse
 
