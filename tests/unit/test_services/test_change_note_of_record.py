@@ -12,7 +12,7 @@ class TestChangeNoteOfRecord:
     @pytest.mark.asyncio
     async def test_change_notes(self):
         mock_session = MagicMock()
-
+        
         mock_context = MagicMock()
         mock_context.__aenter__ = AsyncMock()
         mock_context.__aexit__ = AsyncMock()
