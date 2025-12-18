@@ -72,6 +72,7 @@ class RecordResponse(BaseModel):
 
 
 class RecordUpdate(BaseModel):
+    id: Annotated[int, Field(..., description="ID of record")]
     date: Annotated[Optional[date], Field(None, description="Date of record", examples=[date.today()])]
     time: Annotated[Optional[time], Field(None, description="Time of record", examples=[time(14, 30)])]
     status: Annotated[Optional[str], Field(None, description="Status of record", examples=ALLOWED_STATUSES)]
