@@ -32,6 +32,7 @@ async def user_create_record(
         raise
     except SQLAlchemyError as e:
         logger.error(f"Database error {e}")
+        print(f"\nDB EXCEPTION: {repr(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error"

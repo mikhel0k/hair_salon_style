@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 load_dotenv()
@@ -13,6 +14,13 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_PORT: int
 
+    POSTGRES_DB_TEST: str
+    POSTGRES_USER_TEST: str
+    POSTGRES_USER_TEST: str
+    POSTGRES_PASSWORD_TEST: str
+    POSTGRES_HOST_TEST: str
+    POSTGRES_PORT_TEST: int
+
     @property
     def DATABASE_URL(self) -> str:
         return (f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
@@ -23,10 +31,17 @@ class Settings(BaseSettings):
         return (f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
                 f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}")
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    @property
+    def TEST_DATABASE_URL(self) -> str:
+        return (f"postgresql+asyncpg://{self.POSTGRES_USER_TEST}:{self.POSTGRES_PASSWORD_TEST}@"
+                f"{self.POSTGRES_HOST_TEST}:{self.POSTGRES_PORT_TEST}/{self.POSTGRES_DB_TEST}")
+
+    @property
+    def TEST_SYNC_DATABASE_URL(self) -> str:
+        return (f"postgresql://{self.POSTGRES_USER_TEST}:{self.POSTGRES_PASSWORD_TEST}@"
+                f"{self.POSTGRES_HOST_TEST}:{self.POSTGRES_PORT_TEST}/{self.POSTGRES_DB_TEST}")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 settings = Settings()

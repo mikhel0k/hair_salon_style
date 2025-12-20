@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas import UserCreate, UserResponse, UserFind
+from app.schemas import UserCreate, UserFind
 from app.models.User import User
 
 
