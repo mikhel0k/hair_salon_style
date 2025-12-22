@@ -26,15 +26,15 @@ async def read_records(
     return await user_find_record(session=session, user=UserFind(phone_number=phone_number))
 
 
-@router.patch("/status/", response_model=RecordResponse)
-async def update_record(
+@router.patch("/update_status", response_model=RecordResponse)
+async def edit_status_record(
         record:EditRecordStatus,
         session: AsyncSession = Depends(get_session)
 ):
     return await switch_status_of_record(record, session)
 
 
-@router.patch("/note", response_model=RecordResponse)
+@router.patch("/update_note", response_model=RecordResponse)
 async def edit_note_record(
         record: EditRecordNote,
         session: AsyncSession = Depends(get_session)
