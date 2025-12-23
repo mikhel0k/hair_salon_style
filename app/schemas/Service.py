@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class Service(BaseModel):
@@ -17,6 +17,8 @@ class ServiceCreate(Service):
 
 class ServiceResponse(Service):
     id: Annotated[int, Field(..., description="ID of the service")]
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ServiceUpdate(BaseModel):

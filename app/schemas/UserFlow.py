@@ -10,6 +10,8 @@ class MakeRecord(BaseModel):
         examples=["+79161234567", "+78005553535", "+74951234567"])]
     date: Annotated[date, Field(..., description="Date of record", examples=[date.today()])]
     time: Annotated[time, Field(..., description="Time of record", examples=[time(14, 30)])]
+    master_id: Annotated[int, Field(..., description="Master id of record")]
+    service_id: Annotated[int, Field(..., description="Service id of record")]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",

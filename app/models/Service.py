@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, Text
 from sqlalchemy.orm import Mapped, relationship
 
-from .Base import BaseModel
+from app.models import BaseModel
 
 
 class Service(BaseModel):

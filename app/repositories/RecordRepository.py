@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas import RecordCreate
-from app.models import Record
+from app.models.Record import Record
 
 
 async def create_record(

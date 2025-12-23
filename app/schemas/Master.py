@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class MasterBase(BaseModel):
@@ -18,6 +18,8 @@ class MasterCreate(MasterBase):
 
 class MasterResponse(MasterBase):
     id: Annotated[int, Field(..., description="ID of the master")]
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class MasterUpdate(BaseModel):

@@ -25,6 +25,8 @@ async def user_create_record(
                 date=record.date,
                 time=record.time,
                 notes=record.notes,
+                master_id=record.master_id,
+                service_id=record.service_id,
             )
             created_record = await RecordRepository.create_record(session=session, record=created_record)
             return RecordResponse.model_validate(created_record)
