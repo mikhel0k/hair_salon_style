@@ -22,8 +22,8 @@ class ServiceResponse(Service):
 
 
 class ServiceUpdate(BaseModel):
-    name: Annotated[Optional[str], Field(..., description="Name of the service")]
-    price: Annotated[Optional[float], Field(..., description="Price of the service")]
-    duration: Annotated[Optional[int], Field(..., description="Duration of the service")]
-    category: Annotated[Optional[str], Field(..., description="Category of the service")]
-    description: Annotated[Optional[str], Field(..., description="Description of the service")]
+    name: Annotated[Optional[str], Field(None, description="Name of the service")]
+    price: Annotated[Optional[float], Field(None, description="Price of the service")]
+    duration: Annotated[Optional[int], Field(None, description="Duration of the service")]
+    category: Annotated[Optional[str], Field(None, description="Category of the service")]
+    description: Annotated[Optional[str], Field(None, description="Description of the service")]
