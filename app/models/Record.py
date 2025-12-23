@@ -16,5 +16,9 @@ class Record(BaseModel):
     notes: Mapped[str | None] = Column(Text, nullable=True)
 
     user_id: Mapped[int] = Column(Integer, ForeignKey('users.id'), nullable=False)
+    service_id: Mapped[int] = Column(Integer, ForeignKey('services.id'), nullable=False)
+    master_id: Mapped[int] = Column(Integer, ForeignKey('masters.id'), nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="records")
+    service: Mapped["Service"] = relationship("Service", back_populates="records")
+    master: Mapped["Master"] = relationship("Master", back_populates="records")

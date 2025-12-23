@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from settings import settings
-from app.models import BaseModel, User, Record
+from app.models import BaseModel, User, Record, Service, Master
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -57,7 +57,6 @@ def run_migrations_online() -> None:
     connectable = config.attributes.get("connection", None)
 
     if connectable is not None:
-        # Используем его напрямую БЕЗ .connect()
         do_run_migrations(connectable)
     else:
         engine = engine_from_config(
