@@ -49,7 +49,7 @@ class TestUserCreate:
         assert exc_info.value.errors()[0]["type"] == "value_error"
         assert "Invalid phone format" in str(exc_info.value)
 
-    def test_user_create_without_phone_number(self):
+    def test_user_create_with_phone_number(self):
         data = {}
         with pytest.raises(ValidationError) as exc_info:
             UserCreate(**data)

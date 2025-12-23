@@ -81,8 +81,8 @@ class RecordUpdate(BaseModel):
     time: Annotated[Optional[time], Field(None, description="Time of record", examples=[time(14, 30)])]
     status: Annotated[Optional[str], Field(None, description="Status of record", examples=ALLOWED_STATUSES)]
     price: Annotated[Optional[float], Field(None, description="Price of record", examples=[500, 1500, 1410.10])]
-    master_id: Annotated[int, Field(..., description="Master id of record")]
-    service_id: Annotated[int, Field(..., description="Service id of record")]
+    master_id: Annotated[Optional[int], Field(None, description="Master id of record")]
+    service_id: Annotated[Optional[int], Field(None, description="Service id of record")]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",

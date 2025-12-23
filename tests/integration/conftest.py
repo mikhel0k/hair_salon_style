@@ -19,16 +19,6 @@ async def test_engine():
     await engine.dispose()
 
 
-@pytest.fixture(scope="function")
-async def session(test_engine) -> AsyncGenerator[AsyncSession, None]:
-    session_factory = async_sessionmaker(
-        test_engine,
-        expire_on_commit=False
-    )
-    async with session_factory() as session:
-        yield session
-
-
 @pytest.fixture(scope="function", autouse=True)
 async def setup_db(test_engine):
     alembic_cfg = Config("alembic.ini")
@@ -58,9 +48,14 @@ def _run_downgrade(config, connection):
 
 
 @pytest.fixture(scope="function")
-async def ac(session) -> AsyncGenerator[AsyncClient, None]:
+async def ac(test_engine) -> AsyncGenerator[AsyncClient, None]:
+    session_factory = async_sessionmaker(
+        test_engine,
+        expire_on_commit=False
+    )
     async def override_get_session():
-        yield session
+        async with session_factory() as session:
+            yield session
 
     app.dependency_overrides[get_session] = override_get_session
     async with AsyncClient(

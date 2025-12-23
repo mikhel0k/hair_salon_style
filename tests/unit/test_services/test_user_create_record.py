@@ -27,6 +27,8 @@ class TestUserCreateRecord:
             phone_number=phone_number,
             date=date_record,
             time=time_record,
+            master_id=1,
+            service_id=1,
             notes=notes,
         )
 
@@ -42,6 +44,8 @@ class TestUserCreateRecord:
         test_record.price = 0
         test_record.notes = notes
         test_record.user_id = user_id
+        test_record.master_id = 1
+        test_record.service_id = 1
 
         test_user_find = UserFind(phone_number=phone_number)
         test_user_create = UserCreate(phone_number=phone_number)
@@ -49,6 +53,8 @@ class TestUserCreateRecord:
             user_id=user_id,
             date=date_record,
             time=time_record,
+            master_id=1,
+            service_id=1,
             notes=notes,
         )
 
@@ -88,6 +94,8 @@ class TestUserCreateRecord:
             assert result.price == 0
             assert result.notes == notes
             assert result.user_id == user_id
+            assert result.master_id == 1
+            assert result.service_id == 1
 
     @pytest.mark.asyncio
     async def test_create_record_and_old_user(self):
@@ -109,6 +117,8 @@ class TestUserCreateRecord:
             phone_number=phone_number,
             date=date_record,
             time=time_record,
+            master_id=1,
+            service_id=1,
             notes=notes,
         )
 
@@ -124,12 +134,16 @@ class TestUserCreateRecord:
         test_record.price = 0
         test_record.notes = notes
         test_record.user_id = user_id
+        test_record.master_id = 1
+        test_record.service_id = 1
 
         test_user_find = UserFind(phone_number=phone_number)
         test_record_create = RecordCreate(
             user_id=user_id,
             date=date_record,
             time=time_record,
+            master_id=1,
+            service_id=1,
             notes=notes,
         )
 
@@ -165,3 +179,5 @@ class TestUserCreateRecord:
             assert result.price == 0
             assert result.notes == notes
             assert result.user_id == user_id
+            assert result.master_id == 1
+            assert result.service_id == 1

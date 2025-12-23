@@ -12,12 +12,16 @@ class TestMakeRecord:
             "phone_number": "+78005553535",
             "date": date.today() + timedelta(days=1),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         make_record = MakeRecord(**data)
         assert make_record.phone_number == data["phone_number"]
         assert make_record.date == data["date"]
         assert make_record.time == data["time"]
+        assert make_record.service_id == data["service_id"]
+        assert make_record.master_id == data["master_id"]
         assert make_record.notes == data["notes"]
 
     def test_make_record_today(self):
@@ -25,12 +29,16 @@ class TestMakeRecord:
             "phone_number": "+78005553535",
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         make_record = MakeRecord(**data)
         assert make_record.phone_number == data["phone_number"]
         assert make_record.date == data["date"]
         assert make_record.time == data["time"]
+        assert make_record.service_id == data["service_id"]
+        assert make_record.master_id == data["master_id"]
         assert make_record.notes == data["notes"]
 
 
@@ -39,6 +47,8 @@ class TestMakeRecord:
             "phone_number": "+78005553535",
             "date": date.today() - timedelta(days=1),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -52,12 +62,16 @@ class TestMakeRecord:
             "phone_number": "+78005553535",
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         make_record = MakeRecord(**data)
         assert make_record.phone_number == data["phone_number"]
         assert make_record.date == data["date"]
         assert make_record.time == data["time"]
+        assert make_record.service_id == data["service_id"]
+        assert make_record.master_id == data["master_id"]
         assert make_record.notes == data["notes"]
 
     def test_make_record_with_another_number(self):
@@ -65,12 +79,16 @@ class TestMakeRecord:
             "phone_number": "88005553535",
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         make_record = MakeRecord(**data)
         assert make_record.phone_number == "+78005553535"
         assert make_record.date == data["date"]
         assert make_record.time == data["time"]
+        assert make_record.service_id == data["service_id"]
+        assert make_record.master_id == data["master_id"]
         assert make_record.notes == data["notes"]
 
     def test_make_record_with_another_country_number(self):
@@ -78,6 +96,8 @@ class TestMakeRecord:
             "phone_number": "+68005553535",
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -91,6 +111,8 @@ class TestMakeRecord:
             "phone_number": "+7800555353",
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -104,6 +126,8 @@ class TestMakeRecord:
             "phone_number": "+780055535353",
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -116,6 +140,8 @@ class TestMakeRecord:
         data = {
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -128,6 +154,8 @@ class TestMakeRecord:
         data = {
             "phone_number": "+78005553535",
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -140,6 +168,8 @@ class TestMakeRecord:
         data = {
             "phone_number": "+78005553535",
             "date": date.today(),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -153,12 +183,16 @@ class TestMakeRecord:
         data = {
             "phone_number": "+78005553535",
             "date": date.today(),
+            "master_id": 1,
+            "service_id": 1,
             "time": time(13, 30),
         }
         make_record = MakeRecord(**data)
         assert make_record.phone_number == data["phone_number"]
         assert make_record.date == data["date"]
         assert make_record.time == data["time"]
+        assert make_record.service_id == data["service_id"]
+        assert make_record.master_id == data["master_id"]
         assert make_record.notes is None
 
     def test_make_record_without_none_in_number(self):
@@ -166,6 +200,8 @@ class TestMakeRecord:
             "phone_number": None,
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -179,10 +215,14 @@ class TestMakeRecord:
             "phone_number": 88005553535,
             "date": date.today(),
             "time": time(13, 30),
+            "master_id": 1,
+            "service_id": 1,
             "notes": "I want drink bear"
         }
         make_record = MakeRecord(**data)
         assert make_record.phone_number == "+78005553535"
         assert make_record.date == data["date"]
         assert make_record.time == data["time"]
+        assert make_record.service_id == data["service_id"]
+        assert make_record.master_id == data["master_id"]
         assert make_record.notes == data["notes"]

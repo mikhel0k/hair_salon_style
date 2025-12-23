@@ -15,6 +15,8 @@ class TestRecordCreate:
             "status": "created",
             "price": 300,
             "notes": "I want drink beer",
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1
         }
         record = RecordCreate(**data)
@@ -24,11 +26,15 @@ class TestRecordCreate:
         assert record.price == data["price"]
         assert record.notes == data["notes"]
         assert record.user_id == data["user_id"]
+        assert record.service_id == data["service_id"]
+        assert record.master_id == data["master_id"]
 
     def test_record_create_with_only_non_optional_fields(self):
         data = {
             "date": date.today(),
             "time": time(14, 30),
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1
         }
         record = RecordCreate(**data)
@@ -38,12 +44,16 @@ class TestRecordCreate:
         assert record.price is None
         assert record.status is None
         assert record.notes is None
+        assert record.service_id == data["service_id"]
+        assert record.master_id == data["master_id"]
 
     def test_record_create_with_only_none_in_price(self):
         data = {
             "date": date.today(),
             "time": time(14, 30),
             "user_id": 1,
+            "master_id": 1,
+            "service_id": 1,
             "price": None,
         }
         record = RecordCreate(**data)
@@ -53,11 +63,15 @@ class TestRecordCreate:
         assert record.price is None
         assert record.status is None
         assert record.notes is None
+        assert record.service_id == data["service_id"]
+        assert record.master_id == data["master_id"]
 
     def test_record_create_yesterday(self):
         data = {
             "date": date.today() - timedelta(1),
             "time": time(14, 30),
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -67,6 +81,8 @@ class TestRecordCreate:
     def test_record_create_without_date(self):
         data = {
             "time": time(14, 30),
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -76,6 +92,8 @@ class TestRecordCreate:
     def test_record_create_without_time(self):
         data = {
             "date": date.today(),
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -85,6 +103,8 @@ class TestRecordCreate:
     def test_record_create_without_user_id(self):
         data = {
             "date": date.today(),
+            "master_id": 1,
+            "service_id": 1,
             "time": time(14, 30),
         }
         with pytest.raises(ValidationError) as exc_info:
@@ -95,6 +115,8 @@ class TestRecordCreate:
         data = {
             "date": date.today(),
             "time": time(14, 30),
+            "master_id": 1,
+            "service_id": 1,
             "status": "maked",
             "user_id": 1
         }
@@ -109,6 +131,8 @@ class TestRecordCreate:
             data = {
                 "date": date.today(),
                 "time": time(14, 30),
+                "master_id": 1,
+                "service_id": 1,
                 "status": status,
                 "user_id": 1
             }
@@ -119,11 +143,15 @@ class TestRecordCreate:
             assert record.user_id == data["user_id"]
             assert record.price is None
             assert record.notes is None
+            assert record.service_id == data["service_id"]
+            assert record.master_id == data["master_id"]
 
     def test_record_create_with_negative_price(self):
         data = {
             "date": date.today(),
             "time": time(14, 30),
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1,
             "price": -100,
         }
@@ -137,6 +165,8 @@ class TestRecordCreate:
         data = {
             "date": date.today(),
             "time": time(14, 30),
+            "master_id": 1,
+            "service_id": 1,
             "user_id": 1,
             "price": 0.0,
         }
@@ -147,3 +177,5 @@ class TestRecordCreate:
         assert record.user_id == data["user_id"]
         assert record.price == data["price"]
         assert record.notes is None
+        assert record.service_id == data["service_id"]
+        assert record.master_id == data["master_id"]
