@@ -10,7 +10,7 @@ from app.services import user_create_record, user_find_record, switch_status_of_
 router = APIRouter()
 
 
-@router.post("/create_record", response_model=RecordResponse)
+@router.post("/new_record", response_model=RecordResponse)
 async def create_record(
         record: MakeRecord,
         session: AsyncSession=Depends(get_session)

@@ -2,8 +2,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories import ServiceRepository
 from app.schemas.Service import ServiceCreate, ServiceResponse, ServiceUpdate
-import app.repositories.MasterRepository
-
 
 async def create_service(service: ServiceCreate, session: AsyncSession) -> ServiceResponse:
     service_record = await ServiceRepository.create_service(service, session)

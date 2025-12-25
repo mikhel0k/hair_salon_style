@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 
 from app.models import BaseModel
@@ -7,11 +7,13 @@ from app.models import BaseModel
 class Master(BaseModel):
     __tablename__ = "masters"
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    specialization_id: Mapped[int] = Column(Integer, ForeignKey("specializations.id"))
     name: Mapped[str] = Column(String, nullable=False)
-    specialization: Mapped[str] = Column(String, nullable=False)
     phone: Mapped[str] = Column(String, nullable=False)
     email: Mapped[str] = Column(String, nullable=False)
-    work_schedule: Mapped[str] = Column(String, nullable=False)
-    status: Mapped[str] = Column(String, nullable=False)
+    status: Mapped[str] = Column(String, nullable=False, default='active')
 
     records: Mapped["Record"] = relationship("Record", back_populates="master")
+    specialization: Mapped["Specialization"] = relationship("Specialization", back_populates="masters")
+    cells: Mapped[list["Cell"]] = relationship("Cell", back_populates="master")
+    schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="master")

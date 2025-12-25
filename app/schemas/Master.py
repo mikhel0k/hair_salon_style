@@ -8,8 +8,8 @@ class MasterBase(BaseModel):
     specialization: Annotated[str, Field(..., description="Specialization of the master")]
     phone: Annotated[str, Field(..., description="Phone number of the master")]
     email: Annotated[str, Field(..., description="Email address of the master")]
-    work_schedule: Annotated[str, Field(..., description="Work shedule of the master")]
-    status: Annotated[str, Field(..., description="Status of the master")]
+    work_schedule: Annotated[str, Field(..., description="Work schedule of the master")]
+    status: Annotated[str, Field("hired", description="Status of the master")]
 
 
 class MasterCreate(MasterBase):
@@ -27,5 +27,5 @@ class MasterUpdate(BaseModel):
     specialization: Annotated[Optional[str], Field(..., description="Specialization of the master")]
     phone: Annotated[Optional[str], Field(..., description="Phone number of the master")]
     email: Annotated[Optional[str], Field(..., description="Email address of the master")]
-    work_schedule: Annotated[Optional[str], Field(..., description="Work shedule of the master")]
+    work_schedule: Annotated[Optional[str], Field(..., description="Work schedule of the master")]
     status: Annotated[Optional[str], Field(..., description="Status of the master")]

@@ -23,7 +23,7 @@ async def new_master(
 ):
     return await create_service(session=session, service=service)
 
-@router.get("/services", response_model=List[ServiceResponse] | None)
+@router.get("/all", response_model=List[ServiceResponse] | None)
 async def get_services_paginated(
         session: AsyncSession = Depends(get_session),
         skip: int = 0,
