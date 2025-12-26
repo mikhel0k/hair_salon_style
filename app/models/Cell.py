@@ -13,8 +13,8 @@ class Cell(BaseModel):
     time: Mapped[time] = Column(Time, nullable=False)
     status: Mapped[str] = Column(String(30), nullable=False, server_default="free")
 
-    master: Mapped["Master"] = relationship("Master", back_populates="cells", lazy="joined")
-    record: Mapped["Record"] = relationship("Record", back_populates="cell", lazy="joined")
+    master: Mapped["Master"] = relationship("Master", back_populates="cells")
+    record: Mapped["Record"] = relationship("Record", back_populates="cell")
 
     __table_args__ = (
         UniqueConstraint('master_id', 'date', 'time', name='uq_master_datetime'),

@@ -9,4 +9,4 @@ class User(BaseModel):
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
     phone_number: Mapped[str] = Column(String(15), nullable=False, unique=True, index=True)
 
-    records: Mapped[list["Record"]] = relationship("Record", back_populates="user", lazy="joined")
+    records: Mapped[list["Record"]] = relationship("Record", back_populates="user")

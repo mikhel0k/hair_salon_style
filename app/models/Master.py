@@ -22,4 +22,4 @@ class Master(BaseModel):
         lazy="joined"
     )
     cells: Mapped[list["Cell"]] = relationship("Cell", back_populates="master")
-    schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="master", lazy="joined")
+    schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="master")

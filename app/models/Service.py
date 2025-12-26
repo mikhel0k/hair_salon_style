@@ -14,7 +14,7 @@ class Service(BaseModel):
     category_id: Mapped[int] = Column(Integer, ForeignKey("categories.id"), nullable=False)
 
     records: Mapped[list["Record"]] = relationship("Record", back_populates="service")
-    category: Mapped["Category"] = relationship("Category", back_populates="services", lazy="joined")
+    category: Mapped["Category"] = relationship("Category", back_populates="services")
     specializations: Mapped[list["Specialization"]] = relationship(
         "Specialization",
         secondary="specialization_services",

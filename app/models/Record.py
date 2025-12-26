@@ -14,7 +14,7 @@ class Record(BaseModel):
     status: Mapped[str] = Column(String(30), nullable=False, index=True, server_default='created')
     notes: Mapped[str | None] = Column(Text, nullable=True)
 
-    user: Mapped["User"] = relationship("User", back_populates="records", lazy="joined")
-    service: Mapped["Service"] = relationship("Service", back_populates="records", lazy="joined")
-    master: Mapped["Master"] = relationship("Master", back_populates="records", lazy="joined")
-    cell: Mapped["Cell"] = relationship("Cell", back_populates="record", lazy="joined")
+    user: Mapped["User"] = relationship("User", back_populates="records")
+    service: Mapped["Service"] = relationship("Service", back_populates="records")
+    master: Mapped["Master"] = relationship("Master", back_populates="records")
+    cell: Mapped["Cell"] = relationship("Cell", back_populates="record")

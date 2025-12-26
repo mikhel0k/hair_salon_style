@@ -32,4 +32,4 @@ class Schedule(BaseModel):
     sunday_start: Mapped[time] = Column(Time, nullable=True)
     sunday_end: Mapped[time] = Column(Time, nullable=True)
 
-    master: Mapped["Master"] = relationship("Master", back_populates="schedule", lazy="joined")
+    master: Mapped["Master"] = relationship("Master", back_populates="schedule")
