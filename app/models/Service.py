@@ -1,6 +1,4 @@
-from datetime import timedelta
-
-from sqlalchemy import Column, Integer, String, Float, Text, DECIMAL, Interval, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DECIMAL, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 
 from app.models import BaseModel

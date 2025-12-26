@@ -1,6 +1,4 @@
-from datetime import date, time
-
-from sqlalchemy import Column, Integer, Date, Time, String, Numeric, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 
 from app.models import BaseModel
