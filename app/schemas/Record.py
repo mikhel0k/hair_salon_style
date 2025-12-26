@@ -38,6 +38,8 @@ class RecordResponse(BaseModel):
         description="Notes of record",
         examples=["Customer requested morning appointment", "Special requirements"]
     )]
+    price: Annotated[float, Field(..., description="Price of the service")]
+    name: Annotated[str, Field(..., max_length=30, description="Name of the master")]
 
     service: Annotated[ServiceResponseSmall, Field(..., description="Service response")]
 
@@ -57,7 +59,7 @@ class RecordUpdate(BaseModel):
     service_id: Annotated[Optional[int], Field(None, description="Service id of record")]
     user_id: Annotated[int, Field(..., description="User id of record")]
     cell_id: Annotated[int, Field(..., description="Cell id of record")]
-    status: Annotated[Optional[str], Field(None, description="Status of record", examples=ALLOWED_STATUSES)]
+    status: Annotated[Optional[str], Field(None, max_length=30, description="Status of record", examples=ALLOWED_STATUSES)]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",
@@ -74,7 +76,7 @@ class RecordUpdate(BaseModel):
 
 class EditRecordStatus(BaseModel):
     id: Annotated[int, Field(..., description="ID of record")]
-    status: Annotated[Optional[str], Field(None, description="Status of record", examples=ALLOWED_STATUSES)]
+    status: Annotated[Optional[str], Field(None, max_length=30, description="Status of record", examples=ALLOWED_STATUSES)]
 
     @field_validator("status")
     @classmethod

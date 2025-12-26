@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class MakeRecord(BaseModel):
-    phone_number: Annotated[str, Field(..., description="Phone number",
+    phone_number: Annotated[str, Field(..., max_length=60, description="Phone number",
         examples=["+79161234567", "+78005553535", "+74951234567"])]
     date: Annotated[date, Field(..., description="Date of record", examples=[date.today()])]
     time: Annotated[time, Field(..., description="Time of record", examples=[time(14, 30)])]

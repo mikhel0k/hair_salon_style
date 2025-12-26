@@ -9,10 +9,10 @@ ALLOWED_MASTERS_STATUSES = ["active", "vacation", "dismissed"]
 
 class MasterBase(BaseModel):
     specialization_id: Annotated[int, Field(..., description="Specialization_id of the master")]
-    name: Annotated[str, Field(..., description="Name of the master")]
-    phone: Annotated[str, Field(..., description="Phone number of the master")]
-    email: Annotated[EmailStr, Field(..., description="Email address of the master")]
-    status: Annotated[str, Field("active", description="Status of the master")]
+    name: Annotated[str, Field(..., max_length=30, description="Name of the master")]
+    phone: Annotated[str, Field(..., max_length=15, description="Phone number of the master")]
+    email: Annotated[EmailStr, Field(..., max_length=50, description="Email address of the master")]
+    status: Annotated[str, Field("active", max_length=30, description="Status of the master")]
 
     @field_validator("phone", mode="before")
     @classmethod

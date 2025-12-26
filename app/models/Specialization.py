@@ -7,7 +7,7 @@ from app.models import BaseModel
 class Specialization(BaseModel):
     __tablename__ = 'specializations'
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    name: Mapped[str] = Column(String, nullable=False)
+    name: Mapped[str] = Column(String(40), nullable=False)
 
     masters: Mapped[list["Master"]] = relationship("Master", back_populates="specialization")
     services: Mapped[list["Service"]] = relationship(
