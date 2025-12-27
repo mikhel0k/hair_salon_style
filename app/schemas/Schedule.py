@@ -1,9 +1,7 @@
 from typing import Annotated, Optional
 from datetime import time
 
-from pydantic import Field, ConfigDict, ValidationError, model_validator
-
-from app.models import BaseModel
+from pydantic import Field, ConfigDict, model_validator, BaseModel
 
 
 class ScheduleBase(BaseModel):
