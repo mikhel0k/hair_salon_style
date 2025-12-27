@@ -24,3 +24,11 @@ async def read_user_by_phone(
     answ = await session.execute(stmt)
     user_info = answ.scalar_one_or_none()
     return user_info
+
+
+async def read_user_by_id(
+        user_id: int,
+        session: AsyncSession,
+):
+    user = await session.get(User, user_id)
+    return user

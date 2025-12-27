@@ -16,14 +16,14 @@ async def create_category(
     return category
 
 
-async def get_category(
+async def read_category(
         category_id: int,
         session: AsyncSession,
-) -> Category:
+):
     category = await session.get(Category, category_id)
     return category
 
-async def get_categories_paginate(
+async def read_categories_paginate(
         session: AsyncSession,
         skip: int = 0,
         limit: int = 100,

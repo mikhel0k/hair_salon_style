@@ -16,7 +16,7 @@ async def create_schedule(
     return schedule
 
 
-async def get_schedule(
+async def read_schedule(
         schedule_id: int,
         session: AsyncSession
 ):
@@ -24,11 +24,11 @@ async def get_schedule(
     return schedule
 
 
-async def get_schedule_by_master_id(
+async def read_schedule_by_master_id(
         master_id: int,
         session: AsyncSession
 ):
-    stmt = select(Schedule).where(Schedule.master_id == master_id)
+    stmt = select(Schedule).where(Schedule.master_id == master_id).order_by(Schedule.id.desc())
     schedule = await session.execute(stmt)
     return schedule.scalar_one_or_none()
 

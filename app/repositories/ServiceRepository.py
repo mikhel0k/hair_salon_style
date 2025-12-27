@@ -16,7 +16,7 @@ async def create_service(
     return service
 
 
-async def get_service_by_id(
+async def read_service_by_id(
         service_id: int,
         session: AsyncSession
 ):
@@ -24,11 +24,11 @@ async def get_service_by_id(
     return service
 
 
-async def get_services_by_category_id(
+async def read_services_by_category_id(
         category_id: int,
         session: AsyncSession
 ):
-    stmt = select(Service).where(Service.category_id == category_id)
+    stmt = select(Service).where(Service.category_id == category_id).order_by(Service.category_id.desc())
     services = await session.execute(stmt)
     return services.scalars().all()
 

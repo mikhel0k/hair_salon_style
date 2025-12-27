@@ -40,7 +40,7 @@ async def read_masters_by_category(
         skip: int = 0,
         limit: int = 100,
 ):
-    stmt = select(Master).join(Specialization).where(Specialization.name == specialization).offset(skip).limit(limit)
+    stmt = select(Master).join(Specialization).where(Specialization.name == specialization).offset(skip).limit(limit).order_by(Master.id.desc())
     masters = await session.execute(stmt)
     return masters.scalars().all()
 

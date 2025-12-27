@@ -27,7 +27,7 @@ async def create_cells(
     await session.commit()
 
 
-async def get_cell(
+async def read_cell(
         cell_id: int,
         session: AsyncSession
 ) -> Cell | None:
@@ -35,7 +35,7 @@ async def get_cell(
     return cell
 
 
-async def get_free_cells_by_master_id_and_date(
+async def read_free_cells_by_master_id_and_date(
         master_id: int,
         cell_date: date,
         session: AsyncSession
@@ -47,7 +47,7 @@ async def get_free_cells_by_master_id_and_date(
     return cells.scalars().all()
 
 
-async def get_cells_by_master_id_and_date(
+async def read_cells_by_master_id_and_date(
         master_id: int,
         cell_date: date,
         session: AsyncSession
