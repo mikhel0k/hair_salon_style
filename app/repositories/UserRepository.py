@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas import UserCreate, UserFind
+from app.schemas.User import UserCreate, UserFind
 from app.models.User import User
 
 
@@ -23,8 +23,4 @@ async def read_user_by_phone(
     stmt = select(User).where(User.phone_number == user.phone_number)
     answ = await session.execute(stmt)
     user_info = answ.scalar_one_or_none()
-
-    if not user_info:
-        return None
-    
     return user_info

@@ -53,4 +53,3 @@ async def update_master(
     await session.commit()
     await session.refresh(master)
     return master
-

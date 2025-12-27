@@ -1,3 +1,4 @@
+import decimal
 from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, field_validator
@@ -5,7 +6,7 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 class Service(BaseModel):
     name: Annotated[str, Field(..., max_length=60, description="Name of the service")]
-    price: Annotated[float, Field(..., description="Price of the service")]
+    price: Annotated[decimal.Decimal, Field(..., description="Price of the service")]
     duration_minutes: Annotated[int, Field(..., description="Duration of the service")]
     category_id: Annotated[int, Field(..., description="Category of the service")]
     description: Annotated[str, Field(..., description="Description of the service")]
@@ -40,7 +41,7 @@ class ServiceResponse(Service):
 class ServiceResponseSmall(BaseModel):
     id: Annotated[int, Field(..., description="ID of the service")]
     name: Annotated[str, Field(..., max_length=60, description="Name of the service")]
-    price: Annotated[float, Field(..., description="Price of the service")]
+    price: Annotated[decimal.Decimal, Field(..., description="Price of the service")]
     description: Annotated[str, Field(..., description="Description of the service")]
 
     @field_validator("price")
@@ -55,7 +56,7 @@ class ServiceResponseSmall(BaseModel):
 
 class ServiceUpdate(BaseModel):
     name: Annotated[Optional[str], Field(None, max_length=60, description="Name of the service")]
-    price: Annotated[Optional[float], Field(None, description="Price of the service")]
+    price: Annotated[Optional[decimal.Decimal], Field(None, description="Price of the service")]
     duration_minutes: Annotated[Optional[int], Field(None, description="Duration of the service")]
     category_id: Annotated[Optional[int], Field(None, description="Category of the service")]
     description: Annotated[Optional[str], Field(None, description="Description of the service")]
