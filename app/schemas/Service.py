@@ -44,6 +44,7 @@ class ServiceResponseSmall(BaseModel):
     price: Annotated[decimal.Decimal, Field(..., description="Price of the service")]
     description: Annotated[str, Field(..., description="Description of the service")]
 
+
     @field_validator("price")
     @classmethod
     def validate_price(cls, v):
