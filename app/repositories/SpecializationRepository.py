@@ -5,10 +5,10 @@ from app.schemas.Specialization import SpecializationCreate
 
 
 async def create_specialization(
-        service_data: SpecializationCreate,
+        specialization_data: SpecializationCreate,
         session: AsyncSession,
 ) -> Specialization:
-    specialization = Specialization(**service_data.model_dump())
+    specialization = Specialization(**specialization_data.model_dump())
     session.add(specialization)
     await session.commit()
     await session.refresh(specialization)
