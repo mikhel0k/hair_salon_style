@@ -28,7 +28,7 @@ async def read_records_by_master_id(
         master_id: int,
         session: AsyncSession,
 ):
-    stmt = select(Record).where(Record.master_id == master_id).order_by(Record.id.desc())
+    stmt = select(Record).where(Record.master_id == master_id).order_by(Record.id.asc())
     records = await session.execute(stmt)
     return records.scalars().all()
 
@@ -37,7 +37,7 @@ async def read_records_by_servise_id(
         servise_id: int,
         session: AsyncSession,
 ):
-    stmt = select(Record).where(Record.service_id == servise_id).order_by(Record.id.desc())
+    stmt = select(Record).where(Record.service_id == servise_id).order_by(Record.id.asc())
     records = await session.execute(stmt)
     return records.scalars().all()
 
@@ -46,7 +46,7 @@ async def read_records_by_user_id(
         user_id: int,
         session: AsyncSession,
 ):
-    stmt = select(Record).where(Record.user_id == user_id).order_by(Record.id.desc())
+    stmt = select(Record).where(Record.user_id == user_id).order_by(Record.id.asc())
     records = await session.execute(stmt)
     return records.scalars().all()
 

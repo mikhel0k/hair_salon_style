@@ -28,7 +28,7 @@ async def read_schedule_by_master_id(
         master_id: int,
         session: AsyncSession
 ):
-    stmt = select(Schedule).where(Schedule.master_id == master_id).order_by(Schedule.id.desc())
+    stmt = select(Schedule).where(Schedule.master_id == master_id).order_by(Schedule.id.asc())
     schedule = await session.execute(stmt)
     return schedule.scalar_one_or_none()
 

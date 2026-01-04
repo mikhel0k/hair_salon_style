@@ -5,6 +5,7 @@ from app.schemas.Service import ServiceResponse, ServiceCreate, ServiceUpdate
 from app.core import get_session
 from app.services import ServiceService
 
+
 router = APIRouter()
 
 
@@ -42,7 +43,7 @@ async def get_services_by_category(
     )
 
 
-@router.patch("/{category_id}")
+@router.patch("/{service_id}")
 async def update_service(
         service_id: int,
         service: ServiceUpdate,
@@ -55,7 +56,7 @@ async def update_service(
     )
 
 
-@router.delete("/{category_id}")
+@router.delete("/{service_id}")
 async def delete_service(
         service_id: int,
         session: AsyncSession = Depends(get_session)

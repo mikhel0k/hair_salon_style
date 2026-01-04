@@ -28,7 +28,7 @@ async def read_categories_paginate(
         skip: int = 0,
         limit: int = 100,
 ):
-    stmt = select(Category).order_by(Category.id.desc()).offset(skip).limit(limit)
+    stmt = select(Category).order_by(Category.id.asc()).offset(skip).limit(limit)
     categories = await session.execute(stmt)
     return categories.scalars().all()
 
