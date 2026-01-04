@@ -1,7 +1,9 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import SpecializationService
+from app.models import SpecializationService, Service
 from app.schemas.SpecializationService import SpecializationServicesSchema
+from app.schemas.Service import ServiceResponse
 from app.repositories import SpecializationServiceRepository
 
 
@@ -34,3 +36,14 @@ async def create_spec_services(
             services=to_delete
         )
     await session.commit()
+
+
+async def read_services_by_specialization_id(
+        specialization_id: int,
+        session: AsyncSession
+):
+    services = await SpecializationServiceRepository.read_services_by_specialization(
+        specialization_id=specialization_id,
+        session=session
+    )
+    return [ServiceResponse.model_validate(service) for service in services]

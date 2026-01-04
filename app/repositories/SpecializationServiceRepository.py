@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import SpecializationService
+from app.models import SpecializationService, Service
 
 
 async def create_specialization_services(
@@ -17,7 +17,8 @@ async def read_services_by_specialization(
         specialization_id: int,
         session: AsyncSession,
 ):
-    stmt = select(SpecializationService).where(SpecializationService.specialization_id == specialization_id).order_by(
+    stmt = select(Service).join(SpecializationService).where(
+        SpecializationService.specialization_id == specialization_id).order_by(
         SpecializationService.service_id.asc()
     )
     services = await session.execute(stmt)

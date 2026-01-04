@@ -18,3 +18,15 @@ async def update_specialization_service(
         data=specialization_service,
         session=session
     )
+    return {"status": "success"}
+
+
+@router.get("/services/{specialization_id}")
+async def get_specialization_services(
+        specialization_id: int,
+        session: AsyncSession = Depends(get_session)
+):
+    return await SpecializationServicesService.read_services_by_specialization_id(
+        specialization_id=specialization_id,
+        session=session
+    )
