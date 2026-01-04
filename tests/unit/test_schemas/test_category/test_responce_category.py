@@ -3,7 +3,7 @@ from pydantic import ValidationError
 
 from app.schemas.Category import CategoryResponse
 from app.models.Category import Category
-from conftest import Name, MAX_LENGTH, MIN_LENGTH
+from conftest import Name, MAX_NAME_LENGTH, MIN_NAME_LENGTH
 
 
 class TestCreateCategory:
@@ -22,11 +22,11 @@ class TestCreateCategory:
         assert category.id == category_id
 
     @pytest.mark.parametrize("category, exc_message", [
-        (Category(name = name.wrong_name_short, id = 1), f"String should have at least {MIN_LENGTH} characters"),
-        (Category(name = name.wrong_name_long, id = 1), f"String should have at most {MAX_LENGTH} characters"),
+        (Category(name = name.wrong_name_short, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
+        (Category(name = name.wrong_name_long, id = 1), f"String should have at most {MAX_NAME_LENGTH} characters"),
         (Category(name = name.wrong_name_int, id = 1), "Input should be a valid string"),
-        (Category(name = name.wrong_name_spaces, id = 1), f"String should have at least {MIN_LENGTH} characters"),
-        (Category(name = name.wrong_name_empty, id = 1), f"String should have at least {MIN_LENGTH} characters"),
+        (Category(name = name.wrong_name_spaces, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
+        (Category(name = name.wrong_name_empty, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
         (Category(name = name.wrong_name_none, id = 1), "Input should be a valid string"),
     ])
     def test_create_category_wrong_name(self, category, exc_message):
