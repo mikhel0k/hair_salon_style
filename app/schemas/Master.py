@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 import phonenumbers
 from pydantic import field_validator
 
+from app.schemas.Specialization import SpecializationResponse
 
 ALLOWED_MASTERS_STATUSES = ["active", "vacation", "dismissed"]
 
@@ -44,6 +45,10 @@ class MasterResponse(MasterBase):
     id: Annotated[int, Field(..., description="ID of the master")]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class MasterFullResponse(MasterResponse):
+    specialization: SpecializationResponse = Field(..., description="Specialization of the master")
 
 
 class MasterUpdate(BaseModel):

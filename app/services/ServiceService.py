@@ -1,7 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Service
 from app.schemas.Service import ServiceCreate, ServiceUpdate, ServiceResponse
 from app.repositories import ServiceRepository
 
@@ -62,8 +61,7 @@ async def update_service(
         service=service_from_db,
         session=session
     )
-    service_data = ServiceResponse.model_validate(updated_service)
-    return service_data
+    return ServiceResponse.model_validate(updated_service)
 
 
 async def delete_service(
