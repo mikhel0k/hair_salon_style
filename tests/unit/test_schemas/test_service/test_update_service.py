@@ -3,7 +3,7 @@ import decimal
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.Service import ServiceCreate
+from app.schemas.Service import ServiceUpdate
 from tests.unit.test_schemas.test_service.conftest import (
     Name,
     Price,
@@ -17,7 +17,7 @@ from tests.unit.test_schemas.test_service.conftest import (
 )
 
 
-class TestCreateService:
+class TestUpdateService:
     name = Name()
     price = Price()
     duration = Duration()
@@ -39,7 +39,7 @@ class TestCreateService:
             (name.right_name, price.right_price, duration.right_duration_string, 1, "Some description"),
         ]
     )
-    def test_create_service(
+    def test_update_service(
             self,
             name,
             price,
@@ -47,14 +47,14 @@ class TestCreateService:
             category_id,
             description,
     ):
-        service = ServiceCreate(
+        service = ServiceUpdate(
             name=name,
             price=price,
             duration_minutes=duration_minutes,
             category_id=category_id,
             description=description,
         )
-        assert isinstance(service, ServiceCreate)
+        assert isinstance(service, ServiceUpdate)
         assert service.name == name
         assert service.price == decimal.Decimal(str(price))
         assert service.duration_minutes == int(duration_minutes)
@@ -73,8 +73,6 @@ class TestCreateService:
              ("name",), "string_too_short", f"String should have at least {MIN_NAME_LENGTH} characters"),
             (name.wrong_name_spaces, price.right_price, duration.right_duration, 1, "Some description",
              ("name",), "string_too_short", f"String should have at least {MIN_NAME_LENGTH} characters"),
-            (name.wrong_name_none, price.right_price, duration.right_duration, 1, "Some description",
-             ("name",), "string_type", f"Input should be a valid string"),
             (name.right_name, price.wrong_price_zero, duration.right_duration, 1, "Some description",
              ("price",), "value_error", f"Value error, Price must be greater than {MIN_PRICE}"),
             (name.right_name, price.wrong_price_negative, duration.right_duration, 1, "Some description",
@@ -88,13 +86,9 @@ class TestCreateService:
             (name.right_name, price.wrong_price_negative_float, duration.right_duration, 1, "Some description",
              ("price",), "value_error", f"Value error, Price must be greater than {MIN_PRICE}"),
             (name.right_name, price.wrong_price_negative_three_numbers_after_coma, duration.right_duration, 1, "Some description",
-
-
              ("price",), "value_error", f"Value error, Price must be greater than {MIN_PRICE}"),
             (name.right_name, price.wrong_price_string, duration.right_duration, 1, "Some description",
              ("price",), "decimal_parsing", f"Input should be a valid decimal"),
-            (name.right_name, price.wrong_price_none, duration.right_duration, 1, "Some description",
-             ("price",), "decimal_type", f"Decimal input should be an integer, float, string or Decimal object"),
             (name.right_name, price.right_price, duration.wrong_duration_zero, 1, "Some description",
              ("duration_minutes",), "value_error", f"Value error, Duration must be greater than {MIN_DURATION}"),
             (name.right_name, price.right_price, duration.wrong_duration_negative, 1, "Some description",
@@ -109,7 +103,7 @@ class TestCreateService:
              ("duration_minutes",), "int_from_float", f"Input should be a valid integer, got a number with a fractional part"),
         ]
     )
-    def test_create_service_wrong(
+    def test_update_service_wrong(
             self,
             name,
             price,
@@ -121,7 +115,7 @@ class TestCreateService:
             message,
     ):
         with pytest.raises(ValidationError) as error:
-            service = ServiceCreate(
+            service = ServiceUpdate(
                 name=name,
                 price=price,
                 duration_minutes=duration_minutes,
