@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class SpecializationBase(BaseModel):
-    name: Annotated[str, Field(..., max_length=40, description="Name of the specialization")]
+    name: Annotated[str, Field(..., max_length=40, min_length=3, description="Name of the specialization")]
+    model_config = ConfigDict(str_strip_whitespace=True)
 
 
 class SpecializationCreate(SpecializationBase):

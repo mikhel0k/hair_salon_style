@@ -10,7 +10,7 @@ MIN_DURATION = 0
 
 @dataclass
 class Name:
-    right_name: str = "man`s haircut"
+    right_name: str = "Man`s haircut"
     right_name_short: str = "a" * MIN_NAME_LENGTH
     right_name_long: str = "a" * MAX_NAME_LENGTH
     right_name_сyrillic: str = "Стрижка"
