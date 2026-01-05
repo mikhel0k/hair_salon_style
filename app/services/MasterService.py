@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Master
 from app.schemas.Master import MasterCreate, MasterUpdate, MasterResponse, MasterFullResponse
-from app.repositories import MasterRepository
+from app.repositories import MasterRepository, ScheduleRepository
+from app.schemas.Schedule import ScheduleCreate
 
 
 async def create_master(
@@ -12,6 +13,7 @@ async def create_master(
 ):
     master = Master(**master.model_dump())
     master_in_db = await MasterRepository.create_master(master=master, session=session)
+    await ScheduleRepository.create_schedule(ScheduleCreate(master_id=master_in_db.id), session=session)
     return MasterResponse.model_validate(master_in_db)
 
 
