@@ -6,9 +6,12 @@ from .endpoints.SpecializationService import router as specialization_service_ro
 from .endpoints.Master import router as master_router
 from .endpoints.Schedule import router as schedule_router
 from .endpoints.Cell import router as cell_router
+from .endpoints.Record import router as record_router
 
 
 router = APIRouter()
+
+
 router.include_router(category_router,prefix="/category" ,tags=["category"])
 router.include_router(service_router, prefix="/service", tags=["service"])
 router.include_router(specialization_router, prefix="/specialization", tags=["specialization"])
@@ -16,3 +19,4 @@ router.include_router(specialization_service_router, prefix="/specialization", t
 router.include_router(master_router, prefix="/master", tags=["master"])
 router.include_router(schedule_router, prefix="/schedule", tags=["schedule"])
 router.include_router(cell_router, prefix="/cell", tags=["cell"])
+router.include_router(record_router, prefix="/record", tags=["record"])

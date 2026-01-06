@@ -38,10 +38,6 @@ class RecordResponse(BaseModel):
         description="Notes of record",
         examples=["Customer requested morning appointment", "Special requirements"]
     )]
-    price: Annotated[float, Field(..., description="Price of the service")]
-    name: Annotated[str, Field(..., max_length=30, description="Name of the master")]
-
-    service: Annotated[ServiceResponseSmall, Field(..., description="Service response")]
 
     @field_validator("status")
     @classmethod

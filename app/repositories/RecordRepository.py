@@ -2,18 +2,16 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Record
-from app.schemas.Record import RecordCreate
 
 
 async def create_record(
-        record: RecordCreate,
+        record: Record,
         session: AsyncSession,
 ) -> Record:
-    record_data = Record(**record.model_dump())
-    session.add(record_data)
+    session.add(record)
     await session.commit()
-    await session.refresh(record_data)
-    return record_data
+    await session.refresh(record)
+    return record
 
 
 async def read_record_by_id(

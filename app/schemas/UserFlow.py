@@ -8,10 +8,9 @@ from pydantic import BaseModel, Field, field_validator
 class MakeRecord(BaseModel):
     phone_number: Annotated[str, Field(..., max_length=60, description="Phone number",
         examples=["+79161234567", "+78005553535", "+74951234567"])]
-    date: Annotated[date, Field(..., description="Date of record", examples=[date.today()])]
-    time: Annotated[time, Field(..., description="Time of record", examples=[time(14, 30)])]
     master_id: Annotated[int, Field(..., description="Master id of record")]
     service_id: Annotated[int, Field(..., description="Service id of record")]
+    cell_id: Annotated[int, Field(..., description="Cell id of record")]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",
@@ -31,10 +30,3 @@ class MakeRecord(BaseModel):
             raise ValueError('Invalid phone')
         except:
             raise ValueError('Invalid phone format')
-
-    @field_validator("date")
-    @classmethod
-    def validate_date(cls, v):
-        if v < date.today():
-            raise ValueError("Date must be in the future")
-        return v
