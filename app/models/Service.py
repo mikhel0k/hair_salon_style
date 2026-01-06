@@ -7,7 +7,7 @@ from app.models import BaseModel
 class Service(BaseModel):
     __tablename__ = "services"
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    name: Mapped[str] = Column(String(60), nullable=False)
+    name: Mapped[str] = Column(String(60), nullable=False, unique=True)
     price: Mapped[float] = Column(DECIMAL(10, 2), nullable=False)
     duration_minutes: Mapped[int] = Column(Integer, nullable=False)
     description: Mapped[str] = Column(Text, nullable=False)
