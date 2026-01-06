@@ -57,7 +57,7 @@ async def get_cells_by_date_and_master_id(
         search_date: date,
         session: AsyncSession
 ):
-    return await CellRepository.read_free_cells_by_master_id_and_date(
+    return await CellRepository.read_cells_by_master_id_and_date(
         master_id = master_id,
         cell_date = search_date,
         session = session

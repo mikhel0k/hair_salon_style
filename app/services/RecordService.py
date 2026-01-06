@@ -4,7 +4,7 @@ from app.schemas.Record import RecordResponse
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind, UserCreate
 from app.models.Record import Record
-from app.repositories import RecordRepository
+from app.repositories import RecordRepository, ServiceRepository, CellRepository
 from app.repositories import UserRepository
 
 
@@ -37,4 +37,24 @@ async def new_record(
         record=record,
         session=session
     )
+    service = await ServiceRepository.read_service_by_id(
+        service_id=data.service_id,
+        session=session
+    )
+    need_cells_counter = service.duration_minutes/15
+    cells, cell_id = [], data.cell_id
+    for i in range(int(need_cells_counter)):
+        cell = await CellRepository.read_cell(
+            cell_id=cell_id,
+            session=session
+        )
+        cell.status = "occupied"
+        cells.append(cell)
+        cell_id += 1
+
+    await CellRepository.update_cells(
+        cells=cells,
+        session=session
+    )
+
     return RecordResponse.model_validate(record)

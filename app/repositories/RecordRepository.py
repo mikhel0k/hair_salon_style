@@ -9,7 +9,7 @@ async def create_record(
         session: AsyncSession,
 ) -> Record:
     session.add(record)
-    await session.commit()
+    await session.flush()
     await session.refresh(record)
     return record
 
