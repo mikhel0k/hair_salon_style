@@ -13,6 +13,6 @@ class SpecializationCreate(SpecializationBase):
 
 
 class SpecializationResponse(SpecializationBase):
-    id: Annotated[int, Field(..., description="ID of the specialization")]
+    id: Annotated[int, Field(..., ge=1, description="ID of the specialization")]
 
     model_config = ConfigDict(from_attributes=True)

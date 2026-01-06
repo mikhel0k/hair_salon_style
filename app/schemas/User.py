@@ -28,7 +28,7 @@ class UserCreate(UserSchema):
 
 
 class UserResponse(UserSchema):
-    id: Annotated[int, Field(..., description="User id")]
+    id: Annotated[int, Field(..., ge=1, description="User id")]
 
     model_config = ConfigDict(from_attributes=True)
 

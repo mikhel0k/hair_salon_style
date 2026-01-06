@@ -1,6 +1,7 @@
 from typing import Annotated
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
-from pydantic import BaseModel, Field, ConfigDict
+from .validators import name_validator
 
 
 class CategoryBase(BaseModel):
@@ -8,8 +9,19 @@ class CategoryBase(BaseModel):
         ...,
         max_length=60,
         min_length=3,
-        description="The name of the category"
+        description="The name of the category (only letters, spaces and hyphens allowed)",
+        examples=[
+            "Haircut",
+            "Beard cutting",
+            "Manicure"
+        ]
     )]
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, v):
+        return name_validator(v)
+
     model_config = ConfigDict(str_strip_whitespace=True)
 
 
@@ -18,6 +30,6 @@ class CategoryCreate(CategoryBase):
 
 
 class CategoryResponse(CategoryBase):
-    id: Annotated[int, Field(..., description="ID of the category")]
+    id: Annotated[int, Field(..., ge=1, description="ID of the category")]
 
     model_config = ConfigDict(from_attributes=True)

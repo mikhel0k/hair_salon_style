@@ -6,7 +6,7 @@ from app.models.Category import Category
 from conftest import Name, MAX_NAME_LENGTH, MIN_NAME_LENGTH
 
 
-class TestCreateCategory:
+class TestResponseCategory:
     name = Name()
     @pytest.mark.parametrize("category, name, category_id", [
         (Category(name = name.right_name, id = 1), name.right_name, 1),
@@ -15,21 +15,24 @@ class TestCreateCategory:
         (Category(name = name.right_name_сyrillic, id = 1), name.right_name_сyrillic, 1),
         (Category(name = name.right_name, id = 2), name.right_name, 2),
     ])
-    def test_create_category_right_name(self, category, name, category_id):
+    def test_response_category_right_name(self, category, name, category_id):
         category = CategoryResponse.model_validate(category)
         assert isinstance(category, CategoryResponse)
-        assert category.name == name
+        assert category.name == name.title()
         assert category.id == category_id
 
     @pytest.mark.parametrize("category, exc_message", [
-        (Category(name = name.wrong_name_short, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
+        (Category(name = name.wrong_name_short, id = 1),
+         f"Value error, Field is too short. Minimum {MIN_NAME_LENGTH} characters. Got: '{name.wrong_name_short}'"),
         (Category(name = name.wrong_name_long, id = 1), f"String should have at most {MAX_NAME_LENGTH} characters"),
-        (Category(name = name.wrong_name_int, id = 1), "Input should be a valid string"),
-        (Category(name = name.wrong_name_spaces, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
-        (Category(name = name.wrong_name_empty, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
-        (Category(name = name.wrong_name_none, id = 1), "Input should be a valid string"),
+        (Category(name = name.wrong_name_int, id = 1), "Field must be a string"),
+        (Category(name = name.wrong_name_spaces, id = 1),
+         f"Value error, Field is too short. Minimum {MIN_NAME_LENGTH} characters. Got: ''"),
+        (Category(name = name.wrong_name_empty, id = 1),
+         f"Value error, Field is too short. Minimum {MIN_NAME_LENGTH} characters. Got: '{name.wrong_name_empty}'"),
+        (Category(name = name.wrong_name_none, id = 1), "Field must be a string"),
     ])
-    def test_create_category_wrong_name(self, category, exc_message):
+    def test_response_category_wrong_name(self, category, exc_message):
         with pytest.raises(ValidationError) as error:
             category = CategoryResponse.model_validate(category)
         assert len(error.value.errors()) == 1

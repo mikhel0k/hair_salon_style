@@ -8,9 +8,9 @@ from pydantic import BaseModel, Field, field_validator
 class MakeRecord(BaseModel):
     phone_number: Annotated[str, Field(..., max_length=60, description="Phone number",
         examples=["+79161234567", "+78005553535", "+74951234567"])]
-    master_id: Annotated[int, Field(..., description="Master id of record")]
-    service_id: Annotated[int, Field(..., description="Service id of record")]
-    cell_id: Annotated[int, Field(..., description="Cell id of record")]
+    master_id: Annotated[int, Field(..., ge=1, description="Master id of record")]
+    service_id: Annotated[int, Field(..., ge=1, description="Service id of record")]
+    cell_id: Annotated[int, Field(..., ge=1, description="Cell id of record")]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",

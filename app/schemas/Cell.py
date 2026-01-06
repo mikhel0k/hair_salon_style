@@ -1,38 +1,51 @@
 from typing import Annotated
-from datetime import date, time
+from datetime import date, time, datetime, timedelta
 
 from pydantic import BaseModel, Field, ConfigDict, field_validator
+from enum import Enum
+from .validators import date_validator
 
-ALLOWED_CELLS_STATUSES = ["free", "occupied"]
+class AllowedCellsStatuses(str, Enum):
+    FREE = "free"
+    OCCUPIED = "occupied"
 
 
 class CellBase(BaseModel):
-    master_id: Annotated[int, Field(..., description="ID of the master")]
-    date: Annotated[date, Field(..., description="Date of the cell")]
-    time: Annotated[time, Field(..., description="Time of the cell")]
-    status: Annotated[str, Field(..., max_length=30, description="Status of the cell")]
+    master_id: Annotated[int, Field(..., ge=1, description="ID of the master")]
+    date: Annotated[date, Field(
+        ...,
+        description="Date of the cell",
+        examples=[
+            datetime.today(),
+            datetime.today() + timedelta(days=2),
+            datetime.today() + timedelta(days=7),
+        ]
+    )]
+    time: Annotated[time, Field(
+        ...,
+        description="Time of the cell",
+        examples=[
+            time(hour=8, minute=00),
+            time(hour=9, minute=15),
+            time(hour=11, minute=30),
+        ]
+    )]
+    status: Annotated[AllowedCellsStatuses, Field(
+        default=AllowedCellsStatuses.FREE,
+        description="Status of the cell",
+    )]
 
-
-    @field_validator("status")
-    @classmethod
-    def validate_status(cls, v):
-        if v not in ALLOWED_CELLS_STATUSES:
-            raise ValueError("Status cannot be not free or occupied")
-        return v
+    model_config = ConfigDict(str_strip_whitespace=True)
 
 
 class CellCreate(CellBase):
     @field_validator("date")
     @classmethod
     def validate_date(cls, v):
-        if v is None:
-            raise ValueError("Date cannot be null")
-        if v < date.today():
-            raise ValueError("Date cannot be in the past")
-        return v
+        return date_validator(v)
 
 
 class CellResponse(CellBase):
-    id: Annotated[int, Field(..., description="ID of the cell")]
+    id: Annotated[int, Field(..., ge=1, description="ID of the cell")]
 
     model_config = ConfigDict(from_attributes=True)
