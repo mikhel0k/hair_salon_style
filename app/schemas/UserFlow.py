@@ -3,6 +3,7 @@ from datetime import date, time
 
 import phonenumbers
 from pydantic import BaseModel, Field, field_validator
+from .validators import phone_validator
 
 
 class MakeRecord(BaseModel):
@@ -20,13 +21,4 @@ class MakeRecord(BaseModel):
     @field_validator("phone_number", mode="before")
     @classmethod
     def validate_phone_number(cls, v):
-        if not v:
-            raise ValueError("phone_number cannot be empty")
-
-        try:
-            parsed = phonenumbers.parse(str(v), "RU")
-            if phonenumbers.is_valid_number(parsed):
-                return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
-            raise ValueError('Invalid phone')
-        except:
-            raise ValueError('Invalid phone format')
+        return phone_validator(v)

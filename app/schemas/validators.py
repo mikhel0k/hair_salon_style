@@ -16,6 +16,7 @@ def name_validator(value: Any):
     if value.replace(" ", "").replace("-", "") == "":
         raise ValueError("Field must contain at least one letter")
     if "  " in value:
+
         raise ValueError("Field cannot contain consecutive spaces")
     if "--" in value:
         raise ValueError("Field cannot contain consecutive hyphens")

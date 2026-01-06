@@ -6,7 +6,7 @@ import phonenumbers
 from pydantic import field_validator
 
 from app.schemas.Specialization import SpecializationResponse
-from .validators import phone_validator
+from .validators import phone_validator, name_validator
 
 class AllowedMasterStatuses(str, Enum):
     ACTIVE = "active"
@@ -53,6 +53,11 @@ class MasterBase(BaseModel):
         description="Status of the master",
     )]
 
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, v):
+        return name_validator(v)
+
     @field_validator("phone", mode="before")
     @classmethod
     def validate_phone_number(cls, v):
@@ -76,7 +81,7 @@ class MasterFullResponse(MasterResponse):
 
 
 class MasterUpdate(BaseModel):
-    specialization_id: Annotated[int, Field(..., ge=1, description="Specialization_id of the master")]
+    specialization_id: Annotated[Optional[int], Field(None, ge=1, description="Specialization_id of the master")]
     name: Annotated[Optional[str], Field(
         None,
         min_length=3,
@@ -115,7 +120,16 @@ class MasterUpdate(BaseModel):
         description="Status of the master",
     )]
 
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, v):
+        if v:
+            return name_validator(v)
+        return v
+
     @field_validator("phone", mode="before")
     @classmethod
     def validate_phone_number(cls, v):
-        return phone_validator(v)
+        if v:
+            return phone_validator(v)
+        return v
