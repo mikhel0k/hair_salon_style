@@ -3,35 +3,43 @@ from pydantic import ValidationError
 
 from app.schemas.Specialization import SpecializationResponse
 from app.models.Specialization import Specialization
-from conftest import Name, MAX_NAME_LENGTH, MIN_NAME_LENGTH
+from conftest import Name
+from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes
 
 
-class TestCreateSpecialization:
+class TestResponseSpecialization:
     name = Name()
+
     @pytest.mark.parametrize("specialization, name, specialization_id", [
-        (Specialization(name = name.right_name, id = 1), name.right_name, 1),
-        (Specialization(name = name.right_name_short, id = 1), name.right_name_short, 1),
-        (Specialization(name = name.right_name_long, id = 1), name.right_name_long, 1),
-        (Specialization(name = name.right_name_сyrillic, id = 1), name.right_name_сyrillic, 1),
-        (Specialization(name = name.right_name, id = 2), name.right_name, 2),
+        (Specialization(name=name.right_name, id=1), name.right_name, 1),
+        (Specialization(name=name.right_name_short, id=1), name.right_name_short, 1),
+        (Specialization(name=name.right_name_long, id=1), name.right_name_long, 1),
+        (Specialization(name=name.right_name_сyrillic, id=1), name.right_name_сyrillic, 1),
+        (Specialization(name=name.right_name, id=2), name.right_name, 2),
     ])
-    def test_create_specialization_right_name(self, specialization, name, specialization_id):
+    def test_response_specialization_right_name(self, specialization, name, specialization_id):
         specialization = SpecializationResponse.model_validate(specialization)
         assert isinstance(specialization, SpecializationResponse)
-        assert specialization.name == name
+        assert specialization.name == name.title()
         assert specialization.id == specialization_id
 
-    @pytest.mark.parametrize("specialization, exc_message", [
-        (Specialization(name = name.wrong_name_short, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
-        (Specialization(name = name.wrong_name_long, id = 1), f"String should have at most {MAX_NAME_LENGTH} characters"),
-        (Specialization(name = name.wrong_name_int, id = 1), "Input should be a valid string"),
-        (Specialization(name = name.wrong_name_spaces, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
-        (Specialization(name = name.wrong_name_empty, id = 1), f"String should have at least {MIN_NAME_LENGTH} characters"),
-        (Specialization(name = name.wrong_name_none, id = 1), "Input should be a valid string"),
+    @pytest.mark.parametrize("specialization, error_type, error_msg", [
+        (Specialization(name=name.wrong_name_short, id=1), ErrorTypes.STRING_TOO_SHORT,
+         ErrorMessages.SPEC_STRING_TOO_SHORT),
+        (Specialization(name=name.wrong_name_long, id=1), ErrorTypes.STRING_TOO_LONG,
+         ErrorMessages.SPEC_STRING_TOO_LONG),
+        (Specialization(name=name.wrong_name_int, id=1), ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
+        (Specialization(name=name.wrong_name_spaces, id=1), ErrorTypes.STRING_TOO_SHORT,
+         ErrorMessages.SPEC_STRING_TOO_SHORT),
+        (Specialization(name=name.wrong_name_empty, id=1), ErrorTypes.STRING_TOO_SHORT,
+         ErrorMessages.SPEC_STRING_TOO_SHORT),
+        (Specialization(name=name.wrong_name_none, id=1), ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
     ])
-    def test_create_specialization_wrong_name(self, specialization, exc_message):
+    def test_response_specialization_wrong_name(self, specialization, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             specialization = SpecializationResponse.model_validate(specialization)
-        assert len(error.value.errors()) == 1
-        assert error.value.errors()[0]["loc"] == ("name",)
-        assert exc_message in error.value.errors()[0]["msg"]
+        errors = error.value.errors()
+        assert len(errors) == 1
+        error = errors[0]
+        assert error["type"] == error_type
+        assert error_msg in error["msg"]

@@ -38,7 +38,10 @@ class ServiceResponseSmall(BaseModel):
     price: Annotated[decimal.Decimal, Field(..., ge=1, le=10000, description="Price of the service")]
     description: Annotated[str, Field(..., description="Description of the service")]
 
-
+    @field_validator("name", mode="after")
+    @classmethod
+    def validate_name(cls, v):
+        return name_validator(v)
 
     model_config = ConfigDict(str_strip_whitespace=True, from_attributes=True)
 
@@ -49,5 +52,11 @@ class ServiceUpdate(BaseModel):
     duration_minutes: Annotated[Optional[int], Field(None, ge=10, le=180, description="Duration of the service")]
     category_id: Annotated[Optional[int], Field(None, ge=1, description="Category of the service")]
     description: Annotated[Optional[str], Field(None, description="Description of the service")]
+
+
+    @field_validator("name", mode="after")
+    @classmethod
+    def validate_name(cls, v):
+        return name_validator(v)
 
     model_config = ConfigDict(str_strip_whitespace=True)
