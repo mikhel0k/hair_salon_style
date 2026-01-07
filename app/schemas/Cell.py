@@ -39,10 +39,11 @@ class CellBase(BaseModel):
 
 
 class CellCreate(CellBase):
-    @field_validator("date")
+    @field_validator("date", mode="after")
     @classmethod
     def validate_date(cls, v):
         return date_validator(v)
+
 
 
 class CellResponse(CellBase):

@@ -9,14 +9,9 @@ def name_validator(value: Any):
         raise ValueError("Field must be a string")
     value = value.strip()
     for i in value:
-        if not i.isalpha() and i != " " and i != "-":
-            raise ValueError(f"Invalid character: {i}")
-    if len(value) < 3:
-        raise ValueError(f"Field is too short. Minimum 3 characters. Got: '{value}'")
-    if value.replace(" ", "").replace("-", "") == "":
-        raise ValueError("Field must contain at least one letter")
+        if not i.isalpha() and i != " " and i != "-" and i != "_" and i != "`":
+            raise ValueError(f"Invalid character")
     if "  " in value:
-
         raise ValueError("Field cannot contain consecutive spaces")
     if "--" in value:
         raise ValueError("Field cannot contain consecutive hyphens")
@@ -38,8 +33,8 @@ def phone_validator(value: Any):
         if phonenumbers.is_valid_number(parsed):
             return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
         raise ValueError('Invalid phone')
-    except Exception as e:
-        raise ValueError(f'Invalid phone format: {e}')
+    except Exception:
+        raise ValueError(f'Invalid phone format')
 
 
 def date_validator(value: Any):

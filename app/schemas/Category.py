@@ -17,7 +17,7 @@ class CategoryBase(BaseModel):
         ]
     )]
 
-    @field_validator("name", mode="before")
+    @field_validator("name", mode="after")
     @classmethod
     def validate_name(cls, v):
         return name_validator(v)

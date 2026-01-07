@@ -9,7 +9,7 @@ class SpecializationBase(BaseModel):
     name: Annotated[str, Field(..., max_length=40, min_length=3, description="Name of the specialization")]
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    @field_validator("name", mode='before')
+    @field_validator("name", mode='after')
     @classmethod
     def name_validator(cls, v):
         return name_validator(v)

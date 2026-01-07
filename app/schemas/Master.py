@@ -53,12 +53,12 @@ class MasterBase(BaseModel):
         description="Status of the master",
     )]
 
-    @field_validator("name", mode="before")
+    @field_validator("name", mode="after")
     @classmethod
     def validate_name(cls, v):
         return name_validator(v)
 
-    @field_validator("phone", mode="before")
+    @field_validator("phone", mode="after")
     @classmethod
     def validate_phone_number(cls, v):
         return phone_validator(v)
