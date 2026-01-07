@@ -43,10 +43,10 @@ async def get_category(
     )
 
 
-
 @router.delete("/{category_id}")
 async def delete_category(
         category_id: int,
         session = Depends(get_session),
 ):
-    return await CategoryService.delete_category(category_id=category_id, session=session)
+    await CategoryService.delete_category(category_id=category_id, session=session)
+    return {"status": "success"}

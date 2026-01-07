@@ -14,7 +14,6 @@ class Settings(BaseSettings):
 
     POSTGRES_DB_TEST: str
     POSTGRES_USER_TEST: str
-    POSTGRES_USER_TEST: str
     POSTGRES_PASSWORD_TEST: str
     POSTGRES_HOST_TEST: str
     POSTGRES_PORT_TEST: int
