@@ -49,6 +49,8 @@ class ErrorMessages:
 
     ENUM_CELL = "Input should be 'free' or 'occupied'"
 
+    ID_GREATER_ONE = "Input should be greater than or equal to 1"
+    INT_TYPE = "Input should be a valid integer"
 
 
 class ErrorTypes:
@@ -67,3 +69,17 @@ class ErrorTypes:
     TIME_PARSING = "time_parsing"
     TIME_TYPE = "time_type"
     ENUM = "enum"
+    INT_TYPE = "int_type"
+
+
+class DataForId:
+    right_id = 1
+    big_right_id = 1123124
+    wrong_id_zero = 0
+    wrong_negative_id = -1
+    big_wrong_negative_id = -1123124
+    wrong_id_str = "string"
+    wrong_id_none = None
+    wrong_id_float = 1.5
+    wrong_id_true = True
+    wrong_id_false = False
