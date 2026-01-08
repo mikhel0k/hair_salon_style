@@ -11,7 +11,7 @@ class AllowedCellsStatuses(str, Enum):
 
 
 class CellBase(BaseModel):
-    master_id: Annotated[int, Field(..., ge=1, description="ID of the master")]
+    master_id: Annotated[StrictInt, Field(..., ge=1, description="ID of the master")]
     date: Annotated[date, Field(
         ...,
         description="Date of the cell",
