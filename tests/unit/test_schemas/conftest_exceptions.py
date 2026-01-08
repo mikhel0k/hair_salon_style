@@ -40,6 +40,15 @@ class ErrorMessages:
     WRONG_SPACE_AND_APOSTROPHE_ADJACENT = "Space and apostrophe cannot be adjacent"
     WRONG_SPACE_AND_UNDERSCORE_ADJACENT = "Space and underscore cannot be adjacent"
 
+    DATE_IN_THE_PAST = "Value error, Date cannot be in the past"
+    VALID_DATE = "Input should be a valid date"
+    SHORT_DATE = "Input should be a valid date or datetime, input is too short"
+    WRONG_DATE = "Datetimes provided to dates should have zero time - e.g. be exact dates"
+    SHORT_TIME = "Input should be in a valid time format, input is too short"
+    VALID_TIME = "Input should be a valid time"
+
+    ENUM_CELL = "Input should be 'free' or 'occupied'"
+
 
 
 class ErrorTypes:
@@ -52,3 +61,9 @@ class ErrorTypes:
     LESS_THAN_EQUAL = "less_than_equal"
     INT_FROM_FLOAT = "int_from_float"
     VALUE_ERROR = "value_error"
+    DATE_FROM_DATETIME_PARSING = "date_from_datetime_parsing"
+    DATE_FROM_DATETIME_INEXACT = "date_from_datetime_inexact"
+    DATE_TIPE = "date_type"
+    TIME_PARSING = "time_parsing"
+    TIME_TYPE = "time_type"
+    ENUM = "enum"
