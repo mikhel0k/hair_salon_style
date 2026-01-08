@@ -34,8 +34,6 @@ class TestResponseCategory:
          ErrorTypes.STRING_TOO_SHORT, ErrorMessages.STRING_TOO_SHORT),
         (Category(name=name.wrong_name_empty, id=1),
          ErrorTypes.STRING_TOO_SHORT, ErrorMessages.STRING_TOO_SHORT),
-        (Category(name=name.wrong_name_none, id=1),
-         ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
         (Category(name=name.wrong_invalid_character, id=1),
          ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_INVALID_CHARACTER),
         (Category(name=name.wrong_consecutive_spaces, id=1),

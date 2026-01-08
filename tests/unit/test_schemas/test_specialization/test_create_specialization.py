@@ -27,6 +27,23 @@ class TestCreateSpecialization:
         (name.wrong_name_empty, ErrorTypes.STRING_TOO_SHORT, ErrorMessages.SPEC_STRING_TOO_SHORT),
         (name.wrong_name_spaces, ErrorTypes.STRING_TOO_SHORT, ErrorMessages.SPEC_STRING_TOO_SHORT),
         (name.wrong_name_none, ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
+        (name.wrong_invalid_character, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_INVALID_CHARACTER),
+        (name.wrong_consecutive_spaces, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_CONSECUTIVE_SPACES),
+        (name.wrong_consecutive_hyphens, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_CONSECUTIVE_HYPHENS),
+        (name.wrong_consecutive_apostrophes, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_CONSECUTIVE_APOSTROPHES),
+        (name.wrong_consecutive_underscores, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_CONSECUTIVE_UNDERSCORES),
+        (name.wrong_start_with_hyphen, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_START_WITH_HYPHEN),
+        (name.wrong_start_with_apostrophe, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_START_WITH_APOSTROPHE),
+        (name.wrong_start_with_underscore, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_START_WITH_UNDERSCORE),
+        (name.wrong_end_with_hyphen, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_END_WITH_HYPHEN),
+        (name.wrong_end_with_apostrophe, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_END_WITH_APOSTROPHE),
+        (name.wrong_end_with_underscore, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_END_WITH_UNDERSCORE),
+        (name.wrong_space_and_hyphen_adjacent, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_HYPHEN_ADJACENT),
+        (name.wrong_space_and_apostrophe_adjacent, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_APOSTROPHE_ADJACENT),
+        (name.wrong_space_and_underscore_adjacent, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_UNDERSCORE_ADJACENT),
+        (name.wrong_hyphen_and_space_adjacent, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_HYPHEN_ADJACENT),
+        (name.wrong_apostrophe_and_space_adjacent, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_APOSTROPHE_ADJACENT),
+        (name.wrong_underscore_and_space_adjacent, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_UNDERSCORE_ADJACENT),
     ])
     def test_create_specialization_wrong_name(self, name_value, error_type, error_msg):
         with pytest.raises(ValidationError) as error:

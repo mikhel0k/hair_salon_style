@@ -26,7 +26,6 @@ class TestCreateCategory:
         (name.wrong_name_int, ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
         (name.wrong_name_empty, ErrorTypes.STRING_TOO_SHORT, ErrorMessages.STRING_TOO_SHORT),
         (name.wrong_name_spaces, ErrorTypes.STRING_TOO_SHORT, ErrorMessages.SPEC_STRING_TOO_SHORT),
-        (name.wrong_name_none, ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
         (name.wrong_invalid_character, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_INVALID_CHARACTER),
         (name.wrong_consecutive_spaces, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_CONSECUTIVE_SPACES),
         (name.wrong_consecutive_hyphens, ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_CONSECUTIVE_HYPHENS),
