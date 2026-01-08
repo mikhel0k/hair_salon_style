@@ -1,5 +1,5 @@
 from typing import Annotated
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 
 from .validators import name_validator
 
@@ -30,6 +30,6 @@ class CategoryCreate(CategoryBase):
 
 
 class CategoryResponse(CategoryBase):
-    id: Annotated[int, Field(..., ge=1, description="ID of the category")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of the category")]
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 
 from .validators import name_validator
 
@@ -20,6 +20,6 @@ class SpecializationCreate(SpecializationBase):
 
 
 class SpecializationResponse(SpecializationBase):
-    id: Annotated[int, Field(..., ge=1, description="ID of the specialization")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of the specialization")]
 
     model_config = ConfigDict(from_attributes=True)

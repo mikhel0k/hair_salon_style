@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 import phonenumbers
-from pydantic import field_validator
+from pydantic import field_validator, StrictInt
 
 from app.schemas.Specialization import SpecializationResponse
 from .validators import phone_validator, name_validator
@@ -14,7 +14,7 @@ class AllowedMasterStatuses(str, Enum):
     DISMISSED = "dismissed"
 
 class MasterBase(BaseModel):
-    specialization_id: Annotated[int, Field(..., ge=1, description="Specialization_id of the master")]
+    specialization_id: Annotated[StrictInt, Field(..., ge=1, description="Specialization_id of the master")]
     name: Annotated[str, Field(
         ...,
         min_length=3,
@@ -71,7 +71,7 @@ class MasterCreate(MasterBase):
 
 
 class MasterResponse(MasterBase):
-    id: Annotated[int, Field(..., ge=1, description="ID of the master")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of the master")]
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -81,7 +81,7 @@ class MasterFullResponse(MasterResponse):
 
 
 class MasterUpdate(BaseModel):
-    specialization_id: Annotated[Optional[int], Field(None, ge=1, description="Specialization_id of the master")]
+    specialization_id: Annotated[Optional[StrictInt], Field(None, ge=1, description="Specialization_id of the master")]
     name: Annotated[Optional[str], Field(
         None,
         min_length=3,

@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, Annotated
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 
 from app.schemas.Service import ServiceResponseSmall
 
@@ -14,11 +14,11 @@ class AllowedRecordStatuses(str, Enum):
 
 
 class RecordResponse(BaseModel):
-    id: Annotated[int, Field(..., ge=1, description="ID of record")]
-    master_id: Annotated[int, Field(..., ge=1, description="Master id of record")]
-    service_id: Annotated[int, Field(..., ge=1, description="Service id of record")]
-    user_id: Annotated[int, Field(..., ge=1, description="User id of record")]
-    cell_id: Annotated[int, Field(..., ge=1, description="Cell id of record")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of record")]
+    master_id: Annotated[StrictInt, Field(..., ge=1, description="Master id of record")]
+    service_id: Annotated[StrictInt, Field(..., ge=1, description="Service id of record")]
+    user_id: Annotated[StrictInt, Field(..., ge=1, description="User id of record")]
+    cell_id: Annotated[StrictInt, Field(..., ge=1, description="Cell id of record")]
     status: Annotated[AllowedRecordStatuses, Field(AllowedRecordStatuses.Created, description="Status of record")]
     notes: Annotated[Optional[str], Field(
         None,
@@ -30,10 +30,10 @@ class RecordResponse(BaseModel):
 
 
 class RecordUpdate(BaseModel):
-    master_id: Annotated[Optional[int], Field(None, ge=1, description="Master id of record")]
-    service_id: Annotated[Optional[int], Field(None, ge=1, description="Service id of record")]
-    user_id: Annotated[Optional[int], Field(None, ge=1, description="User id of record")]
-    cell_id: Annotated[Optional[int], Field(None, ge=1, description="Cell id of record")]
+    master_id: Annotated[Optional[StrictInt], Field(None, ge=1, description="Master id of record")]
+    service_id: Annotated[Optional[StrictInt], Field(None, ge=1, description="Service id of record")]
+    user_id: Annotated[Optional[StrictInt], Field(None, ge=1, description="User id of record")]
+    cell_id: Annotated[Optional[StrictInt], Field(None, ge=1, description="Cell id of record")]
     status: Annotated[Optional[AllowedRecordStatuses], Field(None, description="Status of record")]
     notes: Annotated[Optional[str], Field(
         None,
@@ -43,12 +43,12 @@ class RecordUpdate(BaseModel):
 
 
 class EditRecordStatus(BaseModel):
-    id: Annotated[int, Field(..., ge=1, description="ID of record")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of record")]
     status: Annotated[AllowedRecordStatuses, Field(..., description="Status of record",)]
 
 
 class EditRecordNote(BaseModel):
-    id: Annotated[int, Field(..., ge=1, description="ID of record")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of record")]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",

@@ -1,7 +1,7 @@
 from typing import Annotated
 from datetime import date, time, datetime, timedelta
 
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 from enum import Enum
 from .validators import date_validator
 
@@ -47,6 +47,6 @@ class CellCreate(CellBase):
 
 
 class CellResponse(CellBase):
-    id: Annotated[int, Field(..., ge=1, description="ID of the cell")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of the cell")]
 
     model_config = ConfigDict(from_attributes=True)

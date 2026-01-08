@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import phonenumbers
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator,StrictInt
 
 
 class UserSchema(BaseModel):
@@ -28,7 +28,7 @@ class UserCreate(UserSchema):
 
 
 class UserResponse(UserSchema):
-    id: Annotated[int, Field(..., ge=1, description="User id")]
+    id: Annotated[StrictInt, Field(..., ge=1, description="User id")]
 
     model_config = ConfigDict(from_attributes=True)
 
