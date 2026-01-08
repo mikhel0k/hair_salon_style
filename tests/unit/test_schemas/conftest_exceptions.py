@@ -25,6 +25,22 @@ class ErrorMessages:
     SPEC_STRING_TOO_LONG = "String should have at most 40 characters"
     SPEC_STRING_TOO_SHORT = "String should have at least 3 characters"
 
+    WRONG_INVALID_CHARACTER = "Invalid character"
+    WRONG_CONSECUTIVE_SPACES = "Field cannot contain consecutive spaces"
+    WRONG_CONSECUTIVE_HYPHENS = "Field cannot contain consecutive hyphens"
+    WRONG_CONSECUTIVE_APOSTROPHES = "Field cannot contain consecutive apostrophes"
+    WRONG_CONSECUTIVE_UNDERSCORES = "Field cannot contain consecutive underscores"
+    WRONG_START_WITH_HYPHEN = "Field cannot start with a hyphen"
+    WRONG_START_WITH_APOSTROPHE = "Field cannot start with a apostrophe"
+    WRONG_START_WITH_UNDERSCORE = "Field cannot start with a underscore"
+    WRONG_END_WITH_HYPHEN = "Field cannot end with a hyphen"
+    WRONG_END_WITH_APOSTROPHE = "Field cannot end with a apostrophe"
+    WRONG_END_WITH_UNDERSCORE = "Field cannot end with a underscore"
+    WRONG_SPACE_AND_HYPHEN_ADJACENT = "Space and hyphen cannot be adjacent"
+    WRONG_SPACE_AND_APOSTROPHE_ADJACENT = "Space and apostrophe cannot be adjacent"
+    WRONG_SPACE_AND_UNDERSCORE_ADJACENT = "Space and underscore cannot be adjacent"
+
+
 
 class ErrorTypes:
     STRING_TOO_LONG = "string_too_long"

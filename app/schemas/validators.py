@@ -15,12 +15,29 @@ def name_validator(value: Any):
         raise ValueError("Field cannot contain consecutive spaces")
     if "--" in value:
         raise ValueError("Field cannot contain consecutive hyphens")
+    if "``" in value:
+        raise ValueError("Field cannot contain consecutive apostrophes")
+    if "__" in value:
+        raise ValueError("Field cannot contain consecutive underscores")
     if value.startswith("-"):
         raise ValueError("Field cannot start with a hyphen")
+    if value.startswith("`"):
+        raise ValueError("Field cannot start with a apostrophe")
+    if value.startswith("_"):
+        raise ValueError("Field cannot start with a underscore")
     if value.endswith("-"):
         raise ValueError("Field cannot end with a hyphen")
+    if value.endswith("`"):
+        raise ValueError("Field cannot end with a apostrophe")
+    if value.endswith("_"):
+        raise ValueError("Field cannot end with a underscore")
     if " -" in value or "- " in value:
         raise ValueError("Space and hyphen cannot be adjacent")
+    if " `" in value or "` " in value:
+        raise ValueError("Space and apostrophe cannot be adjacent")
+    if " _" in value or "_ " in value:
+        raise ValueError("Space and underscore cannot be adjacent")
+
     return value.title()
 
 
