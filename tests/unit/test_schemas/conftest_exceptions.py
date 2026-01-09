@@ -1,11 +1,6 @@
-MIN_STRING_LENGTH = 3
-MAX_STRING_LENGTH = 60
-MAX_PRICE = 10000
-MIN_PRICE = 0
-MAX_DURATION = 180
-MIN_DURATION = 10
+from dataclasses import dataclass
 
-
+@dataclass
 class ErrorMessages:
     STRING_TOO_LONG = "String should have at most 60 characters"
     STRING_TOO_SHORT = "String should have at least 3 characters"
@@ -52,7 +47,7 @@ class ErrorMessages:
     ID_GREATER_ONE = "Input should be greater than or equal to 1"
     INT_TYPE = "Input should be a valid integer"
 
-
+@dataclass
 class ErrorTypes:
     STRING_TOO_LONG = "string_too_long"
     STRING_TOO_SHORT = "string_too_short"
@@ -71,7 +66,7 @@ class ErrorTypes:
     ENUM = "enum"
     INT_TYPE = "int_type"
 
-
+@dataclass
 class DataForId:
     right_id = 1
     big_right_id = 1123124

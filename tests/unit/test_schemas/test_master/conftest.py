@@ -1,16 +1,26 @@
 from dataclasses import dataclass
 
 MIN_NAME_LENGTH = 3
-MAX_NAME_LENGTH = 60
-MAX_PRICE = 10000
-MIN_PRICE = 0
-MAX_DURATION = 180
-MIN_DURATION = 10
+MAX_NAME_LENGTH = 30
+MIN_EMAIL_LENGTH = 8
+MAX_EMAIL_LENGTH = 50
+
+
+@dataclass
+class Status:
+    right_active = "active"
+    right_vacation = "vacation"
+    right_dismissed = "dismissed"
+    wrong_status_none = None
+    wrong_status_empty = ""
+    wrong_status_boolean = True
+    wrong_status_integer = 1
+    wrong_status_float = 1.0
 
 
 @dataclass
 class Name:
-    right_name: str = "Man`s haircut"
+    right_name: str = "Haircut"
     right_name_short: str = "a" * MIN_NAME_LENGTH
     right_name_long: str = "a" * MAX_NAME_LENGTH
     right_name_сyrillic: str = "Стрижка"
@@ -38,35 +48,44 @@ class Name:
     wrong_apostrophe_and_space_adjacent: str = f"{"a" * (MIN_NAME_LENGTH//2)}` {"a" * (MIN_NAME_LENGTH//2 + 1)}"
     wrong_underscore_and_space_adjacent: str = f"{"a" * (MIN_NAME_LENGTH//2)}_ {"a" * (MIN_NAME_LENGTH//2 + 1)}"
 
-@dataclass
-class Price:
-    right_price: float = 500
-    right_price_small: float = MIN_PRICE+1
-    right_price_big: float = MAX_PRICE
-    right_price_float: float = 500.50
-    right_price_three_numbers_after_coma: float = 500.555
-    right_price_string: str = "100"
-    right_price_string_with_coma: str = "500.50"
-    wrong_price_zero: float = 0
-    wrong_price_negative: float = -500
-    wrong_price_negative_small: float = -1
-    wrong_price_negative_big: float = -MAX_PRICE
-    wrong_price_big: float = MAX_PRICE + 1
-    wrong_price_negative_float: float = -500.50
-    wrong_price_negative_three_numbers_after_coma: float = -500.555
-    wrong_price_string = "asd"
-    wrong_price_none = None
 
 @dataclass
-class Duration:
-    right_duration: int = 60
-    right_duration_small: int = MIN_DURATION + 1
-    right_duration_big: int = MAX_DURATION
-    right_duration_string: str = "60"
-    wrong_duration_zero: int = 0
-    wrong_duration_negative: int = -60
-    wrong_duration_negative_small: int = -MIN_PRICE
-    wrong_duration_negative_big: int = -1
-    wrong_duration_big: int = MAX_DURATION + 1
-    wrong_duration_float: float = 60.5
+class Phone:
+    right_number_str_with_seven = "+79009009090"
+    right_number_str_with_eight = "89009009090"
+    right_number_int = 89009009090
+    wrong_number_str_with_two_without_plus = "29009009090"
+    wrong_number_str_with_five_without_plus = "59009009090"
+    wrong_number_str_with_seven_without_plus = "79009009090"
+    wrong_number_str_with_two_with_plus = "+29009009090"
+    wrong_number_str_with_five_with_plus = "+59009009090"
+    wrong_number_str_with_eight_with_plus = "+89009009090"
+    wrong_number_str_with_seven_short = "+790090090"
+    wrong_number_int_short = 890090090
+    wrong_number_str_with_seven_long = "+7900900909090"
+    wrong_number_int_long = 8900900909090
+    wrong_number_none = None
+    wrong_number_empty = ""
+    wrong_number_true = True
+    wrong_number_false = False
 
+
+@dataclass
+class Email:
+    right_string_mail = "example@mail.ru"
+    right_string_gmail = "example@gmail.com"
+    right_string_yandex = "example@yandex.ru"
+    right_string_long = f"{"a"*(50-8)}@mail.ru"
+    wrong_string_without_dog = "examplemail.ru"
+    wrong_string_without_email = "example@.ru"
+    wrong_string_mail_without_dot = "example@mailru"
+    wrong_string_mail_without_ru = "example@mail."
+    wrong_string_without_dog_mail = "example.ru"
+    wrong_string_without_dot_ru = "example@mail"
+    wrong_dog_mail = "example@asd.ru"
+    wrong_dot_ru = "example@mail.asd"
+    wrong_email_int = 1
+    wrong_email_none = None
+    wrong_email_empty = ""
+    wrong_email_true = True
+    wrong_email_false = False

@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 from datetime import date, timedelta, time
 
-
+@dataclass
 class Date:
     right_today = date.today()
     right_tomorrow = right_today + timedelta(days=1)
@@ -15,7 +16,7 @@ class Date:
     wrong_type_empty = ""
     wrong_type_none = None
 
-
+@dataclass
 class Time:
     right_morning = time(8, 0)
     right_afternoon = time(12, 15)
@@ -28,7 +29,7 @@ class Time:
     wrong_time_empty = ""
     wrong_time_none = None
 
-
+@dataclass
 class Status:
     right_free = "free"
     right_occupied = "occupied"

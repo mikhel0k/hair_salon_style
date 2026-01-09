@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-import phonenumbers
 from pydantic import field_validator, StrictInt
 
 from app.schemas.Specialization import SpecializationResponse
@@ -58,7 +57,7 @@ class MasterBase(BaseModel):
     def validate_name(cls, v):
         return name_validator(v)
 
-    @field_validator("phone", mode="after")
+    @field_validator("phone", mode="before")
     @classmethod
     def validate_phone_number(cls, v):
         return phone_validator(v)
