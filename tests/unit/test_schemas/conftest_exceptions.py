@@ -46,6 +46,7 @@ class ErrorMessages:
 
     ENUM_CELL = "Input should be 'free' or 'occupied'"
     ENUM_MASTER = "Input should be 'active', 'vacation' or 'dismissed'"
+    ENUM_RECORD = "Input should be 'created', 'confirmed', 'rejected' or 'cancelled'"
 
     ID_GREATER_ONE = "Input should be greater than or equal to 1"
     INT_TYPE = "Input should be a valid integer"

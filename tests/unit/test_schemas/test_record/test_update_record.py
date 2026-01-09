@@ -1,0 +1,186 @@
+import pytest
+from pydantic import ValidationError
+
+from app.models import Record
+from app.schemas.Record import RecordUpdate
+from conftest import AllowedRecordStatuses
+from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+
+class TestUpdateRecord:
+    data_for_id = DataForId()
+    status = AllowedRecordStatuses()
+
+    @pytest.mark.parametrize("record, master_id, service_id, user_id, cell_id, status", [
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Created),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Created),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created),
+        (RecordUpdate(master_id=data_for_id.big_right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Created),
+         data_for_id.big_right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.big_right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Created),
+         data_for_id.right_id, data_for_id.big_right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.big_right_id, cell_id=data_for_id.right_id, status=status.Created),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.big_right_id,
+         data_for_id.right_id, status.Created),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.big_right_id, status=status.Created),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.big_right_id, status.Created),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Confirmed),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Confirmed),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Rejected),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Rejected),
+        (RecordUpdate(master_id=data_for_id.right_id, service_id=data_for_id.right_id,
+        user_id=data_for_id.right_id, cell_id=data_for_id.right_id, status=status.Cancelled),
+         data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Cancelled),
+        (RecordUpdate(master_id=data_for_id.right_id),
+         data_for_id.right_id, None, None, None, None),
+        (RecordUpdate(service_id=data_for_id.right_id,),
+         None, data_for_id.right_id, None, None, None),
+        (RecordUpdate(user_id=data_for_id.right_id,),
+         None, None, data_for_id.right_id, None, None),
+        (RecordUpdate(cell_id=data_for_id.right_id,),
+         None, None, None, data_for_id.right_id, None),
+        (RecordUpdate(status=status.Created),
+         None, None, None, None, status.Created),
+    ])
+    def test_update_record_right(self, record, master_id, service_id, user_id, cell_id, status):
+        record = RecordUpdate.model_validate(record)
+        assert isinstance(record, RecordUpdate)
+        assert record.master_id == master_id
+        assert record.service_id == service_id
+        assert record.user_id == user_id
+        assert record.cell_id == cell_id
+        assert record.status == status
+
+    @pytest.mark.parametrize("master_id, service_id, user_id, cell_id, status, error_loc, error_type, error_msg", [
+        (data_for_id.wrong_id_zero, data_for_id.right_id, data_for_id.right_id,
+        data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.wrong_negative_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.big_wrong_negative_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.wrong_id_str, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.wrong_id_float, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.wrong_id_true, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.wrong_id_false, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("master_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.wrong_id_zero, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.wrong_negative_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.big_wrong_negative_id, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.wrong_id_str, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.wrong_id_float, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.wrong_id_true, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.wrong_id_false, data_for_id.right_id,
+         data_for_id.right_id, status.Created,
+         ("service_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.wrong_id_zero,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.wrong_negative_id,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.big_wrong_negative_id,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.wrong_id_str,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.wrong_id_float,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.wrong_id_true,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.wrong_id_false,
+         data_for_id.right_id, status.Created,
+         ("user_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.wrong_id_zero, status.Created,
+         ("cell_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.wrong_negative_id, status.Created,
+         ("cell_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.big_wrong_negative_id, status.Created,
+         ("cell_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.wrong_id_str, status.Created,
+         ("cell_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.wrong_id_float, status.Created,
+         ("cell_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.wrong_id_true, status.Created,
+         ("cell_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.wrong_id_false, status.Created,
+         ("cell_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.wrong_status_string,
+         ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.wrong_status_boolean,
+         ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.wrong_status_empty,
+         ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.wrong_status_integer,
+         ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
+        (data_for_id.right_id, data_for_id.right_id, data_for_id.right_id,
+         data_for_id.right_id, status.wrong_status_float,
+         ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
+    ])
+    def test_update_record_wrong(self, master_id, service_id, user_id, cell_id, status, error_loc, error_type, error_msg):
+        with pytest.raises(ValidationError) as error:
+            record = RecordUpdate(
+                master_id=master_id,
+                service_id=service_id,
+                user_id=user_id,
+                cell_id=cell_id,
+                status=status,
+            )
+        errors = error.value.errors()
+        assert len(errors) == 1
+        error = errors[0]
+        assert error["loc"] == error_loc
+        assert error["type"] == error_type
+        assert error_msg in error["msg"]
