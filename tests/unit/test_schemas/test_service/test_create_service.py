@@ -4,30 +4,32 @@ from pydantic import ValidationError
 
 from app.schemas.Service import ServiceCreate
 from conftest import Name, Price, Duration
-from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes
+from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
 
 
 class TestCreateService:
     name = Name()
     price = Price()
     duration = Duration()
+    data_for_id = DataForId()
 
     @pytest.mark.parametrize(
         "name, price, duration_minutes, category_id, description", [
-            (name.right_name, price.right_price, duration.right_duration, 1, "Some description"),
-            (name.right_name_short, price.right_price, duration.right_duration, 1, "Some description"),
-            (name.right_name_long, price.right_price, duration.right_duration, 1, "Some description"),
-            (name.right_name_сyrillic, price.right_price, duration.right_duration, 1, "Some description"),
-            (name.right_name, price.right_price_small, duration.right_duration, 1, "Some description"),
-            (name.right_name, price.right_price_big, duration.right_duration, 1, "Some description"),
-            (name.right_name, price.right_price_float, duration.right_duration, 1, "Some description"),
-            (name.right_name, price.right_price_three_numbers_after_coma, duration.right_duration, 1,
+            (name.right_name, price.right_price, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name_short, price.right_price, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name_long, price.right_price, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name_сyrillic, price.right_price, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price_small, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price_big, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price_float, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price_three_numbers_after_coma, duration.right_duration, data_for_id.right_id,
              "Some description"),
-            (name.right_name, price.right_price_string, duration.right_duration, 1, "Some description"),
-            (name.right_name, price.right_price_string_with_coma, duration.right_duration, 1, "Some description"),
-            (name.right_name, price.right_price, duration.right_duration_small, 1, "Some description"),
-            (name.right_name, price.right_price, duration.right_duration_big, 1, "Some description"),
-            (name.right_name, price.right_price, duration.right_duration_string, 1, "Some description"),
+            (name.right_name, price.right_price_string, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price_string_with_coma, duration.right_duration, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price, duration.right_duration_small, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price, duration.right_duration_big, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price, duration.right_duration_string, data_for_id.right_id, "Some description"),
+            (name.right_name, price.right_price, duration.right_duration_string, data_for_id.big_right_id, "Some description"),
         ]
     )
     def test_create_service(
@@ -153,6 +155,6 @@ class TestCreateService:
         errors = error.value.errors()
         assert len(errors) == 1
         error = errors[0]
-        # assert error["loc"] == error_loc
+        assert error["loc"] == error_loc
         assert error["type"] == error_type
         assert error_msg in error["msg"]

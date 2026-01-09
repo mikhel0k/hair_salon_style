@@ -11,7 +11,7 @@ class SpecializationBase(BaseModel):
 
     @field_validator("name", mode='after')
     @classmethod
-    def name_validator(cls, v):
+    def validate_name(cls, v):
         return name_validator(v)
 
 

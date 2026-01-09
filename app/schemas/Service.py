@@ -57,6 +57,8 @@ class ServiceUpdate(BaseModel):
     @field_validator("name", mode="after")
     @classmethod
     def validate_name(cls, v):
+        if v is None:
+            return v
         return name_validator(v)
 
     model_config = ConfigDict(str_strip_whitespace=True)
