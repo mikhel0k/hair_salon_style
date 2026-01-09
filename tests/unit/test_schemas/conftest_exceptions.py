@@ -3,10 +3,12 @@ from dataclasses import dataclass
 @dataclass
 class ErrorMessages:
     STRING_TOO_LONG = "String should have at most 60 characters"
+    STRING_TOO_LONG_30 = "String should have at most 30 characters"
     STRING_TOO_SHORT = "String should have at least 3 characters"
     STRING_TYPE = "Input should be a valid string"
     STRING_EMPTY = "String should have at least 3 characters"
     STRING_SPACES = "String should have at least 3 characters"
+    PHONE_NUMBER_TOO_SHORT = "String should have at least 8 characters"
 
     PRICE_TOO_LOW = "Input should be greater than or equal to 1"
     PRICE_TOO_HIGH = "Input should be less than or equal to 10000"
@@ -43,9 +45,19 @@ class ErrorMessages:
     VALID_TIME = "Input should be a valid time"
 
     ENUM_CELL = "Input should be 'free' or 'occupied'"
+    ENUM_MASTER = "Input should be 'active', 'vacation' or 'dismissed'"
 
     ID_GREATER_ONE = "Input should be greater than or equal to 1"
     INT_TYPE = "Input should be a valid integer"
+    INVALID_PHONE_FORMAT = "Value error, Invalid phone format"
+    EMPTY_PHONE = "Value error, phone_number cannot be empty"
+
+    EMAIL_MISS_DOG = "An email address must have an @-sign."
+    EMAIL_MISS_PERIOD = "value is not a valid email address: An email address cannot have a period immediately after the @-sign."
+    EMAIL_INVALID_PERIOD = "value is not a valid email address: The part after the @-sign is not valid. It should have a period."
+    EMAIL_END_WITH_PERIOD = "value is not a valid email address: An email address cannot end with a period."
+    VAIT_STRING = "Value error, Field must be a string"
+
 
 @dataclass
 class ErrorTypes:

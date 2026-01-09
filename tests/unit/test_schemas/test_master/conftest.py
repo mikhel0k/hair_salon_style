@@ -11,6 +11,7 @@ class Status:
     right_active = "active"
     right_vacation = "vacation"
     right_dismissed = "dismissed"
+    wrong_status_string = "string"
     wrong_status_none = None
     wrong_status_empty = ""
     wrong_status_boolean = True
@@ -20,7 +21,7 @@ class Status:
 
 @dataclass
 class Name:
-    right_name: str = "Haircut"
+    right_name: str = "Petr"
     right_name_short: str = "a" * MIN_NAME_LENGTH
     right_name_long: str = "a" * MAX_NAME_LENGTH
     right_name_сyrillic: str = "Стрижка"
@@ -54,9 +55,9 @@ class Phone:
     right_number_str_with_seven = "+79009009090"
     right_number_str_with_eight = "89009009090"
     right_number_int = 89009009090
+    right_number_str_with_seven_without_plus = "79009009090"
     wrong_number_str_with_two_without_plus = "29009009090"
     wrong_number_str_with_five_without_plus = "59009009090"
-    wrong_number_str_with_seven_without_plus = "79009009090"
     wrong_number_str_with_two_with_plus = "+29009009090"
     wrong_number_str_with_five_with_plus = "+59009009090"
     wrong_number_str_with_eight_with_plus = "+89009009090"
@@ -82,8 +83,6 @@ class Email:
     wrong_string_mail_without_ru = "example@mail."
     wrong_string_without_dog_mail = "example.ru"
     wrong_string_without_dot_ru = "example@mail"
-    wrong_dog_mail = "example@asd.ru"
-    wrong_dot_ru = "example@mail.asd"
     wrong_email_int = 1
     wrong_email_none = None
     wrong_email_empty = ""
