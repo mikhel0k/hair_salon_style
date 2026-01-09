@@ -89,7 +89,9 @@ class TestResponseCategory:
     def test_response_category_wrong_name(self, category, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             category = CategoryResponse.model_validate(category)
-        assert len(error.value.errors()) == 1
-        assert error.value.errors()[0]["loc"] == error_loc
-        assert error.value.errors()[0]["type"] == error_type
-        assert error_msg in error.value.errors()[0]["msg"]
+        errors = error.value.errors()
+        assert len(errors) == 1
+        error = errors[0]
+        assert error["loc"] == error_loc
+        assert error["type"] == error_type
+        assert error_msg in error["msg"]

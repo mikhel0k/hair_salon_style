@@ -135,7 +135,9 @@ class TestResponseCell:
     def test_response_cell_wrong(self, cell, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             cell = CellResponse.model_validate(cell)
-        assert len(error.value.errors()) == 1
-        assert error.value.errors()[0]["loc"] == error_loc
-        assert error.value.errors()[0]["type"] == error_type
-        assert error_msg in error.value.errors()[0]["msg"]
+        errors = error.value.errors()
+        assert len(errors) == 1
+        error = errors[0]
+        assert error["loc"] == error_loc
+        assert error["type"] == error_type
+        assert error_msg in error["msg"]

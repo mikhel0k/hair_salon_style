@@ -133,5 +133,6 @@ class TestResponseServiceSmall:
         errors = error.value.errors()
         assert len(errors) == 1
         error = errors[0]
+        # assert error["loc"] == error_loc
         assert error["type"] == error_type
         assert error_msg in error["msg"]

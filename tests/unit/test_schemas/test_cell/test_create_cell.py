@@ -104,7 +104,9 @@ class TestCreateCell:
     def test_create_cell_wrong(self, date, time, status, master_id, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             cell = CellCreate(master_id=master_id, date=date, time=time, status=status)
-        assert len(error.value.errors()) == 1
-        assert error.value.errors()[0]["loc"] == error_loc
-        assert error.value.errors()[0]["type"] == error_type
-        assert error_msg in error.value.errors()[0]["msg"]
+        errors = error.value.errors()
+        assert len(errors) == 1
+        error = errors[0]
+        assert error["loc"] == error_loc
+        assert error["type"] == error_type
+        assert error_msg in error["msg"]
