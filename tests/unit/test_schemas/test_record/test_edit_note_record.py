@@ -7,14 +7,14 @@ from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorType
 from conftest import AllowedRecordStatuses
 
 
-class TestEditStatusRecord:
+class TestEditNoteRecord:
     data_for_id = DataForId()
     status = AllowedRecordStatuses()
 
     @pytest.mark.parametrize("record_id",[
         data_for_id.right_id, data_for_id.big_right_id,
     ])
-    def test_edit_status_record_create(self, record_id):
+    def test_edit_note_record_create(self, record_id):
         record = EditRecordNote(
             id=record_id
         )
@@ -31,7 +31,7 @@ class TestEditStatusRecord:
         (data_for_id.wrong_id_true, ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
         (data_for_id.wrong_id_false, ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
     ])
-    def test_edit_status_record_wrong(self, record_id, error_loc, error_type, error_msg):
+    def test_edit_note_record_wrong(self, record_id, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             record = EditRecordNote(
             id=record_id,

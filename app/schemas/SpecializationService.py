@@ -3,6 +3,8 @@ from typing import Annotated
 from pydantic import BaseModel, Field, StrictInt
 
 
+ValidateStrictInt = Annotated[StrictInt, Field(ge=1)]
+
 class SpecializationServicesSchema(BaseModel):
-    specialization_id: Annotated[StrictInt, Field(..., ge=1, description="ID of the specialization")]
-    services_id: Annotated[set[StrictInt], Field(..., ge=1, description="List of service IDs")]
+    specialization_id: ValidateStrictInt = Field(..., description="ID of the specialization")
+    services_id: set[ValidateStrictInt] = Field(..., description="List of service IDs")
