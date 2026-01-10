@@ -3,7 +3,7 @@ from enum import Enum
 
 
 @dataclass
-class AllowedRecordStatuses(str):
+class AllowedRecordStatuses:
     Created = "created"
     Confirmed = "confirmed"
     Rejected = "rejected"
