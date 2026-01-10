@@ -18,7 +18,7 @@ class MakeRecord(BaseModel):
         examples=["Customer requested morning appointment", "Special requirements"]
     )]
 
-    @field_validator("phone_number", mode="after")
+    @field_validator("phone_number", mode="before")
     @classmethod
     def validate_phone_number(cls, v):
         return phone_validator(v)
