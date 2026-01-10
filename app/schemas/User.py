@@ -8,7 +8,7 @@ class UserSchema(BaseModel):
     phone_number: Annotated[str, Field(...,  max_length=15, description="Phone number",
         examples=["+79161234567", "+78005553535", "+74951234567"])]
 
-    @field_validator("phone_number", mode="after")
+    @field_validator("phone_number", mode="before")
     @classmethod
     def validate_phone_number(cls, v):
         if not v:
