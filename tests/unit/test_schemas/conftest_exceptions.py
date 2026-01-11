@@ -59,6 +59,11 @@ class ErrorMessages:
     EMAIL_END_WITH_PERIOD = "value is not a valid email address: An email address cannot end with a period."
     VAIT_STRING = "Value error, Field must be a string"
 
+    NOT_TWO_NONE = "Value error, start and end times must both be None or not None"
+    TO_EARLY = "Value error, Start time must be after 8 o`clock"
+    TO_LATE = "Value error, End time must be before 20 o`clock"
+    TO_SHORT = "Value error, Work time must be minimum 120 minutes"
+
 
 @dataclass
 class ErrorTypes:

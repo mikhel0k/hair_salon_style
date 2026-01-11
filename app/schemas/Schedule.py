@@ -34,14 +34,16 @@ class ScheduleBase(BaseModel):
 
         for day, start, end in days:
             if start is not None and end is not None:
+                start = start.replace(tzinfo=None)
+                end = end.replace(tzinfo=None)
                 if start > end:
-                    raise ValueError(f"Start time in {day} must be before end time")
+                    raise ValueError(f"Start time must be before end time")
                 if start < time(8, 0):
-                    raise ValueError(f"Start time in {day} must be after 8 o`clock")
+                    raise ValueError(f"Start time must be after 8 o`clock")
                 if end > time(20,0):
-                    raise ValueError(f"End time in {day} must be before 20 o`clock")
+                    raise ValueError(f"End time must be before 20 o`clock")
                 if (end.hour*60 + end.minute) - (start.hour*60 + start.minute) < 120:
-                    raise ValueError(f"Work time in {day} must be minimum 120 minutes")
+                    raise ValueError(f"Work time must be minimum 120 minutes")
             if (start is None) != (end is None):
                 raise ValueError(f"start and end times must both be None or not None")
 
