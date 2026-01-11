@@ -59,8 +59,8 @@ class TestCreateSchedule:
             (
                 time_data.right_morning, time_data.right_evening, time_data.right_morning, time_data.right_evening,
                 time_data.right_morning, time_data.right_evening, time_data.right_morning, time_data.right_evening,
-                time_data.right_afternoon, time_data.right_evening, time_data.right_morning, time_data.right_evening,
-                time_data.right_morning, time_data.right_evening, data_for_id.right_id
+                time_data.right_morning, time_data.right_evening, time_data.right_morning, time_data.right_evening,
+                time_data.right_afternoon, time_data.right_evening, data_for_id.right_id
             ),
             (
                 time_data.right_morning, time_data.right_afternoon, time_data.right_morning, time_data.right_evening,

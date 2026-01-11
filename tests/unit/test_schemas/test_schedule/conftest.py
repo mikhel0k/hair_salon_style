@@ -17,3 +17,4 @@ class Time:
     wrong_time_false = False
     wrong_time_empty = ""
     wrong_time_none = None
+    right_time_none = None
