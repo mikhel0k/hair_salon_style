@@ -8,7 +8,7 @@ from app.services import RecordService
 router = APIRouter()
 
 
-@router.post('/new_record')
+@router.post('/')
 async def new_record(
         record: MakeRecord,
         session: AsyncSession = Depends(get_session)

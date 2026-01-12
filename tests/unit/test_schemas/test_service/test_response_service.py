@@ -1,5 +1,4 @@
 import decimal
-from urllib import response
 
 import pytest
 from pydantic import ValidationError

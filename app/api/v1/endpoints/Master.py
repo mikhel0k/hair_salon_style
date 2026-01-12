@@ -9,7 +9,7 @@ from app.services import MasterService
 router = APIRouter()
 
 
-@router.post("/new_master", response_model=MasterResponse)
+@router.post("/", response_model=MasterResponse)
 async def new_master(
         master: MasterCreate,
         session: AsyncSession=Depends(get_session)

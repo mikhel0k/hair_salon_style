@@ -9,7 +9,7 @@ from app.services import ServiceService
 router = APIRouter()
 
 
-@router.post("/new_service",response_model=ServiceResponse)
+@router.post("/",response_model=ServiceResponse)
 async def new_service(
         service: ServiceCreate,
         session: AsyncSession = Depends(get_session)
@@ -21,18 +21,18 @@ async def new_service(
 
 
 
-@router.get("/by_id/{service_id}",response_model=ServiceResponse)
-async def get_service_by_id(
-        service_id: int,
-        session: AsyncSession = Depends(get_session)
-):
-    return await ServiceService.get_service_by_id(
-        service_id=service_id,
-        session=session
-    )
+# @router.get("/by_id/{service_id}",response_model=ServiceResponse)
+# async def get_service_by_id(
+#         service_id: int,
+#         session: AsyncSession = Depends(get_session)
+# ):
+#     return await ServiceService.get_service_by_id(
+#         service_id=service_id,
+#         session=session
+#     )
 
 
-@router.get("/category/{category_id}", )
+@router.get("/{category_id}", )
 async def get_services_by_category(
         category_id: int,
         session: AsyncSession = Depends(get_session)

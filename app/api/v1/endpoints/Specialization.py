@@ -9,7 +9,7 @@ from app.schemas.Specialization import SpecializationCreate, SpecializationRespo
 router = APIRouter()
 
 
-@router.post("/new_specialization",response_model=SpecializationResponse)
+@router.post("/",response_model=SpecializationResponse)
 async def create_specialization(
         specialization: SpecializationCreate,
         session: AsyncSession = Depends(get_session),

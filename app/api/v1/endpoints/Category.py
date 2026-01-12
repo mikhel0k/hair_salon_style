@@ -8,7 +8,7 @@ from app.services import CategoryService
 router = APIRouter()
 
 
-@router.post("/new_category", response_model=CategoryResponse)
+@router.post("/", response_model=CategoryResponse)
 async def new_category(
         category_data: CategoryCreate,
         session = Depends(get_session),
@@ -19,7 +19,7 @@ async def new_category(
     )
 
 
-@router.get("/paginated")
+@router.get("/")
 async def paginated_category(
         skip: int = 0,
         limit: int = 100,
@@ -32,15 +32,15 @@ async def paginated_category(
     )
 
 
-@router.get("/{category_id}", response_model=CategoryResponse)
-async def get_category(
-        category_id: int,
-        session = Depends(get_session)
-):
-    return await CategoryService.get_category_by_id(
-        session=session,
-        category_id=category_id
-    )
+# @router.get("/{category_id}", response_model=CategoryResponse)
+# async def get_category(
+#         category_id: int,
+#         session = Depends(get_session)
+# ):
+#     return await CategoryService.get_category_by_id(
+#         session=session,
+#         category_id=category_id
+#     )
 
 
 @router.delete("/{category_id}")
