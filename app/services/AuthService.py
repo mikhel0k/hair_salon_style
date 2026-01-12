@@ -17,7 +17,7 @@ async def registration(
         worker=worker,
     )
     data = {
-        "id": worker_in_db.id,
+        "sub": worker_in_db.id,
         "is_master": worker_in_db.is_master,
         "is_admin": worker_in_db.is_admin,
         "is_active": worker_in_db.is_active,
