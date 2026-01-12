@@ -18,6 +18,7 @@ class Master(BaseModel):
     specialization: Mapped["Specialization"] = relationship("Specialization", back_populates="masters")
     cells: Mapped[list["Cell"]] = relationship("Cell", back_populates="master")
     schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="master")
+    worker: Mapped["Worker"] = relationship("Worker", back_populates="master", uselist=False)
 
     __table_args__ = (
         UniqueConstraint('phone', 'email'),
