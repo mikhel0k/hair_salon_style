@@ -7,6 +7,7 @@ from .endpoints.Master import router as master_router
 from .endpoints.Schedule import router as schedule_router
 from .endpoints.Cell import router as cell_router
 from .endpoints.Record import router as record_router
+from .endpoints.Auth import router as auth_router
 
 
 router = APIRouter()
@@ -20,3 +21,4 @@ router.include_router(master_router, prefix="/master", tags=["master"])
 router.include_router(schedule_router, prefix="/schedule", tags=["schedule"])
 router.include_router(cell_router, prefix="/cell", tags=["cell"])
 router.include_router(record_router, prefix="/record", tags=["record"])
+router.include_router(auth_router, prefix="/auth", tags=["auth"])

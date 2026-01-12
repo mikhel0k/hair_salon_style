@@ -9,7 +9,7 @@ from app.services import SpecializationServicesService
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("/services")
 async def update_specialization_service(
         specialization_service: SpecializationServicesSchema,
         session: AsyncSession = Depends(get_session)

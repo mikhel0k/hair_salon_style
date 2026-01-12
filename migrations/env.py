@@ -15,6 +15,7 @@ from app.models import (
     Service,
     Specialization,
     SpecializationService,
+    Worker,
 )
 
 # this is the Alembic Config object, which provides

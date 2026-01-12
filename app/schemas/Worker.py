@@ -12,6 +12,9 @@ class WorkerBase(BaseModel):
 
 class WorkerCreate(WorkerBase):
     password: Annotated[str, Field(..., description="Password of worker")]
+    is_master: Annotated[bool, Field(..., description="Is master?")]
+    is_admin: Annotated[bool, Field(..., description="Is admin?")]
+    is_active: Annotated[bool, Field(..., description="Is active?")]
 
 
 class WorkerResponseInner(WorkerBase):
