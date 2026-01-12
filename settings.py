@@ -1,8 +1,11 @@
 from dotenv import load_dotenv
+from pathlib import Path
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 class Settings(BaseSettings):
@@ -17,6 +20,10 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD_TEST: str
     POSTGRES_HOST_TEST: str
     POSTGRES_PORT_TEST: int
+
+    JWT_PRIVATE_KEY: Path = BASE_DIR / "jwt_tokens" / "jwt-private.pem"
+    JWT_PUBLIC_KEY: Path = BASE_DIR / "jwt_tokens" / "jwt-public.pem"
+    ALGORITHM: str = "RS256"
 
     @property
     def DATABASE_URL(self) -> str:
