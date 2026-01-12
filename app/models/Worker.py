@@ -7,7 +7,7 @@ from app.models.Base import BaseModel
 class Worker(BaseModel):
     __tablename__ = "workers"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    master_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("masters.id"), nullable=True)
+    master_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("masters.id"), nullable=True, unique=True)
     username: Mapped[str] = mapped_column(String(30), nullable=False)
     password: Mapped[str] = mapped_column(String, nullable=False)
 
