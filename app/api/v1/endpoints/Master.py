@@ -25,12 +25,19 @@ async def get_master(
     return await MasterService.get_master(master_id=master_id, session=session)
 
 
-@router.get("/specialization/{specialization_id}")
-async def get_masters_by_specialization_id(
-        specialization_id: int,
-        session: AsyncSession = Depends(get_session)
+@router.get("/by_service_id/{service_id}")
+async def get_masters_by_service_id(
+        service_id: int,
+        session: AsyncSession = Depends(get_session),
+        skip: int = 0,
+        limit: int = 100
 ):
-    return await MasterService.get_masters_by_specialization_id(specialization_id=specialization_id, session=session)
+    return await MasterService.get_masters_by_service_id(
+        service_id=service_id,
+        session=session,
+        skip=skip,
+        limit=limit
+    )
 
 
 @router.patch("/{master_id}")

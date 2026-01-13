@@ -8,6 +8,7 @@ from .Service import Service
 from .Specialization import Specialization
 from .SpecializationService import SpecializationService
 from .User import User
+from .Worker import Worker
 
 __all__ = [
     "BaseModel",
@@ -20,4 +21,5 @@ __all__ = [
     "Specialization",
     "SpecializationService",
     "User",
+    "Worker"
 ]

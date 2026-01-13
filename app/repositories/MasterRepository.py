@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.models import Master
+from app.models import Master, SpecializationService
 
 
 async def create_master(
@@ -24,16 +24,21 @@ async def read_master(
     return result.scalar_one_or_none()
 
 
-async def read_masters_by_specialization_id(
-        session: AsyncSession,
-        specialization_id: int,
-        skip: int = 0,
-        limit: int = 100,
+async def read_masters_by_service_id(
+    session: AsyncSession,
+    service_id: int,
+    skip: int = 0,
+    limit: int = 100,
 ):
-    stmt = select(Master).where(Master.specialization_id==specialization_id).offset(skip).limit(
-        limit).order_by(Master.id.asc())
-    masters = await session.execute(stmt)
-    return masters.scalars().all()
+    stmt = (
+        select(Master)
+        .join(Master.specialization)
+        .join(SpecializationService, SpecializationService.specialization_id == Master.specialization_id)
+        .where(SpecializationService.service_id == service_id)
+        .offset(skip).limit(limit)
+    )
+    result = await session.execute(stmt)
+    return result.scalars().all()
 
 
 async def update_master(

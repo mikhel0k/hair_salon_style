@@ -1,3 +1,5 @@
+from sqlalchemy.exc import IntegrityError
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,7 +14,12 @@ async def create_master(
         session: AsyncSession
 ):
     master = Master(**master.model_dump())
-    master_in_db = await MasterRepository.create_master(master=master, session=session)
+    try:
+        master_in_db = await MasterRepository.create_master(master=master, session=session)
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Master with this data already exists")
     await ScheduleRepository.create_schedule(ScheduleCreate(master_id=master_in_db.id), session=session)
     return MasterResponse.model_validate(master_in_db)
 
@@ -27,7 +34,12 @@ async def update_master(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Master not found")
     for key, value in master_data.model_dump(exclude_unset=True).items():
         setattr(master, key, value)
-    master_in_db = await MasterRepository.update_master(master=master, session=session)
+    try:
+        master_in_db = await MasterRepository.update_master(master=master, session=session)
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Master with this data already exists")
     return MasterResponse.model_validate(master_in_db)
 
 
@@ -41,9 +53,16 @@ async def get_master(
     return MasterFullResponse.model_validate(master)
 
 
-async def get_masters_by_specialization_id(
-        specialization_id: int,
+async def get_masters_by_service_id(
+        service_id: int,
         session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100
 ):
-    masters = await MasterRepository.read_masters_by_specialization_id(specialization_id=specialization_id, session=session)
+    masters = await MasterRepository.read_masters_by_service_id(
+        service_id=service_id,
+        session=session,
+        skip=skip,
+        limit=limit,
+    )
     return [MasterResponse.model_validate(master) for master in masters]
