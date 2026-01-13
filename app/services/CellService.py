@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import date, timedelta, datetime, time
+from datetime import date, timedelta, datetime
 
 from app.repositories import ScheduleRepository, CellRepository
 from app.schemas.Cell import CellCreate
@@ -49,7 +50,12 @@ async def make_cells(
             )
             start_time += timedelta(minutes=15)
         current_date += timedelta(days=1)
-    await CellRepository.create_cells(sells_list=cells, session=session)
+    try:
+        await session.rollback()
+        await CellRepository.create_cells(sells_list=cells, session=session)
+    except IntegrityError as e:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Cell with this data already exists")
 
 
 async def get_cells_by_date_and_master_id(

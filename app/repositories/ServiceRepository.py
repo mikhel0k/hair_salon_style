@@ -26,9 +26,12 @@ async def read_service_by_id(
 
 async def read_services_by_category_id(
         category_id: int,
-        session: AsyncSession
+        session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
 ):
-    stmt = select(Service).where(Service.category_id == category_id).order_by(Service.category_id.asc())
+    stmt = select(Service).where(Service.category_id == category_id).order_by(
+        Service.category_id.asc()).offset(skip).limit(limit)
     services = await session.execute(stmt)
     return services.scalars().all()
 

@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories import ScheduleRepository
@@ -25,5 +26,10 @@ async def update_schedule(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Schedule not found")
     for key, value in schedule_data.model_dump(exclude_unset=True).items():
         setattr(schedule, key, value)
-    schedule_in_db = await ScheduleRepository.update_schedule(schedule=schedule, session=session)
+    try:
+        schedule_in_db = await ScheduleRepository.update_schedule(schedule=schedule, session=session)
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Schedule with this data already exists")
     return ScheduleResponse.model_validate(schedule_in_db)

@@ -1,3 +1,5 @@
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.Record import RecordResponse
@@ -21,10 +23,15 @@ async def new_record(
         user_create = UserCreate(
             phone_number=data.phone_number,
         )
-        user = await UserRepository.create_user(
-            user=user_create,
-            session=session
-        )
+        try:
+            user = await UserRepository.create_user(
+                user=user_create,
+                session=session
+            )
+        except IntegrityError as e:
+            await session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, detail="Record with this data already exists")
     record = Record(
         master_id=data.master_id,
         service_id=data.service_id,
@@ -33,10 +40,16 @@ async def new_record(
         status="created",
         notes=data.notes,
     )
-    record = await RecordRepository.create_record(
-        record=record,
-        session=session
-    )
+    try:
+        record = await RecordRepository.create_record(
+            record=record,
+            session=session
+        )
+
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Record with this data already exists")
     service = await ServiceRepository.read_service_by_id(
         service_id=data.service_id,
         session=session
@@ -52,9 +65,14 @@ async def new_record(
         cells.append(cell)
         cell_id += 1
 
-    await CellRepository.update_cells(
-        cells=cells,
-        session=session
-    )
+    try:
+        await CellRepository.update_cells(
+            cells=cells,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Record with this data already exists")
 
     return RecordResponse.model_validate(record)

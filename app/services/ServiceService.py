@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.Service import ServiceCreate, ServiceUpdate, ServiceResponse
@@ -9,10 +10,15 @@ async def create_service(
         service: ServiceCreate,
         session: AsyncSession
 ):
-    service_from_db = await ServiceRepository.create_service(
-        service=service,
-        session=session
-    )
+    try:
+        service_from_db = await ServiceRepository.create_service(
+            service=service,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Service with this data already exists")
     service_data = ServiceResponse.model_validate(service_from_db)
     return service_data
 
@@ -33,12 +39,15 @@ async def get_service_by_id(
 
 async def get_services_by_category_id(
         category_id: int,
-        session: AsyncSession
+        session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
 ):
     services_from_db = await ServiceRepository.read_services_by_category_id(
-
         category_id=category_id,
         session=session,
+        skip=skip,
+        limit=limit
     )
     service_data = [ServiceResponse.model_validate(service) for service in services_from_db]
     return service_data
@@ -57,10 +66,15 @@ async def update_service(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
     for key, value in service.model_dump(exclude_unset=True).items():
         setattr(service_from_db, key, value)
-    updated_service = await ServiceRepository.update_service(
-        service=service_from_db,
-        session=session
-    )
+    try:
+        updated_service = await ServiceRepository.update_service(
+            service=service_from_db,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Service with this data already exists")
     return ServiceResponse.model_validate(updated_service)
 
 

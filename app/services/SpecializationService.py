@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.Specialization import SpecializationCreate, SpecializationResponse
@@ -9,10 +10,15 @@ async def create_specialization(
         specialization: SpecializationCreate,
         session: AsyncSession,
 ):
-    specialization_in_db = await SpecializationRepository.create_specialization(
-        specialization_data=specialization,
-        session=session
-    )
+    try:
+        specialization_in_db = await SpecializationRepository.create_specialization(
+            specialization_data=specialization,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Specialization with this data already exists")
     specialization_data = SpecializationResponse.model_validate(specialization_in_db)
     return specialization_data
 

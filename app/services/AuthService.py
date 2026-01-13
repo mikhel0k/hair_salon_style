@@ -1,3 +1,5 @@
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_password_hash, create_token
@@ -12,10 +14,15 @@ async def registration(
 ):
     worker_data.password = get_password_hash(worker_data.password)
     worker = Worker(**worker_data.model_dump())
-    worker_in_db = await WorkerRepository.create_worker(
-        session=session,
-        worker=worker,
-    )
+    try:
+        worker_in_db = await WorkerRepository.create_worker(
+            session=session,
+            worker=worker,
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Worker with this data already exists")
     data = {
         "sub": worker_in_db.id,
         "is_master": worker_in_db.is_master,

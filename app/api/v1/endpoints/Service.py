@@ -35,11 +35,15 @@ async def new_service(
 @router.get("/{category_id}", )
 async def get_services_by_category(
         category_id: int,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
+        skip: int = 0,
+        limit: int = 100
 ):
     return await ServiceService.get_services_by_category_id(
         category_id=category_id,
-        session=session
+        session=session,
+        skip=skip,
+        limit=limit
     )
 
 
