@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/", response_model=MasterResponse)
-async def new_master(
+async def create_master(
         master: MasterCreate,
         session: AsyncSession=Depends(get_session)
 ):
@@ -41,7 +41,7 @@ async def get_masters_by_service_id(
 
 
 @router.patch("/{master_id}")
-async def patch_master(
+async def update_master(
         master_id: int,
         update_master: MasterUpdate,
         session: AsyncSession = Depends(get_session),

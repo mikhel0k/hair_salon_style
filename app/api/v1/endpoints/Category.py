@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/", response_model=CategoryResponse)
-async def new_category(
+async def create_category(
         category_data: CategoryCreate,
         session = Depends(get_session),
 ):
@@ -20,7 +20,7 @@ async def new_category(
 
 
 @router.get("/")
-async def paginated_category(
+async def get_categories(
         skip: int = 0,
         limit: int = 100,
         session: AsyncSession = Depends(get_session),

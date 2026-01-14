@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/",response_model=ServiceResponse)
-async def new_service(
+async def create_service(
         service: ServiceCreate,
         session: AsyncSession = Depends(get_session)
 ):

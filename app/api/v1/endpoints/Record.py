@@ -1,16 +1,30 @@
+from faker.providers import phone_number
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
 from app.schemas.UserFlow import MakeRecord
+from app.schemas.User import UserFind
 from app.services import RecordService
 
 router = APIRouter()
 
 
 @router.post('/')
-async def new_record(
+async def create_record(
         record: MakeRecord,
         session: AsyncSession = Depends(get_session)
 ):
     return await RecordService.new_record(session=session, data=record)
+
+
+@router.get('/phone_number')
+async def get_records_hy_phone(
+        phone_number: str,
+        session: AsyncSession = Depends(get_session)
+):
+    user = UserFind(phone_number=phone_number)
+    return await RecordService.get_records_hy_phone(
+        user=user,
+        session=session
+    )

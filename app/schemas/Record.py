@@ -3,6 +3,7 @@ from typing import Optional, Annotated
 
 from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 
+from app.schemas.Master import MasterResponse
 from app.schemas.Service import ServiceResponseSmall
 
 
@@ -27,6 +28,11 @@ class RecordResponse(BaseModel):
     )]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FullRecordResponse(RecordResponse):
+    master: Annotated[Optional[MasterResponse], Field(..., description="Master of record")]
+    service: Annotated[Optional[ServiceResponseSmall], Field(..., description="Service of record")]
 
 
 class RecordUpdate(BaseModel):

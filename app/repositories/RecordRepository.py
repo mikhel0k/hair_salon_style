@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.models import Record
 
@@ -44,7 +45,10 @@ async def read_records_by_user_id(
         user_id: int,
         session: AsyncSession,
 ):
-    stmt = select(Record).where(Record.user_id == user_id).order_by(Record.id.asc())
+    stmt = select(Record).options(
+        joinedload(Record.master),
+        joinedload(Record.service)
+    ).where(Record.user_id == user_id).order_by(Record.id.asc())
     records = await session.execute(stmt)
     return records.scalars().all()
 
