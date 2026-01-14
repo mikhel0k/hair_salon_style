@@ -47,7 +47,8 @@ async def read_records_by_user_id(
 ):
     stmt = select(Record).options(
         joinedload(Record.master),
-        joinedload(Record.service)
+        joinedload(Record.service),
+        joinedload(Record.cell),
     ).where(Record.user_id == user_id).order_by(Record.id.asc())
     records = await session.execute(stmt)
     return records.scalars().all()

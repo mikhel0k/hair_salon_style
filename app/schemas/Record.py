@@ -3,6 +3,7 @@ from typing import Optional, Annotated
 
 from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 
+from app.schemas.Cell import CellResponse
 from app.schemas.Master import MasterResponse
 from app.schemas.Service import ServiceResponseSmall
 
@@ -33,6 +34,7 @@ class RecordResponse(BaseModel):
 class FullRecordResponse(RecordResponse):
     master: Annotated[Optional[MasterResponse], Field(..., description="Master of record")]
     service: Annotated[Optional[ServiceResponseSmall], Field(..., description="Service of record")]
+    cell: Annotated[Optional[CellResponse], Field(..., description="Cell of record")]
 
 
 class RecordUpdate(BaseModel):

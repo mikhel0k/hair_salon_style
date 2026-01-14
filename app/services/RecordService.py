@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.Record import RecordResponse, FullRecordResponse
+from app.schemas.Record import RecordResponse, FullRecordResponse, RecordUpdate
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind, UserCreate
 from app.models.Record import Record
@@ -93,3 +93,32 @@ async def get_records_hy_phone(
         session=session
     )
     return [FullRecordResponse.model_validate(record) for record in records]
+
+
+async def update_record(
+        record_id: int,
+        data: RecordUpdate,
+        session: AsyncSession
+):
+    record = await RecordRepository.read_record_by_id(
+        record_id=record_id,
+        session=session
+    )
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    for key, value in data.model_dump(exclude_unset=True).items():
+        setattr(record, key, value)
+    try:
+        await RecordRepository.update_record(
+            record=record,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Record with this data already exists"
+        )

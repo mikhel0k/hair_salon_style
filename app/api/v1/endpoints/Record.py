@@ -28,3 +28,16 @@ async def get_records_hy_phone(
         user=user,
         session=session
     )
+
+
+@router.patch('/{record_id}')
+async def update_record(
+        record_id: int,
+        record: MakeRecord,
+        session: AsyncSession = Depends(get_session)
+):
+    return await RecordService.update_record(
+        record_id=record_id,
+        data=record,
+        session=session
+    )
