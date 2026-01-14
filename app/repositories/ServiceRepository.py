@@ -19,7 +19,7 @@ async def create_service(
 async def read_service_by_id(
         service_id: int,
         session: AsyncSession
-):
+) -> Service:
     service = await session.get(Service, service_id)
     return service
 

@@ -20,7 +20,10 @@ async def create_master(
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Master with this data already exists")
-    await ScheduleRepository.create_schedule(ScheduleCreate(master_id=master_in_db.id), session=session)
+    await ScheduleRepository.create_schedule(ScheduleCreate(
+        id=master_in_db.id,
+        master_id=master_in_db.id
+    ), session=session)
     return MasterResponse.model_validate(master_in_db)
 
 

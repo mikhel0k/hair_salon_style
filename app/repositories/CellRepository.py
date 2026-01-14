@@ -58,6 +58,17 @@ async def read_cells_by_master_id_and_date(
     return cells.scalars().all()
 
 
+async def read_cells_by_master_id(
+        master_id: int,
+        session: AsyncSession
+):
+    stmt = select(Cell).order_by(Cell.date, Cell.time).where(
+        Cell.master_id == master_id,
+    )
+    cells = await session.execute(stmt)
+    return cells.scalars().all()
+
+
 async def update_cell(
         cell: Cell,
         session: AsyncSession

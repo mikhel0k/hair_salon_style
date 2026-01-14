@@ -2,8 +2,9 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import date, timedelta, datetime
+import math
 
-from app.repositories import ScheduleRepository, CellRepository
+from app.repositories import ScheduleRepository, CellRepository, ServiceRepository
 from app.schemas.Cell import CellCreate
 from app.schemas.Schedule import ScheduleResponse
 
@@ -38,7 +39,7 @@ async def make_cells(
             current_date += timedelta(days=1)
             continue
         start_time = datetime.combine(current_date, start_time)
-        end_time = datetime.combine(current_date, end_time) - timedelta(minutes=30)
+        end_time = datetime.combine(current_date, end_time)
         while start_time <= end_time:
             cells.append(
                 CellCreate(
@@ -68,3 +69,34 @@ async def get_cells_by_date_and_master_id(
         cell_date = search_date,
         session = session
     )
+
+
+async def get_free_cells_by_service_id_and_master_id(
+        service_id: int,
+        master_id: int,
+        session: AsyncSession
+):
+    cells = await CellRepository.read_cells_by_master_id(
+        master_id = master_id,
+        session = session
+    )
+    if not cells:
+        return {
+            "message" : "No free cells found",
+        }
+    service = await ServiceRepository.read_service_by_id(service_id=service_id, session=session)
+    if not service:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
+    required_slots = math.ceil(service.duration_minutes/15)
+    response=[]
+    l, r = 0, required_slots
+    for i in range(len(cells) - required_slots + 1):
+        window = cells[i: i + required_slots]
+
+        is_free = all(c.status == "free" for c in window)
+        same_day = all(c.date == window[0].date for c in window)
+
+        if is_free and same_day:
+            response.append(window[0])
+
+    return response

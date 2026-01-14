@@ -28,3 +28,16 @@ async def read_cells(
         master_id=master_id,
         search_date=date
     )
+
+
+@router.get("/free/service/{service_id}")
+async def free_service(
+        service_id: int,
+        master_id: int,
+        session: AsyncSession = Depends(get_session)
+):
+    return await CellService.get_free_cells_by_service_id_and_master_id(
+        service_id=service_id,
+        master_id=master_id,
+        session=session
+    )
