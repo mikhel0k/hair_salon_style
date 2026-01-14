@@ -32,3 +32,8 @@ class WorkerResponse(WorkerBase):
     master: Annotated[Optional[MasterResponse], Field(None, description="Master ID")]
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class Login(BaseModel):
+    username: Annotated[str, Field(..., description="Username of worker")]
+    password: Annotated[str, Field(..., description="Password of worker")]

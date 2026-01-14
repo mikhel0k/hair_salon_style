@@ -2,9 +2,9 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import get_password_hash, create_token
+from app.core.security import get_password_hash, create_token, verify_password
 from app.models.Worker import Worker
-from app.schemas.Worker import WorkerCreate
+from app.schemas.Worker import WorkerCreate, Login
 from app.repositories import WorkerRepository
 
 
@@ -31,3 +31,29 @@ async def registration(
     }
     token = create_token(data)
     return token
+
+
+async def login(
+        login_data: Login,
+        session: AsyncSession,
+):
+    worker = await WorkerRepository.get_worker_by_username(session=session, username=login_data.username)
+    if not worker:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Worker login or password is incorrect"
+        )
+    if verify_password(login_data.password, worker.password):
+        data = {
+            "sub": worker.id,
+            "is_master": worker.is_master,
+            "is_admin": worker.is_admin,
+            "is_active": worker.is_active,
+        }
+        token = create_token(data)
+        return token
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Worker login or password is incorrect"
+        )

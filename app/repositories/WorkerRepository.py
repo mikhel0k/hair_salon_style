@@ -24,6 +24,15 @@ async def get_worker(
     return worker
 
 
+async def get_worker_by_username(
+        username: str,
+        session: AsyncSession
+):
+    stmt = select(Worker).where(Worker.username == username)
+    worker = await session.execute(stmt)
+    return worker.scalar_one_or_none()
+
+
 async def update_worker(
         worker: Worker,
         session: AsyncSession,
