@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.Record import RecordResponse, FullRecordResponse, RecordUpdate
+from app.schemas.Record import RecordResponse, FullRecordResponse, RecordUpdate, EditRecordStatus, EditRecordNote
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind, UserCreate
 from app.models.Record import Record
@@ -122,3 +122,59 @@ async def update_record(
             status_code=status.HTTP_409_CONFLICT,
             detail="Record with this data already exists"
         )
+
+
+async def update_status_record(
+        data: EditRecordStatus,
+        session: AsyncSession
+):
+    record = await RecordRepository.read_record_by_id(
+        record_id=data.id,
+        session=session
+    )
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    record.status = data.status
+    try:
+        await RecordRepository.update_record(
+            record=record,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Record with this data already exists"
+        )
+    return RecordResponse.model_validate(record)
+
+
+async def update_note_record(
+        data: EditRecordNote,
+        session: AsyncSession
+):
+    record = await RecordRepository.read_record_by_id(
+        record_id=data.id,
+        session=session
+    )
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    record.notes = data.notes
+    try:
+        await RecordRepository.update_record(
+            record=record,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Record with this data already exists"
+        )
+    return RecordResponse.model_validate(record)

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
+from app.schemas.Record import EditRecordStatus, EditRecordNote
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind
 from app.services import RecordService
@@ -41,3 +42,26 @@ async def update_record(
         data=record,
         session=session
     )
+
+
+@router.put('/{record_id}/status/{new_status}')
+async def update_record_status(
+        data: EditRecordStatus,
+        session: AsyncSession = Depends(get_session)
+):
+    return await RecordService.update_status_record(
+        data=data,
+        session=session
+    )
+
+
+@router.put('/{record_id}/note/{new_status}')
+async def update_record_status(
+        data: EditRecordNote,
+        session: AsyncSession = Depends(get_session)
+):
+    return await RecordService.update_note_record(
+        data=data,
+        session=session
+    )
+
