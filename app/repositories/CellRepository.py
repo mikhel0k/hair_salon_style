@@ -12,7 +12,7 @@ async def create_cell(
 ) -> Cell:
     cell = Cell(**cell_data.model_dump())
     session.add(cell)
-    await session.commit()
+    await session.flush()
     await session.refresh(cell)
     return cell
 
@@ -24,7 +24,7 @@ async def create_cells(
     for cell_data in sells_list:
         cell = Cell(**cell_data.model_dump())
         session.add(cell)
-    await session.commit()
+    await session.flush()
 
 
 async def read_cell(
@@ -33,6 +33,15 @@ async def read_cell(
 ) -> Cell | None:
     cell = await session.get(Cell, cell_id)
     return cell
+
+
+async def read_cells(
+        cells_id: list[int],
+        session: AsyncSession
+):
+    stmt = select(Cell).where(Cell.id.in_(cells_id))
+    cells = await session.execute(stmt)
+    return cells.scalars().all()
 
 
 async def read_free_cells_by_master_id_and_date(
@@ -74,7 +83,7 @@ async def update_cell(
         session: AsyncSession
 ):
     session.add(cell)
-    await session.commit()
+    await session.flush()
     await session.refresh(cell)
     return cell
 
@@ -85,4 +94,4 @@ async def update_cells(
 ):
     for cell in cells:
         session.add(cell)
-    await session.commit()
+    await session.flush()

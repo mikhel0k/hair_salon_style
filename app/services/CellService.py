@@ -57,6 +57,7 @@ async def make_cells(
     except IntegrityError as e:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Cell with this data already exists")
+    await session.commit()
 
 
 async def get_cells_by_date_and_master_id(

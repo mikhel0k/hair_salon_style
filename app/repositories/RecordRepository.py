@@ -68,6 +68,6 @@ async def update_record(
         session: AsyncSession,
 ):
     session.add(record)
-    await session.commit()
+    await session.flush()
     await session.refresh(record)
     return record

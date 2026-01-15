@@ -56,7 +56,7 @@ async def update_record_status(
 
 
 @router.put('/{record_id}/note/{new_status}')
-async def update_record_status(
+async def update_record_note(
         data: EditRecordNote,
         session: AsyncSession = Depends(get_session)
 ):
