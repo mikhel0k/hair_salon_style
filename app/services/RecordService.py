@@ -40,33 +40,16 @@ async def new_record(
         service_id=data.service_id,
         session=session
     )
-    need_cells_counter = math.ceil(service.duration_minutes / 15)
 
-    # Генерируем список ID (352, 353, 354, 355)
-    cell_ids_to_occupy = [int(data.cell_id + i) for i in range(need_cells_counter)]
+    new_cells_id = list(range(data.cell_id, data.cell_id + math.ceil(service.duration_minutes / 15)))
+    new_cells = await CellRepository.read_cells(new_cells_id, session)
+    for cell in new_cells:
+        if cell.status == "free":
+            cell.status = "occupied"
+        else:
+            raise HTTPException(409, f"Cell already occupied")
+    await CellRepository.update_cells(new_cells, session)
 
-    # Печать для отладки (потом можно удалить)
-    print(f"DEBUG: Пытаемся занять ID: {cell_ids_to_occupy}")
-
-    if not cell_ids_to_occupy:
-        raise HTTPException(status_code=400, detail="Неверная длительность услуги")
-
-    # ВАЖНО: используем правильный синтаксис для IN_
-    stmt = select(Cell).where(Cell.id.in_(cell_ids_to_occupy))
-    result = await session.execute(stmt)
-    cells = result.scalars().all()
-
-    print(f"DEBUG: Найдено ячеек в базе: {len(cells)}")
-
-    if len(cells) != need_cells_counter:
-        raise HTTPException(status_code=404, detail="Некоторые временные слоты не найдены")
-
-    for cell in cells:
-        if cell.status != "free":
-            raise HTTPException(status_code=409, detail=f"Слот {cell.time} уже занят")
-        cell.status = "occupied"  # Меняем статус
-
-    # Создаем запись
     record = Record(
         master_id=data.master_id,
         service_id=data.service_id,
@@ -78,7 +61,7 @@ async def new_record(
     session.add(record)
 
     try:
-        await session.commit()  # SQLAlchemy сама сделает UPDATE для всех ячеек и INSERT для записи
+        await session.commit()
         await session.refresh(record)
     except Exception as e:
         await session.rollback()
@@ -117,7 +100,6 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
     new_service_id = data.service_id or old_service_id
 
     service = await ServiceRepository.read_service_by_id(new_service_id, session)
-    need_cells_count = math.ceil(service.duration_minutes / 15)
 
     if new_cell_id != old_cell_id or new_service_id != old_service_id:
         old_cells_id = list(range(old_cell_id,old_cell_id+math.ceil(record.service.duration_minutes / 15)))
