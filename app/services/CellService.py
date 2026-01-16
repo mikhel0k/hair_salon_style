@@ -5,7 +5,7 @@ from datetime import date, timedelta, datetime
 import math
 
 from app.models import Cell
-from app.repositories import ScheduleRepository, CellRepository, ServiceRepository
+from app.repositories import ScheduleRepository, CellRepository, ServiceRepository, MasterRepository
 from app.schemas.Cell import CellCreate
 from app.schemas.Schedule import ScheduleResponse
 
@@ -81,6 +81,15 @@ async def get_days_with_empty_cells_by_service_id_and_master_id(
         master_id: int,
         session: AsyncSession
 ):
+    if not await MasterRepository.checking_master_provides_service(
+        master_id=master_id,
+        session=session,
+        service_id=service_id,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Master not provides service"
+        )
     cells = await CellRepository.read_cells_by_master_id(
         master_id = master_id,
         session = session
@@ -112,6 +121,15 @@ async def get_days_with_empty_cells_by_service_id_master_id_and_date(
         master_id: int,
         session: AsyncSession
 ):
+    if not await MasterRepository.checking_master_provides_service(
+        master_id=master_id,
+        session=session,
+        service_id=service_id,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Master not provides service"
+        )
     cells = await CellRepository.read_cells_by_master_id_and_date(
         cell_date = record_date,
         master_id = master_id,

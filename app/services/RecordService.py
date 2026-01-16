@@ -52,6 +52,11 @@ async def new_record(
     new_cells = await CellRepository.read_cells(new_cells_id, session)
     for cell in new_cells:
         if cell.status == "free":
+            if cell.master_id != data.master_id:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Master not provides service"
+                )
             cell.status = "occupied"
         else:
             raise HTTPException(409, f"Cell already occupied")
@@ -125,6 +130,11 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
         old_cells_id = list(range(old_cell_id,old_cell_id+math.ceil(record.service.duration_minutes / 15)))
         old_cells = await CellRepository.read_cells(old_cells_id, session)
         for cell in old_cells:
+            if cell.master_id != data.master_id:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Master not provides service"
+                )
             cell.status = "free"
         await CellRepository.update_cells(old_cells, session)
 
@@ -133,6 +143,11 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
         new_cells = await CellRepository.read_cells(new_cells_id, session)
         for cell in new_cells:
             if cell.status == "free":
+                if cell.master_id != data.master_id:
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail="Master not provides service"
+                    )
                 cell.status = "occupied"
             else:
                 raise HTTPException(409, f"Cell already occupied")
