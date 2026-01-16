@@ -1,9 +1,8 @@
-from faker.providers import phone_number
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
-from app.schemas.Record import EditRecordStatus, EditRecordNote
+from app.schemas.Record import EditRecordStatus, EditRecordNote, RecordUpdate
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind
 from app.services import RecordService
@@ -34,7 +33,7 @@ async def get_records_hy_phone(
 @router.patch('/{record_id}')
 async def update_record(
         record_id: int,
-        record: MakeRecord,
+        record: RecordUpdate,
         session: AsyncSession = Depends(get_session)
 ):
     return await RecordService.update_record(
@@ -55,7 +54,7 @@ async def update_record_status(
     )
 
 
-@router.put('/{record_id}/note/{new_status}')
+@router.put('/{record_id}/note')
 async def update_record_note(
         data: EditRecordNote,
         session: AsyncSession = Depends(get_session)

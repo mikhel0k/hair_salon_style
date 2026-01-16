@@ -124,13 +124,22 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
     old_service_id = record.service_id
     new_service_id = data.service_id or old_service_id
 
+    if data.master_id and not data.cell_id:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Master not provides service"
+        )
+
+    old_master_id = record.master_id
+    new_master_id = data.master_id or old_master_id
+
     service = await ServiceRepository.read_service_by_id(new_service_id, session)
 
     if new_cell_id != old_cell_id or new_service_id != old_service_id:
         old_cells_id = list(range(old_cell_id,old_cell_id+math.ceil(record.service.duration_minutes / 15)))
         old_cells = await CellRepository.read_cells(old_cells_id, session)
         for cell in old_cells:
-            if cell.master_id != data.master_id:
+            if cell.master_id != old_master_id:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Master not provides service"
@@ -143,7 +152,7 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
         new_cells = await CellRepository.read_cells(new_cells_id, session)
         for cell in new_cells:
             if cell.status == "free":
-                if cell.master_id != data.master_id:
+                if cell.master_id != new_master_id:
                     raise HTTPException(
                         status_code=status.HTTP_409_CONFLICT,
                         detail="Master not provides service"
