@@ -1,8 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import select, exists
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.models import Master, SpecializationService
+from app.models import Master, SpecializationService, Specialization
 
 
 async def create_master(
@@ -32,13 +32,31 @@ async def read_masters_by_service_id(
 ):
     stmt = (
         select(Master)
-        .join(Master.specialization)
-        .join(SpecializationService, SpecializationService.specialization_id == Master.specialization_id)
+
+        .join(Specialization)
+        .join(SpecializationService)
         .where(SpecializationService.service_id == service_id)
         .offset(skip).limit(limit)
     )
     result = await session.execute(stmt)
     return result.scalars().all()
+
+
+async def checking_master_provides_service(
+        master_id: int,
+        service_id: int,
+        session: AsyncSession,
+):
+    query = (
+        select(Master)
+        .join(Specialization)
+        .join(SpecializationService)
+        .where(Master.id == master_id)
+        .where(SpecializationService.service_id == service_id)
+    )
+    stmt = select(query.exists())
+    result = await session.execute(stmt)
+    return result.scalar() or False
 
 
 async def update_master(

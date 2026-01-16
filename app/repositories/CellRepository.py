@@ -39,7 +39,7 @@ async def read_cells(
         cells_id: list[int],
         session: AsyncSession
 ):
-    stmt = select(Cell).where(Cell.id.in_(cells_id))
+    stmt = select(Cell).where(Cell.id.in_(cells_id)).with_for_update()
     cells = await session.execute(stmt)
     return cells.scalars().all()
 

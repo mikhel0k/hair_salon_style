@@ -10,7 +10,7 @@ from app.schemas.Record import RecordResponse, FullRecordResponse, RecordUpdate,
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind, UserCreate
 from app.models.Record import Record
-from app.repositories import RecordRepository, ServiceRepository, CellRepository
+from app.repositories import RecordRepository, ServiceRepository, CellRepository, MasterRepository
 from app.repositories import UserRepository
 
 
@@ -18,6 +18,15 @@ async def new_record(
         data: MakeRecord,
         session: AsyncSession,
 ):
+    if not await MasterRepository.checking_master_provides_service(
+        master_id=data.master_id,
+        session=session,
+        service_id=data.service_id,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Master not provides service"
+        )
     user_find = UserFind(phone_number=data.phone_number)
     user = await UserRepository.read_user_by_phone(
         user=user_find,
@@ -90,6 +99,19 @@ async def get_records_hy_phone(
 
 async def update_record(record_id: int, data: RecordUpdate, session: AsyncSession):
     record = await RecordRepository.read_record_by_id(record_id, session)
+
+    new_master_id = data.master_id or record.master_id
+    new_service_id = data.service_id or record.service_id
+    if not await MasterRepository.checking_master_provides_service(
+            master_id=new_master_id,
+            session=session,
+            service_id=new_service_id,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Master not provides service"
+        )
+
     if not record:
         raise HTTPException(404, "Record not found")
 
@@ -127,7 +149,6 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
     except IntegrityError:
         await session.rollback()
         raise HTTPException(409, "Update failed due to data conflict")
-    await session.commit()
 
     return RecordResponse.model_validate(record)
 
