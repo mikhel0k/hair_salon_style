@@ -15,6 +15,7 @@ async def create_specialization(
             specialization_data=specialization,
             session=session
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(
@@ -40,10 +41,16 @@ async def delete_specialization(
         specialization_id: int,
         session: AsyncSession,
 ):
-    specialization_in_db = await SpecializationRepository.read_specialization(
-        specialization_id=specialization_id,
-        session=session
-    )
+    try:
+        specialization_in_db = await SpecializationRepository.read_specialization(
+            specialization_id=specialization_id,
+            session=session
+        )
+        await session.commit()
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Something went wrong")
     if not specialization_in_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Specialization not found")
     await SpecializationRepository.delete_specialization(

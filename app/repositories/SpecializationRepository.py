@@ -10,7 +10,7 @@ async def create_specialization(
 ) -> Specialization:
     specialization = Specialization(**specialization_data.model_dump())
     session.add(specialization)
-    await session.commit()
+    await session.flush()
     await session.refresh(specialization)
     return specialization
 
@@ -28,4 +28,4 @@ async def delete_specialization(
         session: AsyncSession,
 ):
     await session.delete(specialization)
-    await session.commit()
+    await session.flush()

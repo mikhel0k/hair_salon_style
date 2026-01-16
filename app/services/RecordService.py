@@ -1,11 +1,9 @@
 import math
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Cell
 from app.schemas.Record import RecordResponse, FullRecordResponse, RecordUpdate, EditRecordStatus, EditRecordNote
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind, UserCreate

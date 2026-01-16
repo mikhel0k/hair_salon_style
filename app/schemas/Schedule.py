@@ -51,6 +51,8 @@ class ScheduleBase(BaseModel):
 
 
 class ScheduleCreate(ScheduleBase):
+    id: Annotated[StrictInt, Field(..., ge=1, description="ID of the schedule")]
+
     master_id: Annotated[StrictInt, Field(..., ge=1, description="ID of the master")]
 
 
@@ -63,3 +65,4 @@ class ScheduleResponse(ScheduleBase):
     master_id: Annotated[StrictInt, Field(..., ge=1, description="ID of the master")]
 
     model_config = ConfigDict(from_attributes=True)
+

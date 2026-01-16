@@ -11,7 +11,7 @@ async def create_worker(
         session: AsyncSession,
 ):
     session.add(worker)
-    await session.commit()
+    await session.flush()
     await session.refresh(worker)
     return worker
 
@@ -38,7 +38,7 @@ async def update_worker(
         session: AsyncSession,
 ):
     session.add(worker)
-    await session.commit()
+    await session.flush()
     await session.refresh(worker)
     return worker
 

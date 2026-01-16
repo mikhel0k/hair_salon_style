@@ -19,6 +19,7 @@ async def registration(
             session=session,
             worker=worker,
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(

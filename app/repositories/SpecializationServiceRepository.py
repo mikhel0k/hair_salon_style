@@ -11,6 +11,7 @@ async def create_specialization_services(
         session: AsyncSession,
 ):
     session.add_all(spec_service_data)
+    await session.flush()
 
 
 async def read_services_by_specialization(

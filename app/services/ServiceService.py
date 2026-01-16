@@ -15,6 +15,7 @@ async def create_service(
             service=service,
             session=session
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(
@@ -71,6 +72,7 @@ async def update_service(
             service=service_from_db,
             session=session
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(

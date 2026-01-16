@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, session
+from sqlalchemy.orm import joinedload
 
 from app.models import Feedback, Record, Master, Service, User, Cell
 
@@ -10,7 +10,7 @@ async def create_feedback(
         session: AsyncSession,
 ):
     session.add(feedback)
-    await session.commit()
+    await session.flush()
     await session.refresh(feedback)
     return feedback
 
@@ -20,7 +20,7 @@ async def update_feedback(
         session: AsyncSession
 ):
     session.add(feedback)
-    await session.commit()
+    await session.flush()
     await session.refresh(feedback)
     return feedback
 
@@ -29,8 +29,8 @@ async def delete_feedback(
         feedback: Feedback,
         session: AsyncSession
 ):
-    session.delete(feedback)
-    await session.commit()
+    await session.delete(feedback)
+    await session.flush()
 
 
 async def get_feedbacks_by_master_id(

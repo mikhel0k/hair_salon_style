@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories import ScheduleRepository
-from app.schemas.Schedule import ScheduleCreate, ScheduleResponse, ScheduleUpdate
+from app.schemas.Schedule import ScheduleResponse, ScheduleUpdate
 
 
 async def get_schedule_by_master_id(
@@ -28,6 +28,7 @@ async def update_schedule(
         setattr(schedule, key, value)
     try:
         schedule_in_db = await ScheduleRepository.update_schedule(schedule=schedule, session=session)
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(

@@ -11,7 +11,7 @@ async def create_category(
 ) -> Category:
     category = Category(**category_data.model_dump())
     session.add(category)
-    await session.commit()
+    await session.flush()
     await session.refresh(category)
     return category
 
@@ -38,4 +38,4 @@ async def delete_category(
         session: AsyncSession,
 ):
     await session.delete(category)
-    await session.commit()
+    await session.flush()

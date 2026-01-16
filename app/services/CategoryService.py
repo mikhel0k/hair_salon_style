@@ -15,6 +15,7 @@ async def create_category(
             category_data=category,
             session=session,
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(
@@ -55,10 +56,17 @@ async def delete_category(
         category_id: int,
         session: AsyncSession,
 ):
-    category_from_db = await CategoryRepository.read_category(
-        category_id=category_id,
-        session=session
-    )
+    try:
+        category_from_db = await CategoryRepository.read_category(
+            category_id=category_id,
+            session=session
+        )
+        await session.commit()
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Something went wrong")
+
     if not category_from_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
     await CategoryRepository.delete_category(category=category_from_db, session=session)

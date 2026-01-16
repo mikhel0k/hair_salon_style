@@ -11,7 +11,7 @@ async def create_service(
 ) -> Service:
     service = Service(**service.model_dump())
     session.add(service)
-    await session.commit()
+    await session.flush()
     await session.refresh(service)
     return service
 
@@ -19,7 +19,7 @@ async def create_service(
 async def read_service_by_id(
         service_id: int,
         session: AsyncSession
-) -> Service:
+):
     service = await session.get(Service, service_id)
     return service
 
@@ -41,7 +41,7 @@ async def update_service(
         session: AsyncSession,
 ):
     session.add(service)
-    await session.commit()
+    await session.flush()
     await session.refresh(service)
     return service
 
@@ -51,4 +51,4 @@ async def delete_service(
         session: AsyncSession,
 ):
     await session.delete(service)
-    await session.commit()
+    await session.flush()

@@ -10,7 +10,7 @@ async def create_master(
         session: AsyncSession,
 ) -> Master:
     session.add(master)
-    await session.commit()
+    await session.flush()
     await session.refresh(master)
     return master
 
@@ -64,6 +64,6 @@ async def update_master(
         session: AsyncSession,
 ):
     session.add(master)
-    await session.commit()
+    await session.flush()
     await session.refresh(master)
     return master
