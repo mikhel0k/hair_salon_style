@@ -7,10 +7,9 @@ from app.schemas.Cell import CellCreate
 
 
 async def create_cell(
-        cell_data: CellCreate,
+        cell: Cell,
         session: AsyncSession,
 ) -> Cell:
-    cell = Cell(**cell_data.model_dump())
     session.add(cell)
     await session.flush()
     await session.refresh(cell)
@@ -18,12 +17,10 @@ async def create_cell(
 
 
 async def create_cells(
-        sells_list: list[CellCreate],
+        sells_list: list[Cell],
         session: AsyncSession
 ):
-    for cell_data in sells_list:
-        cell = Cell(**cell_data.model_dump())
-        session.add(cell)
+    session.add_all(sells_list)
     await session.flush()
 
 
@@ -92,6 +89,5 @@ async def update_cells(
         cells: list[Cell],
         session: AsyncSession
 ):
-    for cell in cells:
-        session.add(cell)
+    session.add_all(cells)
     await session.flush()

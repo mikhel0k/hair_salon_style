@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import date, timedelta, datetime
 import math
 
+from app.models import Cell
 from app.repositories import ScheduleRepository, CellRepository, ServiceRepository
 from app.schemas.Cell import CellCreate
 from app.schemas.Schedule import ScheduleResponse
@@ -42,22 +43,25 @@ async def make_cells(
         end_time = datetime.combine(current_date, end_time)
         while start_time <= end_time:
             cells.append(
-                CellCreate(
+                Cell(
+                **CellCreate(
                     master_id=master_id,
                     date=current_date,
                     time=start_time.time(),
                     status="free"
+                ).model_dump()
                 )
             )
             start_time += timedelta(minutes=15)
         current_date += timedelta(days=1)
     try:
-        await session.rollback()
         await CellRepository.create_cells(sells_list=cells, session=session)
+        await session.commit()
     except IntegrityError as e:
+        await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Cell with this data already exists")
-    await session.commit()
+
 
 
 async def get_cells_by_date_and_master_id(
