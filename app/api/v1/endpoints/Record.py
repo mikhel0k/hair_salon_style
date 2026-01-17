@@ -1,8 +1,11 @@
+from datetime import date
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
-from app.schemas.Record import EditRecordStatus, EditRecordNote, RecordUpdate
+from app.core.dependencies import is_user_master
+from app.schemas.Record import EditRecordStatus, EditRecordNote, RecordUpdate, AllowedRecordStatuses
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind
 from app.services import RecordService
@@ -43,12 +46,50 @@ async def update_record(
     )
 
 
-@router.put('/{record_id}/status/')
+@router.put('/{record_id}/status/cancelled')
 async def update_record_status_cancelled(
-        data: EditRecordStatus,
+        record_id: int,
         session: AsyncSession = Depends(get_session)
 ):
-    return await RecordService.update_status_record(
+    data = EditRecordStatus(
+        id=record_id,
+        status=AllowedRecordStatuses.Cancelled,
+    )
+    return await RecordService.update_status_to_cancelled(
+        data=data,
+        session=session
+    )
+
+
+@router.put('/{record_id}/status/confirmed')
+async def update_record_status_confirmed(
+        record_id: int,
+        master = Depends(is_user_master),
+        session: AsyncSession = Depends(get_session)
+):
+    data = EditRecordStatus(
+        id=record_id,
+        status=AllowedRecordStatuses.Confirmed,
+    )
+    return await RecordService.update_status_to_completed_or_confirmed(
+        master_id=master["sub"],
+        data=data,
+        session=session
+    )
+
+
+@router.put('/{record_id}/status/completed')
+async def update_record_status_completed(
+        record_id: int,
+        master = Depends(is_user_master),
+        session: AsyncSession = Depends(get_session)
+):
+    data = EditRecordStatus(
+        id=record_id,
+        status=AllowedRecordStatuses.Completed,
+    )
+    return await RecordService.update_status_to_completed_or_confirmed(
+        master_id=master["sub"],
         data=data,
         session=session
     )
@@ -61,6 +102,21 @@ async def update_record_note(
 ):
     return await RecordService.update_note_record(
         data=data,
+        session=session
+    )
+
+
+@router.get("/master")
+async def read_records_by_master_id_and_time_interval(
+        start_time: date,
+        master=Depends(is_user_master),
+        end_time: date = None,
+        session: AsyncSession = Depends(get_session)
+):
+    return await RecordService.read_records_by_master_id_and_time_interval(
+        master_id=master["sub"],
+        start_time=start_time,
+        end_time=end_time,
         session=session
     )
 

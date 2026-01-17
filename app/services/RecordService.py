@@ -1,4 +1,5 @@
 import math
+from datetime import date
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -175,14 +176,59 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
     return RecordResponse.model_validate(record)
 
 
-async def update_status_record(
+async def update_status_to_cancelled(
         data: EditRecordStatus,
         session: AsyncSession
 ):
+    if data.status != "cancelled":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Status not canceled"
+        )
     record = await RecordRepository.read_record_by_id(
         record_id=data.id,
         session=session
     )
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found"
+        )
+    record.status = data.status
+    try:
+        await RecordRepository.update_record(
+            record=record,
+            session=session
+        )
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Record with this data already exists"
+        )
+
+    return RecordResponse.model_validate(record)
+
+
+async def update_status_to_completed_or_confirmed(
+        master_id: int,
+        data: EditRecordStatus,
+        session: AsyncSession
+):
+    if data.status not in ["completed", "confirmed"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Status not canceled"
+        )
+    record = await RecordRepository.read_record_by_id(
+        record_id=data.id,
+        session=session
+    )
+    if record.master_id != master_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Record is not this master"
+        )
     if not record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -230,3 +276,19 @@ async def update_note_record(
             detail="Record with this data already exists"
         )
     return RecordResponse.model_validate(record)
+
+
+async def read_records_by_master_id_and_time_interval(
+        master_id: int,
+        start_time: date,
+        session: AsyncSession,
+        end_time: date = None,
+):
+    end_time = end_time or start_time
+    records = await RecordRepository.read_records_by_master_id_and_time_interval(
+        master_id=master_id,
+        date_start=start_time,
+        date_end=end_time,
+        session=session
+    )
+    return [RecordResponse.model_validate(record) for record in records]

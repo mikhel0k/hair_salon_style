@@ -1,8 +1,10 @@
-from sqlalchemy import select
+from datetime import date
+
+from sqlalchemy import select, between
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from app.models import Record
+from app.models import Record, Cell
 
 
 async def create_record(
@@ -28,6 +30,20 @@ async def read_records_by_master_id(
         session: AsyncSession,
 ):
     stmt = select(Record).where(Record.master_id == master_id).order_by(Record.id.asc())
+    records = await session.execute(stmt)
+    return records.scalars().all()
+
+
+async def read_records_by_master_id_and_time_interval(
+        master_id: int,
+        date_start: date,
+        date_end: date,
+        session: AsyncSession,
+):
+    stmt = select(Record).join(Cell).where(
+        Record.master_id == master_id,
+        between(Cell.date, date_start, date_end),
+    ).order_by(Record.id.asc())
     records = await session.execute(stmt)
     return records.scalars().all()
 

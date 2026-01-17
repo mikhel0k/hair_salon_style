@@ -215,6 +215,7 @@ class TestCreateSchedule:
             master_id,
     ):
         schedule = ScheduleCreate(
+            id=master_id,
             master_id=master_id,
             monday_start=monday_start,
             monday_end=monday_end,
@@ -972,6 +973,7 @@ class TestCreateSchedule:
     ):
         with pytest.raises(ValidationError) as error:
             schedule = ScheduleCreate(
+                id=1,
                 master_id=master_id,
                 monday_start=monday_start,
                 monday_end=monday_end,
