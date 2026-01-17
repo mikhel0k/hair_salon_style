@@ -9,18 +9,20 @@ async def get_worker(
         request: Request,
 ):
     token = request.cookies.get("access_token")
+    print(token)
     if not token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     try:
         data = decode_token(token)
+        print(data)
         return {
-            "id": data.get("sub"),
+            "sub": int(data.get("sub")),
             "is_master": data.get("is_master"),
             "is_admin": data.get("is_admin"),
             "is_active": data.get("is_active"),
         }
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
 
 async def is_user_master(data: dict = Depends(get_worker)):
