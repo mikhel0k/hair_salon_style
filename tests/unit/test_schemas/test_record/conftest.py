@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class AllowedRecordStatuses:
     Created = "created"
     Confirmed = "confirmed"
-    Rejected = "rejected"
+    Completed = "completed"
     Cancelled = "cancelled"
     wrong_status_string = "string"
     wrong_status_none = None

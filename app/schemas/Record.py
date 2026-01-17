@@ -11,7 +11,7 @@ from app.schemas.Service import ServiceResponseSmall
 class AllowedRecordStatuses(str, Enum):
     Created = "created"
     Confirmed = "confirmed"
-    Rejected = "rejected"
+    Completed = "completed"
     Cancelled = "cancelled"
 
 

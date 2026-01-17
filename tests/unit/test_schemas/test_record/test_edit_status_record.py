@@ -15,7 +15,7 @@ class TestEditStatusRecord:
         (data_for_id.right_id, AllowedRecordStatuses.Created),
         (data_for_id.big_right_id, AllowedRecordStatuses.Created),
         (data_for_id.right_id, AllowedRecordStatuses.Confirmed),
-        (data_for_id.right_id, AllowedRecordStatuses.Rejected),
+        (data_for_id.right_id, AllowedRecordStatuses.Completed),
         (data_for_id.right_id, AllowedRecordStatuses.Cancelled),
     ])
     def test_edit_status_record_create(self, record_id, status):

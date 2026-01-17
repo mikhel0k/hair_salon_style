@@ -43,8 +43,8 @@ async def update_record(
     )
 
 
-@router.put('/{record_id}/status/{new_status}')
-async def update_record_status(
+@router.put('/{record_id}/status/')
+async def update_record_status_cancelled(
         data: EditRecordStatus,
         session: AsyncSession = Depends(get_session)
 ):
