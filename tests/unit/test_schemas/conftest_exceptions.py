@@ -64,6 +64,8 @@ class ErrorMessages:
     TO_LATE = "Value error, End time must be before 20 o`clock"
     TO_SHORT = "Value error, Work time must be minimum 120 minutes"
 
+    LESS_THAN_EQUAL_5 = "Input should be less than or equal to 5"
+
 
 @dataclass
 class ErrorTypes:
