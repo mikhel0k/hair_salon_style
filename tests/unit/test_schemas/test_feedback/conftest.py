@@ -17,7 +17,7 @@ class Estimation:
 class Comment:
     right_short_comment = "bla bla bla"
     right_long_comment = "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla"
-    right_int_comment = 1
-    right_float_comment = 1.5
-    right_bool_comment = False
     right_none_comment = None
+    wrong_int_comment = 1
+    wrong_float_comment = 1.5
+    wrong_bool_comment = False
