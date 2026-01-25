@@ -18,4 +18,3 @@ class Record(BaseModel):
     service: Mapped["Service"] = relationship("Service", back_populates="records")
     master: Mapped["Master"] = relationship("Master", back_populates="records")
     cell: Mapped["Cell"] = relationship("Cell", back_populates="record")
-    feedback: Mapped["Feedback"] = relationship("Feedback", back_populates="record")
