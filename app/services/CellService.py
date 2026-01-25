@@ -6,7 +6,7 @@ import math
 
 from app.models import Cell
 from app.repositories import ScheduleRepository, CellRepository, ServiceRepository, MasterRepository
-from app.schemas.Cell import CellCreate
+from app.schemas.Cell import CellCreate, CellResponse
 from app.schemas.Schedule import ScheduleResponse
 
 DAYS_IN_WEEK = [
@@ -69,11 +69,12 @@ async def get_cells_by_date_and_master_id(
         search_date: date,
         session: AsyncSession
 ):
-    return await CellRepository.read_cells_by_master_id_and_date(
+    cells = await CellRepository.read_cells_by_master_id_and_date(
         master_id = master_id,
         cell_date = search_date,
         session = session
     )
+    return [CellResponse.model_validate(cell) for cell in cells]
 
 
 async def get_days_with_empty_cells_by_service_id_and_master_id(
@@ -115,7 +116,7 @@ async def get_days_with_empty_cells_by_service_id_and_master_id(
     return sorted(response)
 
 
-async def get_days_with_empty_cells_by_service_id_master_id_and_date(
+async def get_ids_with_empty_cells_by_service_id_master_id_in_date(
         record_date: date,
         service_id: int,
         master_id: int,
@@ -152,4 +153,5 @@ async def get_days_with_empty_cells_by_service_id_master_id_and_date(
         if is_free:
             response.append(window[0])
 
-    return response
+    cells = sorted(response)
+    return [CellResponse.model_validate(cell) for cell in cells]
