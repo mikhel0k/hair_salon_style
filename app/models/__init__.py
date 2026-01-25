@@ -9,7 +9,6 @@ from .Specialization import Specialization
 from .SpecializationService import SpecializationService
 from .User import User
 from .Worker import Worker
-from .Feedback import Feedback
 
 __all__ = [
     "BaseModel",
@@ -23,5 +22,4 @@ __all__ = [
     "SpecializationService",
     "User",
     "Worker",
-    "Feedback",
 ]
