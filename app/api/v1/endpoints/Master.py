@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
@@ -9,28 +9,46 @@ from app.services import MasterService
 router = APIRouter()
 
 
-@router.post("/", response_model=MasterResponse)
+@router.post(
+    "/",
+    response_model=MasterResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_master(
-        master: MasterCreate,
+        master_data: MasterCreate,
         session: AsyncSession=Depends(get_session)
 ):
-    return await MasterService.create_master(master=master, session=session)
+    return await MasterService.create_master(
+        master=master_data,
+        session=session,
+    )
 
 
-@router.get("/{master_id}")
+@router.get(
+    "/{master_id}",
+    response_model=MasterResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def get_master(
         master_id: int,
         session: AsyncSession = Depends(get_session)
 ):
-    return await MasterService.get_master(master_id=master_id, session=session)
+    return await MasterService.get_master(
+        master_id=master_id,
+        session=session,
+    )
 
 
-@router.get("/by_service_id/{service_id}")
+@router.get(
+    "/by-service/{service_id}",
+    response_model=list[MasterResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def get_masters_by_service_id(
         service_id: int,
         session: AsyncSession = Depends(get_session),
         skip: int = 0,
-        limit: int = 100
+        limit: int = 100,
 ):
     return await MasterService.get_masters_by_service_id(
         service_id=service_id,
@@ -40,10 +58,18 @@ async def get_masters_by_service_id(
     )
 
 
-@router.patch("/{master_id}")
+@router.patch(
+    "/{master_id}",
+    response_model=MasterResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def update_master(
         master_id: int,
-        update_master: MasterUpdate,
+        master_data: MasterUpdate,
         session: AsyncSession = Depends(get_session),
 ):
-    return await MasterService.update_master(master_id=master_id, master_data=update_master, session=session)
+    return await MasterService.update_master(
+        master_id=master_id,
+        master_data=master_data,
+        session=session,
+    )

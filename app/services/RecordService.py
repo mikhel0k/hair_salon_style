@@ -84,7 +84,7 @@ async def new_record(
     return RecordResponse.model_validate(record)
 
 
-async def get_records_hy_phone(
+async def get_records_by_phone(
         user: UserFind,
         session: AsyncSession
 ):

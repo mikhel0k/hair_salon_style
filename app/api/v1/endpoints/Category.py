@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.Category import CategoryResponse, CategoryCreate
@@ -8,7 +8,11 @@ from app.services import CategoryService
 router = APIRouter()
 
 
-@router.post("/", response_model=CategoryResponse)
+@router.post(
+    "/",
+    response_model=CategoryResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_category(
         category_data: CategoryCreate,
         session = Depends(get_session),
@@ -19,7 +23,11 @@ async def create_category(
     )
 
 
-@router.get("/")
+@router.get(
+    "/",
+    response_model=list[CategoryResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def get_categories(
         skip: int = 0,
         limit: int = 100,
@@ -32,21 +40,15 @@ async def get_categories(
     )
 
 
-# @router.get("/{category_id}", response_model=CategoryResponse)
-# async def get_category(
-#         category_id: int,
-#         session = Depends(get_session)
-# ):
-#     return await CategoryService.get_category_by_id(
-#         session=session,
-#         category_id=category_id
-#     )
-
-
-@router.delete("/{category_id}")
+@router.delete(
+    "/{category_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_category(
         category_id: int,
         session = Depends(get_session),
 ):
-    await CategoryService.delete_category(category_id=category_id, session=session)
-    return {"status": "success"}
+    await CategoryService.delete_category(
+        category_id=category_id,
+        session=session,
+    )

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from app.schemas.Service import ServiceResponse, ServiceCreate, ServiceUpdate
 from app.core import get_session
@@ -9,30 +10,26 @@ from app.services import ServiceService
 router = APIRouter()
 
 
-@router.post("/",response_model=ServiceResponse)
+@router.post(
+    "/",
+    response_model=ServiceResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_service(
-        service: ServiceCreate,
+        service_data: ServiceCreate,
         session: AsyncSession = Depends(get_session)
 ):
     return await ServiceService.create_service(
-        service=service,
+        service=service_data,
         session=session
     )
 
 
-
-# @router.get("/by_id/{service_id}",response_model=ServiceResponse)
-# async def get_service_by_id(
-#         service_id: int,
-#         session: AsyncSession = Depends(get_session)
-# ):
-#     return await ServiceService.get_service_by_id(
-#         service_id=service_id,
-#         session=session
-#     )
-
-
-@router.get("/{category_id}", )
+@router.get(
+    "/{category_id}",
+    response_model=list[ServiceResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def get_services_by_category(
         category_id: int,
         session: AsyncSession = Depends(get_session),
@@ -47,7 +44,11 @@ async def get_services_by_category(
     )
 
 
-@router.patch("/{service_id}")
+@router.patch(
+    "/{service_id}",
+    response_model=ServiceResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
 async def update_service(
         service_id: int,
         service: ServiceUpdate,
@@ -60,12 +61,15 @@ async def update_service(
     )
 
 
-@router.delete("/{service_id}")
+@router.delete(
+    "/{service_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def delete_service(
         service_id: int,
         session: AsyncSession = Depends(get_session)
 ):
-    return await ServiceService.delete_service(
+    await ServiceService.delete_service(
         service_id=service_id,
         session=session
     )
