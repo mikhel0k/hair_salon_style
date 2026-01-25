@@ -5,9 +5,10 @@ from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 from enum import Enum
 from app.core.validators import date_validator
 
+
 class AllowedCellsStatuses(str, Enum):
-    FREE = "free"
-    OCCUPIED = "occupied"
+    FREE = "FREE"
+    OCCUPIED = "OCCUPIED"
 
 
 class CellBase(BaseModel):

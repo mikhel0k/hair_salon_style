@@ -8,9 +8,9 @@ MAX_EMAIL_LENGTH = 50
 
 @dataclass
 class Status:
-    right_active = "active"
-    right_vacation = "vacation"
-    right_dismissed = "dismissed"
+    right_active = "ACTIVE"
+    right_vacation = "VACATION"
+    right_dismissed = "DISMISSED"
     wrong_status_string = "string"
     wrong_status_none = None
     wrong_status_empty = ""

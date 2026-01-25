@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class AllowedRecordStatuses:
-    Created = "created"
-    Confirmed = "confirmed"
-    Completed = "completed"
-    Cancelled = "cancelled"
+    Created = "CREATED"
+    Confirmed = "CONFIRMED"
+    Completed = "COMPLETED"
+    Cancelled = "CANCELLED"
     wrong_status_string = "string"
     wrong_status_none = None
     wrong_status_empty = ""

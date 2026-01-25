@@ -44,9 +44,9 @@ class ErrorMessages:
     SHORT_TIME = "Input should be in a valid time format, input is too short"
     VALID_TIME = "Input should be a valid time"
 
-    ENUM_CELL = "Input should be 'free' or 'occupied'"
-    ENUM_MASTER = "Input should be 'active', 'vacation' or 'dismissed'"
-    ENUM_RECORD = "Input should be 'created', 'confirmed', 'completed' or 'cancelled'"
+    ENUM_CELL = "Input should be 'FREE' or 'OCCUPIED'"
+    ENUM_MASTER = "Input should be 'ACTIVE', 'VACATION' or 'DISMISSED'"
+    ENUM_RECORD = "Input should be 'CREATED', 'CONFIRMED', 'COMPLETED' or 'CANCELLED'"
 
     ID_GREATER_ONE = "Input should be greater than or equal to 1"
     INT_TYPE = "Input should be a valid integer"

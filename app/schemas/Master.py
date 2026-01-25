@@ -9,9 +9,9 @@ from app.core.validators import phone_validator, name_validator
 
 
 class AllowedMasterStatuses(str, Enum):
-    ACTIVE = "active"
-    VACATION = "vacation"
-    DISMISSED = "dismissed"
+    ACTIVE = "ACTIVE"
+    VACATION = "VACATION"
+    DISMISSED = "DISMISSED"
 
 
 class MasterBase(BaseModel):

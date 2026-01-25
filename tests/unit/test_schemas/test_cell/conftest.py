@@ -31,8 +31,8 @@ class Time:
 
 @dataclass
 class Status:
-    right_free = "free"
-    right_occupied = "occupied"
+    right_free = "FREE"
+    right_occupied = "OCCUPIED"
     wrong_status = "wrong_status"
     wrong_status_none = None
     wrong_status_empty = ""

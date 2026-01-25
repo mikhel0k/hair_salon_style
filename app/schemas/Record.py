@@ -9,10 +9,10 @@ from app.schemas.Service import ServiceResponseSmall
 
 
 class AllowedRecordStatuses(str, Enum):
-    Created = "created"
-    Confirmed = "confirmed"
-    Completed = "completed"
-    Cancelled = "cancelled"
+    CREATED = "CREATED"
+    CONFIRMED = "CONFIRMED"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
 
 
 class RecordResponse(BaseModel):
@@ -21,7 +21,7 @@ class RecordResponse(BaseModel):
     service_id: Annotated[StrictInt, Field(..., ge=1, description="Service id of record")]
     user_id: Annotated[StrictInt, Field(..., ge=1, description="User id of record")]
     cell_id: Annotated[StrictInt, Field(..., ge=1, description="Cell id of record")]
-    status: Annotated[AllowedRecordStatuses, Field(AllowedRecordStatuses.Created, description="Status of record")]
+    status: Annotated[AllowedRecordStatuses, Field(AllowedRecordStatuses.CREATED, description="Status of record")]
     notes: Annotated[Optional[str], Field(
         None,
         description="Notes of record",
