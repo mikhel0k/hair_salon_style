@@ -11,7 +11,7 @@ async def create_schedule(
 ) -> Schedule:
     schedule = Schedule(**schedule_data.model_dump())
     session.add(schedule)
-    await session.commit()
+    await session.flush()
     await session.refresh(schedule)
     return schedule
 
@@ -38,7 +38,7 @@ async def update_schedule(
         session: AsyncSession
 ):
     session.add(schedule)
-    await session.commit()
+    await session.flush()
     await session.refresh(schedule)
     return schedule
 
@@ -48,4 +48,4 @@ async def delete_schedule(
         session: AsyncSession,
 ):
     await session.delete(schedule)
-    await session.commit()
+    await session.flush()

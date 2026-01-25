@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import date
 
 from app.models import Cell
-from app.schemas.Cell import CellCreate
 
 
 async def create_cell(
