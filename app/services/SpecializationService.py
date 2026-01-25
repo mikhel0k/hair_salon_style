@@ -41,9 +41,15 @@ async def delete_specialization(
         specialization_id: int,
         session: AsyncSession,
 ):
+    specialization_in_db = await SpecializationRepository.read_specialization(
+        specialization_id=specialization_id,
+        session=session
+    )
+    if not specialization_in_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Specialization not found")
     try:
-        specialization_in_db = await SpecializationRepository.read_specialization(
-            specialization_id=specialization_id,
+        await SpecializationRepository.delete_specialization(
+            specialization=specialization_in_db,
             session=session
         )
         await session.commit()
@@ -51,10 +57,4 @@ async def delete_specialization(
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Something went wrong")
-    if not specialization_in_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Specialization not found")
-    await SpecializationRepository.delete_specialization(
-        specialization=specialization_in_db,
-        session=session
-    )
 

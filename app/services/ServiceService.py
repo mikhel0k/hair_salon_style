@@ -90,7 +90,11 @@ async def delete_service(
     )
     if not service_from_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
-    await ServiceRepository.delete_service(
-        service=service_from_db,
-        session=session
-    )
+    try:
+        await ServiceRepository.delete_service(service=service_from_db, session=session)
+        await session.commit()
+    except IntegrityError as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Service with this data already exists"
+        )

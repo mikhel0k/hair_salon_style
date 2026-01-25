@@ -52,13 +52,13 @@ async def new_record(
     new_cells_id = list(range(data.cell_id, data.cell_id + math.ceil(service.duration_minutes / 15)))
     new_cells = await CellRepository.read_cells(new_cells_id, session)
     for cell in new_cells:
-        if cell.status == "free":
+        if cell.status == "FREE":
             if cell.master_id != data.master_id:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Master not provides service"
                 )
-            cell.status = "occupied"
+            cell.status = "OCCUPIED"
         else:
             raise HTTPException(409, f"Cell already occupied")
     await CellRepository.update_cells(new_cells, session)
@@ -68,10 +68,10 @@ async def new_record(
         service_id=data.service_id,
         user_id=user.id,
         cell_id=data.cell_id,
-        status="created",
+        status="CREATED",
         notes=data.notes,
     )
-    session.add(record)
+    await RecordRepository.create_record(record, session)
 
     try:
         await session.commit()
@@ -145,23 +145,32 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
                     status_code=status.HTTP_409_CONFLICT,
                     detail="Master not provides service"
                 )
-            cell.status = "free"
-        await CellRepository.update_cells(old_cells, session)
+            cell.status = "FREE"
+        try:
+            await CellRepository.update_cells(old_cells, session)
+        except IntegrityError:
+            await session.rollback()
+            raise HTTPException(409, "Update failed due to data conflict")
 
 
         new_cells_id = list(range(new_cell_id, new_cell_id+math.ceil(service.duration_minutes / 15)))
         new_cells = await CellRepository.read_cells(new_cells_id, session)
         for cell in new_cells:
-            if cell.status == "free":
+            if cell.status == "FREE":
                 if cell.master_id != new_master_id:
                     raise HTTPException(
                         status_code=status.HTTP_409_CONFLICT,
                         detail="Master not provides service"
                     )
-                cell.status = "occupied"
+                cell.status = "OCCUPIED"
             else:
                 raise HTTPException(409, f"Cell already occupied")
-        await CellRepository.update_cells(new_cells, session)
+        try:
+            await CellRepository.update_cells(new_cells, session)
+        except IntegrityError:
+            await session.rollback()
+            raise HTTPException(409, "Update failed due to data conflict")
+
 
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -180,7 +189,7 @@ async def update_status_to_cancelled(
         data: EditRecordStatus,
         session: AsyncSession
 ):
-    if data.status != "cancelled":
+    if data.status != "CANCELLED":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Status not canceled"
@@ -206,6 +215,19 @@ async def update_status_to_cancelled(
             status_code=status.HTTP_409_CONFLICT,
             detail="Record with this data already exists"
         )
+    service = await ServiceRepository.read_service_by_id(
+        service_id=record.service_id,
+    )
+    old_cells_id = list(range(record.cell_id, record.cell_id + math.ceil(record.service.duration_minutes / 15)))
+    old_cells = await CellRepository.read_cells(old_cells_id, session)
+    for cell in old_cells:
+        if cell.master_id != record.master_id:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Master not provides service"
+            )
+        cell.status = "FREE"
+    await CellRepository.update_cells(old_cells, session)
 
     return RecordResponse.model_validate(record)
 
@@ -215,7 +237,7 @@ async def update_status_to_completed_or_confirmed(
         data: EditRecordStatus,
         session: AsyncSession
 ):
-    if data.status not in ["completed", "confirmed"]:
+    if data.status not in ["COMPLETED", "CONFIRMED"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Status not canceled"

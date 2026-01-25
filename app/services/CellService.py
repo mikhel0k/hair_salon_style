@@ -41,14 +41,14 @@ async def make_cells(
             continue
         start_time = datetime.combine(current_date, start_time)
         end_time = datetime.combine(current_date, end_time)
-        while start_time <= end_time:
+        while start_time + timedelta(minutes=15) <= end_time:
             cells.append(
                 Cell(
                 **CellCreate(
                     master_id=master_id,
                     date=current_date,
                     time=start_time.time(),
-                    status="free"
+                    status="FREE",
                 ).model_dump()
                 )
             )
@@ -107,8 +107,8 @@ async def get_days_with_empty_cells_by_service_id_and_master_id(
     for l in range(len(cells)-required_slots):
         if cells[l].date in response:
             continue
-        if cells[l].status == "free" and cells[l].date == cells[l+required_slots].date:
-            is_free = all(c.status == "free" for c in cells[l:l+required_slots])
+        if cells[l].status == "FREE" and cells[l].date == cells[l+required_slots].date:
+            is_free = all(c.status == "FREE" for c in cells[l:l+required_slots])
             same_day = all(c.date == cells[l].date for c in cells[l:l+required_slots])
             if is_free and same_day:
                 response.append(cells[l].date)
@@ -148,7 +148,7 @@ async def get_ids_with_empty_cells_by_service_id_master_id_in_date(
     l, r = 0, required_slots
     for i in range(len(cells) - required_slots + 1):
         window = cells[i: i + required_slots]
-        is_free = all(c.status == "free" for c in window)
+        is_free = all(c.status == "FREE" for c in window)
 
         if is_free:
             response.append(window[0])
