@@ -1,40 +1,31 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import Response
 
-from app.core import get_session
+from app.core import get_session, set_auth_token
 from app.schemas.Worker import WorkerCreate, Login
 from app.services import AuthService
 
 router = APIRouter()
 
 
-@router.post("/registration")
+@router.post("/registration", status_code=status.HTTP_201_CREATED)
 async def registration(
+        worker_data: WorkerCreate,
         response: Response,
-        worker: WorkerCreate,
         session: AsyncSession = Depends(get_session)
 ):
-    token = await AuthService.registration(worker, session)
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,
-        samesite="lax"
-    )
-    return {"Created"}
+    token = await AuthService.registration(worker_data, session)
+    set_auth_token(response, token)
+    return {"status": "success"}
+
 
 @router.post("/login")
 async def login(
-        response: Response,
         login_data: Login,
+        response: Response,
         session: AsyncSession = Depends(get_session)
 ):
     token = await AuthService.login(login_data, session)
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        httponly=True,
-        samesite="lax"
-    )
-    return {"Login"}
+    set_auth_token(response, token)
+    return {"status": "success"}
