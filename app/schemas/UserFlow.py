@@ -1,9 +1,7 @@
 from typing import Annotated, Optional
-from datetime import date, time
 
-import phonenumbers
 from pydantic import BaseModel, Field, field_validator, StrictInt
-from .validators import phone_validator
+from app.core.validators import phone_validator
 
 
 class MakeRecord(BaseModel):

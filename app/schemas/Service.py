@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, field_validator, StrictInt
 
-from .validators import name_validator
+from app.core.validators import name_validator
 
 
 class ServiceBase(BaseModel):

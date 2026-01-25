@@ -13,10 +13,10 @@ from .endpoints.Auth import router as auth_router
 router = APIRouter()
 
 endpoints = [
-    (category_router, "/category/", ["category"]),
-    (service_router, "/service/", ["service"]),
-    (specialization_router, "/specialization/", ["specialization"]),
-    (specialization_service_router, "/specialization/", ["specialization"]),
+    (category_router, "/category", ["category"]),
+    (service_router, "/service", ["service"]),
+    (specialization_router, "/specialization", ["specialization"]),
+    (specialization_service_router, "/specialization", ["specialization"]),
     (master_router, "/master", ["master"]),
     (schedule_router, "/schedule", ["schedule"]),
     (cell_router, "/cell", ["cell"]),

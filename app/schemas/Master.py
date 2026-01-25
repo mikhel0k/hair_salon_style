@@ -5,12 +5,14 @@ from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from pydantic import field_validator, StrictInt
 
 from app.schemas.Specialization import SpecializationResponse
-from .validators import phone_validator, name_validator
+from app.core.validators import phone_validator, name_validator
+
 
 class AllowedMasterStatuses(str, Enum):
     ACTIVE = "active"
     VACATION = "vacation"
     DISMISSED = "dismissed"
+
 
 class MasterBase(BaseModel):
     specialization_id: Annotated[StrictInt, Field(..., ge=1, description="Specialization_id of the master")]

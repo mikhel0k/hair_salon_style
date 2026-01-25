@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.put(
-    "/services",
+    "/",
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def update_specialization_service(
@@ -26,7 +26,7 @@ async def update_specialization_service(
 
 
 @router.get(
-    "/services/{specialization_id}",
+    "/{specialization_id}",
     response_model=list[SpecializationServicesSchema],
     status_code=status.HTTP_200_OK,
 )
