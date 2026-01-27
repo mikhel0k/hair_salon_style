@@ -47,14 +47,13 @@ async def read_cells(
 
 @router.get(
     "/free-days/{service_id}",
-    response_model=list[str],
     status_code=status.HTTP_200_OK,
 )
 async def free_day_for_service(
         service_id: int,
         master_id: int,
         session: AsyncSession = Depends(get_session)
-) -> list[str]:
+):
     return await CellService.get_days_with_empty_cells_by_service_id_and_master_id(
         service_id=service_id,
         master_id=master_id,

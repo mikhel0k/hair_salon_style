@@ -9,15 +9,13 @@ async def get_worker(
         request: Request,
 ):
     token = request.cookies.get("access_token")
-    print(token)
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     try:
         data = decode_token(token)
         try:
             master_id = int(data.get("master_id"))
-        except Exception as e:
-            print(e)
+        except:
             master_id = None
         return {
             "sub": int(data.get("sub")),

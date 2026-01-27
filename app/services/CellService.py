@@ -153,5 +153,4 @@ async def get_ids_with_empty_cells_by_service_id_master_id_in_date(
         if is_free:
             response.append(window[0])
 
-    cells = sorted(response)
-    return [CellResponse.model_validate(cell) for cell in cells]
+    return [CellResponse.model_validate(cell) for cell in response]
