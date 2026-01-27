@@ -9,7 +9,8 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy import orm
+from app.core.security import get_password_hash
 
 # revision identifiers, used by Alembic.
 revision: str = 'e5809bb1ba5a'
@@ -129,6 +130,28 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+
+    bind = op.get_bind()
+    session = orm.Session(bind=bind)
+    session.execute(
+        sa.text("""
+                INSERT INTO workers (id, master_id, username, password, is_master, is_admin, is_active) 
+                VALUES (:id, :master_id, :username, :password, :is_master, :is_admin, :is_active)
+            """),
+        [
+            {
+                "id": "1",
+                "master_id": None,
+                "username": "I_am_admin",
+                "password": get_password_hash("zxc-123"),
+                "is_master": False,
+                "is_admin": True,
+                "is_active": True
+            },
+        ]
+    )
+    session.commit()
+
     # ### end Alembic commands ###
 
 
