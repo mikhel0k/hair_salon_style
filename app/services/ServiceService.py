@@ -24,18 +24,17 @@ async def create_service(
     return service_data
 
 
-async def get_service_by_id(
-        service_id: int,
+async def get_services(
         session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
 ):
-    service_from_db = await ServiceRepository.read_service_by_id(
-        service_id=service_id,
+    service_from_db = await ServiceRepository.read_services(
+        skip = skip,
+        limit = limit,
         session=session
     )
-    if not service_from_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
-    service_data = ServiceResponse.model_validate(service_from_db)
-    return service_data
+    return [ServiceResponse.model_validate(service) for service in service_from_db]
 
 
 async def get_services_by_category_id(

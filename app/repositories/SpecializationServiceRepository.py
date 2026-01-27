@@ -26,15 +26,6 @@ async def read_services_by_specialization(
     return services.scalars().all()
 
 
-async def read_specializations_by_service(
-        service_id: int,
-        session: AsyncSession,
-):
-    stmt = select(SpecializationService).where(SpecializationService.service_id == service_id)
-    specializations = await session.execute(stmt)
-    return specializations.scalars().all()
-
-
 async def delete_connection(
         specialization_id: int,
         services: set[int],

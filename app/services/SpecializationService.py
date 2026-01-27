@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.Specialization import SpecializationCreate, SpecializationResponse
 from app.repositories import SpecializationRepository
+from app.schemas.SpecializationService import SpecializationWithServicesResponse
 
 
 async def create_specialization(
@@ -34,27 +35,17 @@ async def get_specialization_by_id(
     )
     if not specialization_in_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Specialization not found")
-    return specialization_in_db
+    return SpecializationWithServicesResponse.model_validate(specialization_in_db)
 
 
-async def delete_specialization(
-        specialization_id: int,
+async def get_specializations(
         session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
 ):
-    specialization_in_db = await SpecializationRepository.read_specialization(
-        specialization_id=specialization_id,
+    specializations = await SpecializationRepository.read_specializations(
+        skip=skip,
+        limit=limit,
         session=session
     )
-    if not specialization_in_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Specialization not found")
-    try:
-        await SpecializationRepository.delete_specialization(
-            specialization=specialization_in_db,
-            session=session
-        )
-        await session.commit()
-    except IntegrityError as e:
-        await session.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Something went wrong")
-
+    return [SpecializationResponse.model_validate(specialization) for specialization in specializations]

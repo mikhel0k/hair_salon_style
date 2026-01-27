@@ -28,6 +28,22 @@ async def create_service(
 
 
 @router.get(
+    "/",
+    response_model=list[ServiceResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def get_services(
+        session: AsyncSession = Depends(get_session),
+        skip: int = 0,
+        limit: int = 100
+):
+    return await ServiceService.get_services(
+        session=session,
+        skip=skip,
+        limit=limit
+    )
+
+@router.get(
     "/{category_id}",
     response_model=list[ServiceResponse],
     status_code=status.HTTP_200_OK,

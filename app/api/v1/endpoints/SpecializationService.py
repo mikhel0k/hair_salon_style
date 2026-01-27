@@ -4,6 +4,7 @@ from starlette import status
 
 from app.core import get_session
 from app.core.dependencies import is_user_admin
+from app.schemas.Service import ServiceResponse
 from app.schemas.SpecializationService import SpecializationServicesSchema
 from app.services import SpecializationServicesService
 
@@ -25,18 +26,3 @@ async def update_specialization_service(
         session=session
     )
     return {"status": "success"}
-
-
-@router.get(
-    "/{specialization_id}",
-    response_model=list[SpecializationServicesSchema],
-    status_code=status.HTTP_200_OK,
-)
-async def get_specialization_services(
-        specialization_id: int,
-        session: AsyncSession = Depends(get_session)
-):
-    return await SpecializationServicesService.read_services_by_specialization_id(
-        specialization_id=specialization_id,
-        session=session
-    )

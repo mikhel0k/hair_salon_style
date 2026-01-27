@@ -16,6 +16,16 @@ async def create_service(
     return service
 
 
+async def read_services(
+        session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
+):
+    stmt = select(Service).offset(skip).limit(limit)
+    services = await session.execute(stmt)
+    return services.scalars().all()
+
+
 async def read_service_by_id(
         service_id: int,
         session: AsyncSession

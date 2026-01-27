@@ -1,6 +1,8 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from app.models import Specialization
+from app.models import Specialization, Service
 from app.schemas.Specialization import SpecializationCreate
 
 
@@ -19,13 +21,16 @@ async def read_specialization(
         specialization_id: int,
         session: AsyncSession,
 ):
-    specialization = await session.get(Specialization, specialization_id)
-    return specialization
+    stmt = select(Specialization).options(selectinload(Specialization.services)).where(Specialization.id == specialization_id)
+    specialization = await session.execute(stmt)
+    return specialization.scalars().one_or_none()
 
 
-async def delete_specialization(
-        specialization: Specialization,
+async def read_specializations(
         session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
 ):
-    await session.delete(specialization)
-    await session.flush()
+    stmt = select(Specialization).offset(skip).limit(limit)
+    specializations = await session.execute(stmt)
+    return specializations.scalars().all()

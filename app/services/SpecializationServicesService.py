@@ -53,13 +53,3 @@ async def create_spec_services(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Something went wrong")
 
-
-async def read_services_by_specialization_id(
-        specialization_id: int,
-        session: AsyncSession
-):
-    services = await SpecializationServiceRepository.read_services_by_specialization(
-        specialization_id=specialization_id,
-        session=session
-    )
-    return [ServiceResponse.model_validate(service) for service in services]

@@ -16,7 +16,7 @@ endpoints = [
     (category_router, "/category", ["category"]),
     (service_router, "/service", ["service"]),
     (specialization_router, "/specialization", ["specialization"]),
-    (specialization_service_router, "/specialization", ["specialization"]),
+    (specialization_service_router, "/service/specialization", ["specialization"]),
     (master_router, "/master", ["master"]),
     (schedule_router, "/schedule", ["schedule"]),
     (cell_router, "/cell", ["cell"]),
