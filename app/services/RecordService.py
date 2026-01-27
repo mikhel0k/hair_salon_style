@@ -71,11 +71,9 @@ async def new_record(
         status="CREATED",
         notes=data.notes,
     )
-    await RecordRepository.create_record(record, session)
-
     try:
+        record = await RecordRepository.create_record(record, session)
         await session.commit()
-        await session.refresh(record)
     except Exception as e:
         await session.rollback()
         print(f"ERROR: {e}")
@@ -227,8 +225,15 @@ async def update_status_to_cancelled(
                 detail="Master not provides service"
             )
         cell.status = "FREE"
-    await CellRepository.update_cells(old_cells, session)
-
+    try:
+        await CellRepository.update_cells(old_cells, session)
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Update failed due to data conflict"
+        )
     return RecordResponse.model_validate(record)
 
 
@@ -262,6 +267,7 @@ async def update_status_to_completed_or_confirmed(
             record=record,
             session=session
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(
@@ -291,6 +297,7 @@ async def update_note_record(
             record=record,
             session=session
         )
+        await session.commit()
     except IntegrityError as e:
         await session.rollback()
         raise HTTPException(
