@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
 from app.core.dependencies import is_user_admin
-from app.schemas.Master import MasterResponse, MasterCreate, MasterUpdate
+from app.schemas.Master import MasterResponse, MasterCreate, MasterUpdate, MasterFullResponse
 from app.services import MasterService
 
 
@@ -27,16 +27,18 @@ async def create_master(
 
 
 @router.get(
-    "/{master_id}",
-    response_model=MasterResponse,
+    "/",
+    response_model=list[MasterFullResponse],
     status_code=status.HTTP_200_OK,
 )
-async def get_master(
-        master_id: int,
+async def get_masters(
+        skip: int = 0,
+        limit: int = 100,
         session: AsyncSession = Depends(get_session)
 ):
-    return await MasterService.get_master(
-        master_id=master_id,
+    return await MasterService.get_masters(
+        skip=skip,
+        limit=limit,
         session=session,
     )
 

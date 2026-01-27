@@ -48,14 +48,13 @@ async def update_master(
     return MasterResponse.model_validate(master_in_db)
 
 
-async def get_master(
-        master_id: int,
-        session: AsyncSession
+async def get_masters(
+        session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
 ):
-    master = await MasterRepository.read_master(master_id=master_id, session=session)
-    if master is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Master not found")
-    return MasterFullResponse.model_validate(master)
+    masters = await MasterRepository.read_masters(skip=skip, limit=limit, session=session)
+    return [MasterFullResponse.model_validate(master) for master in masters]
 
 
 async def get_masters_by_service_id(

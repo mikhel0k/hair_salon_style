@@ -15,13 +15,22 @@ async def create_master(
     return master
 
 
+async def read_masters(
+        session: AsyncSession,
+        skip: int = 0,
+        limit: int = 100,
+):
+    stmt = select(Master).options(joinedload(Master.specialization)).offset(skip).limit(limit)
+    result = await session.execute(stmt)
+    return result.scalars().all()
+
+
 async def read_master(
         master_id: int,
         session: AsyncSession,
-) -> Master | None:
-    stmt = select(Master).options(joinedload(Master.specialization)).where(Master.id == master_id)
-    result = await session.execute(stmt)
-    return result.scalar_one_or_none()
+):
+    master = await session.get(Master, master_id)
+    return master
 
 
 async def read_masters_by_service_id(
