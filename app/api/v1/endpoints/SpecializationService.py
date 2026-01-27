@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.core import get_session
+from app.core.dependencies import is_user_admin
 from app.schemas.SpecializationService import SpecializationServicesSchema
 from app.services import SpecializationServicesService
 
@@ -16,6 +17,7 @@ router = APIRouter()
 )
 async def update_specialization_service(
         specialization_service: SpecializationServicesSchema,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session)
 ):
     await SpecializationServicesService.create_spec_services(

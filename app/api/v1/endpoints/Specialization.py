@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.core import get_session
+from app.core.dependencies import is_user_admin
 from app.services import SpecializationService
 from app.schemas.Specialization import SpecializationCreate, SpecializationResponse
 
@@ -17,6 +18,7 @@ router = APIRouter()
 )
 async def create_specialization(
         specialization_data: SpecializationCreate,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session),
 ):
     return await SpecializationService.create_specialization(
@@ -46,6 +48,7 @@ async def get_specialization_by_id(
 )
 async def delete_specialization_by_id(
         specialization_id: int,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session),
 ):
     await SpecializationService.delete_specialization(

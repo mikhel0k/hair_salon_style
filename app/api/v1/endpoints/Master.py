@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
+from app.core.dependencies import is_user_admin
 from app.schemas.Master import MasterResponse, MasterCreate, MasterUpdate
 from app.services import MasterService
 
@@ -16,6 +17,7 @@ router = APIRouter()
 )
 async def create_master(
         master_data: MasterCreate,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession=Depends(get_session)
 ):
     return await MasterService.create_master(
@@ -66,6 +68,7 @@ async def get_masters_by_service_id(
 async def update_master(
         master_id: int,
         master_data: MasterUpdate,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session),
 ):
     return await MasterService.update_master(

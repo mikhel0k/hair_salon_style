@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import Response
 
 from app.core import get_session, set_auth_token
+from app.core.dependencies import is_user_admin
 from app.schemas.Worker import WorkerCreate, Login
 from app.services import AuthService
 
@@ -16,6 +17,7 @@ router = APIRouter()
 async def registration(
         worker_data: WorkerCreate,
         response: Response,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session)
 ):
     token = await AuthService.registration(

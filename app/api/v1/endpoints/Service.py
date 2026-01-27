@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
+from app.core.dependencies import is_user_admin
 from app.schemas.Service import ServiceResponse, ServiceCreate, ServiceUpdate
 from app.core import get_session
 from app.services import ServiceService
@@ -17,6 +18,7 @@ router = APIRouter()
 )
 async def create_service(
         service_data: ServiceCreate,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session)
 ):
     return await ServiceService.create_service(
@@ -52,6 +54,7 @@ async def get_services_by_category(
 async def update_service(
         service_id: int,
         service: ServiceUpdate,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session)
 ):
     return await ServiceService.update_service(
@@ -67,6 +70,7 @@ async def update_service(
 )
 async def delete_service(
         service_id: int,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session)
 ):
     await ServiceService.delete_service(

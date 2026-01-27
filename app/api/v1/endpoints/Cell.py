@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
+from app.core.dependencies import is_user_admin
 from app.schemas.Cell import CellResponse
 from app.services import CellService
 
@@ -17,6 +18,7 @@ router = APIRouter()
 )
 async def create_cells(
         master_id: int,
+        admin_user = Depends(is_user_admin),
         session: AsyncSession=Depends(get_session)
 ):
     await CellService.make_cells(
