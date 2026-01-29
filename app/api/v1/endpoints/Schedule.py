@@ -43,7 +43,7 @@ async def update_schedule(
 
 
 @router.get(
-    "/{master_id}",
+    "/{master_id}/",
     response_model=ScheduleResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -59,7 +59,7 @@ async def get_schedule_by_master_id_for_admin(
 
 
 @router.patch(
-    "/{schedule_id}",
+    "/{schedule_id}/",
     response_model=ScheduleResponse,
     status_code=status.HTTP_202_ACCEPTED,
 )

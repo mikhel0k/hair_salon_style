@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/{master_id}",
+    "/{master_id}/",
     response_model=dict[str, str],
     status_code=status.HTTP_201_CREATED,
 )
@@ -46,7 +46,7 @@ async def read_cells(
 
 
 @router.get(
-    "/free-days/{service_id}",
+    "/free-days/{service_id}/",
     status_code=status.HTTP_200_OK,
 )
 async def free_day_for_service(
@@ -62,7 +62,7 @@ async def free_day_for_service(
 
 
 @router.get(
-    "/free-slots/{service_id}",
+    "/free-slots/{service_id}/",
     response_model=list[CellResponse],
     status_code=status.HTTP_200_OK,
 )

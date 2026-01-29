@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/registration",
+    "/registration/",
     status_code=status.HTTP_201_CREATED,
 )
 async def registration(
@@ -29,7 +29,7 @@ async def registration(
 
 
 @router.post(
-    "/login",
+    "/login/",
     status_code=status.HTTP_200_OK,
 )
 async def login(

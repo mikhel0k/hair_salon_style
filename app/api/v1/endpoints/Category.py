@@ -43,7 +43,7 @@ async def get_categories(
 
 
 @router.delete(
-    "/{category_id}",
+    "/{category_id}/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_category(

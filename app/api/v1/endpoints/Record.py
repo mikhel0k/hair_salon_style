@@ -30,7 +30,7 @@ async def create_record(
 
 
 @router.get(
-    "/by-phone/{phone_number}",
+    "/by-phone/{phone_number}/",
     response_model=list[RecordResponse],
     status_code=status.HTTP_200_OK,
 )
@@ -46,7 +46,7 @@ async def get_records_by_phone(
 
 
 @router.patch(
-    "/{record_id}",
+    "/{record_id}/",
     response_model=RecordResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -63,7 +63,7 @@ async def update_record(
 
 
 @router.put(
-    "/{record_id}/status/cancelled",
+    "/{record_id}/status/cancelled/",
     response_model=RecordResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -82,7 +82,7 @@ async def update_record_status_cancelled(
 
 
 @router.put(
-    "/{record_id}/status/confirmed",
+    "/{record_id}/status/confirmed/",
     response_model=RecordResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -103,7 +103,7 @@ async def update_record_status_confirmed(
 
 
 @router.put(
-    "/{record_id}/status/completed",
+    "/{record_id}/status/completed/",
     response_model=RecordResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -124,7 +124,7 @@ async def update_record_status_completed(
 
 
 @router.put(
-    "/{record_id}/note",
+    "/{record_id}/note/",
     response_model=RecordResponse,
     status_code=status.HTTP_200_OK,
 )
@@ -139,7 +139,7 @@ async def update_record_note(
 
 
 @router.get(
-    "/master",
+    "/master/",
     response_model=list[RecordResponse],
     status_code=status.HTTP_200_OK,
 )

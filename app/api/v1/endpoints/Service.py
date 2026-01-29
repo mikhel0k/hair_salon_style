@@ -44,7 +44,7 @@ async def get_services(
     )
 
 @router.get(
-    "/{category_id}",
+    "/{category_id}/",
     response_model=list[ServiceResponse],
     status_code=status.HTTP_200_OK,
 )
@@ -63,7 +63,7 @@ async def get_services_by_category(
 
 
 @router.patch(
-    "/{service_id}",
+    "/{service_id}/",
     response_model=ServiceResponse,
     status_code=status.HTTP_202_ACCEPTED,
 )
@@ -81,7 +81,7 @@ async def update_service(
 
 
 @router.delete(
-    "/{service_id}",
+    "/{service_id}/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_service(

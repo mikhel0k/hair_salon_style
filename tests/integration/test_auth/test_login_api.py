@@ -2,14 +2,14 @@ import pytest
 from httpx import AsyncClient
 from starlette import status
 from app.core.security import decode_token
-from tests.integration.conftest import RIGHT_LOGIN, RIGHT_PASSWORD
+from tests.integration.conftest import CORRECT_LOGIN, CORRECT_PASSWORD
 
 
 @pytest.mark.asyncio
-async def test_login_right(ac: AsyncClient):
-    payload = {"username": RIGHT_LOGIN, "password": RIGHT_PASSWORD}
+async def test_login_200(ac: AsyncClient):
+    payload = {"username": CORRECT_LOGIN, "password": CORRECT_PASSWORD}
 
-    response = await ac.post("/v1/auth/login", json=payload)
+    response = await ac.post("/v1/auth/login/", json=payload)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"status" : "success"}
@@ -29,12 +29,12 @@ async def test_login_right(ac: AsyncClient):
     "payload",
     [
         {"username": "Wrong_admin", "password": "qwerty123"},
-        {"username": RIGHT_LOGIN, "password": "qwerty123"}
+        {"username": CORRECT_LOGIN, "password": "qwerty123"}
     ]
 )
 @pytest.mark.asyncio
 async def test_login_wrong_401(payload, ac: AsyncClient):
-    response = await ac.post("/v1/auth/login", json=payload)
+    response = await ac.post("/v1/auth/login/", json=payload)
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json() == {"detail" : "Worker login or password is incorrect"}
@@ -54,7 +54,7 @@ async def test_login_wrong_401(payload, ac: AsyncClient):
 )
 @pytest.mark.asyncio
 async def test_login_wrong_422(payload, message, ac: AsyncClient):
-    response = await ac.post("/v1/auth/login", json=payload)
+    response = await ac.post("/v1/auth/login/", json=payload)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert response.json()["detail"][0]["msg"] == message

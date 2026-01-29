@@ -44,7 +44,7 @@ async def get_masters(
 
 
 @router.get(
-    "/by-service/{service_id}",
+    "/by-service/{service_id}/",
     response_model=list[MasterResponse],
     status_code=status.HTTP_200_OK,
 )
@@ -63,7 +63,7 @@ async def get_masters_by_service_id(
 
 
 @router.patch(
-    "/{master_id}",
+    "/{master_id}/",
     response_model=MasterResponse,
     status_code=status.HTTP_200_OK,
 )

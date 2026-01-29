@@ -47,7 +47,7 @@ async def get_specializations(
 
 
 @router.get(
-    "/{specialization_id}",
+    "/{specialization_id}/",
     response_model=SpecializationWithServicesResponse,
     status_code=status.HTTP_200_OK,
 )
