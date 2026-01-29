@@ -140,7 +140,7 @@ def upgrade() -> None:
             """),
         [
             {
-                "id": "1",
+                "id": 1,
                 "master_id": None,
                 "username": "I_am_admin",
                 "password": get_password_hash("Zxc-q123"),
@@ -169,4 +169,7 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('specializations')
     op.drop_table('categories')
+    op.execute("DROP TYPE IF EXISTS allowedmasterstatuses")
+    op.execute("DROP TYPE IF EXISTS allowedcellsstatuses")
+    op.execute("DROP TYPE IF EXISTS allowedrecordstatuses")
     # ### end Alembic commands ###
