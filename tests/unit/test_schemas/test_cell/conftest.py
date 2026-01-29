@@ -3,12 +3,12 @@ from datetime import date, timedelta, time
 
 @dataclass
 class Date:
-    right_today = date.today()
-    right_tomorrow = right_today + timedelta(days=1)
-    right_on_week_bigger = right_today + timedelta(days=7)
-    right_date_string = "2030-01-01"
-    wrong_yesterday = right_today - timedelta(days=1)
-    wrong_on_week_smaller = right_tomorrow - timedelta(days=7)
+    correct_today = date.today()
+    correct_tomorrow = correct_today + timedelta(days=1)
+    correct_on_week_bigger = correct_today + timedelta(days=7)
+    correct_date_string = "2030-01-01"
+    wrong_yesterday = correct_today - timedelta(days=1)
+    wrong_on_week_smaller = correct_tomorrow - timedelta(days=7)
     wrong_type_string = "string"
     wrong_type_integer = 1
     wrong_type_float = 1.0
@@ -18,10 +18,10 @@ class Date:
 
 @dataclass
 class Time:
-    right_morning = time(8, 0)
-    right_afternoon = time(12, 15)
-    right_evening = time(19, 30)
-    right_string = "12:20:00"
+    correct_morning = time(8, 0)
+    correct_afternoon = time(12, 15)
+    correct_evening = time(19, 30)
+    correct_string = "12:20:00"
     wrong_time_string = "qwe"
     wrong_time_integer = 1
     wrong_time_float = 1.0
@@ -31,8 +31,8 @@ class Time:
 
 @dataclass
 class Status:
-    right_free = "FREE"
-    right_occupied = "OCCUPIED"
+    correct_free = "FREE"
+    correct_occupied = "OCCUPIED"
     wrong_status = "wrong_status"
     wrong_status_none = None
     wrong_status_empty = ""

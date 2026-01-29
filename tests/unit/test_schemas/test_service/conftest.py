@@ -10,10 +10,10 @@ MIN_DURATION = 10
 
 @dataclass
 class Name:
-    right_name: str = "Man`s haircut"
-    right_name_short: str = "a" * MIN_NAME_LENGTH
-    right_name_long: str = "a" * MAX_NAME_LENGTH
-    right_name_сyrillic: str = "Стрижка"
+    correct_name: str = "Man`s haircut"
+    correct_name_short: str = "a" * MIN_NAME_LENGTH
+    correct_name_long: str = "a" * MAX_NAME_LENGTH
+    correct_name_сyrillic: str = "Стрижка"
     wrong_name_long: str = "a" * (MAX_NAME_LENGTH + 1)
     wrong_name_short: str = "a" * (MIN_NAME_LENGTH - 1)
     wrong_name_int: int = 1
@@ -40,13 +40,13 @@ class Name:
 
 @dataclass
 class Price:
-    right_price: float = 500
-    right_price_small: float = MIN_PRICE+1
-    right_price_big: float = MAX_PRICE
-    right_price_float: float = 500.50
-    right_price_three_numbers_after_coma: float = 500.555
-    right_price_string: str = "100"
-    right_price_string_with_coma: str = "500.50"
+    correct_price: float = 500
+    correct_price_small: float = MIN_PRICE+1
+    correct_price_big: float = MAX_PRICE
+    correct_price_float: float = 500.50
+    correct_price_three_numbers_after_coma: float = 500.555
+    correct_price_string: str = "100"
+    correct_price_string_with_coma: str = "500.50"
     wrong_price_zero: float = 0
     wrong_price_negative: float = -500
     wrong_price_negative_small: float = -1
@@ -59,10 +59,10 @@ class Price:
 
 @dataclass
 class Duration:
-    right_duration: int = 60
-    right_duration_small: int = MIN_DURATION + 1
-    right_duration_big: int = MAX_DURATION
-    right_duration_string: str = "60"
+    correct_duration: int = 60
+    correct_duration_small: int = MIN_DURATION + 1
+    correct_duration_big: int = MAX_DURATION
+    correct_duration_string: str = "60"
     wrong_duration_zero: int = 0
     wrong_duration_negative: int = -60
     wrong_duration_negative_small: int = -MIN_PRICE

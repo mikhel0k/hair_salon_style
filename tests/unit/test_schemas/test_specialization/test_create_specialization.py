@@ -10,12 +10,12 @@ class TestCreateSpecialization:
     name = Name()
 
     @pytest.mark.parametrize("name", [
-        name.right_name,
-        name.right_name_short,
-        name.right_name_long,
-        name.right_name_сyrillic,
+        name.correct_name,
+        name.correct_name_short,
+        name.correct_name_long,
+        name.correct_name_сyrillic,
     ])
-    def test_create_specialization_right_name(self, name):
+    def test_create_specialization_correct(self, name):
         specialization = SpecializationCreate(name=name)
         assert isinstance(specialization, SpecializationCreate)
         assert specialization.name == name.title()
@@ -45,7 +45,7 @@ class TestCreateSpecialization:
         (name.wrong_apostrophe_and_space_adjacent, ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_APOSTROPHE_ADJACENT),
         (name.wrong_underscore_and_space_adjacent, ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_UNDERSCORE_ADJACENT),
     ])
-    def test_create_specialization_wrong_name(self, name_value, error_loc, error_type, error_msg):
+    def test_create_specialization_wrong(self, name_value, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             specialization = SpecializationCreate(name=name_value)
         errors = error.value.errors()

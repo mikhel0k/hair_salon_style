@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Phone:
-    right_number_str_with_seven = "+79009009090"
-    right_number_str_with_eight = "89009009090"
-    right_number_int = 89009009090
-    right_number_str_with_seven_without_plus = "79009009090"
+    correct_number_str_with_seven = "+79009009090"
+    correct_number_str_with_eight = "89009009090"
+    correct_number_int = 89009009090
+    correct_number_str_with_seven_without_plus = "79009009090"
     wrong_number_str_with_two_without_plus = "29009009090"
     wrong_number_str_with_five_without_plus = "59009009090"
     wrong_number_str_with_two_with_plus = "+29009009090"

@@ -10,12 +10,12 @@ class TestCreateCategory:
     name = Name()
 
     @pytest.mark.parametrize("name", [
-        name.right_name,
-        name.right_name_short,
-        name.right_name_long,
-        name.right_name_сyrillic,
+        name.correct_name,
+        name.correct_name_short,
+        name.correct_name_long,
+        name.correct_name_сyrillic,
     ])
-    def test_create_category_right_name(self, name):
+    def test_create_category_correct(self, name):
         category = CategoryCreate(name=name)
         assert isinstance(category, CategoryCreate)
         assert category.name == name.title()
@@ -44,7 +44,7 @@ class TestCreateCategory:
         (name.wrong_apostrophe_and_space_adjacent, ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_APOSTROPHE_ADJACENT),
         (name.wrong_underscore_and_space_adjacent, ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_UNDERSCORE_ADJACENT),
     ])
-    def test_create_category_wrong_name(self, error_loc, name_value, error_type, error_msg):
+    def test_create_category_wrong(self, error_loc, name_value, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
             category = CategoryCreate(name=name_value)
         errors = error.value.errors()

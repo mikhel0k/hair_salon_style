@@ -12,13 +12,13 @@ class TestEditStatusRecord:
     status = AllowedRecordStatuses()
 
     @pytest.mark.parametrize("record_id, status",[
-        (data_for_id.right_id, AllowedRecordStatuses.Created),
-        (data_for_id.big_right_id, AllowedRecordStatuses.Created),
-        (data_for_id.right_id, AllowedRecordStatuses.Confirmed),
-        (data_for_id.right_id, AllowedRecordStatuses.Completed),
-        (data_for_id.right_id, AllowedRecordStatuses.Cancelled),
+        (data_for_id.correct_id, AllowedRecordStatuses.Created),
+        (data_for_id.big_correct_id, AllowedRecordStatuses.Created),
+        (data_for_id.correct_id, AllowedRecordStatuses.Confirmed),
+        (data_for_id.correct_id, AllowedRecordStatuses.Completed),
+        (data_for_id.correct_id, AllowedRecordStatuses.Cancelled),
     ])
-    def test_edit_status_record_create(self, record_id, status):
+    def test_edit_status_record_correct(self, record_id, status):
         record = EditRecordStatus(
             id=record_id,
             status=status
@@ -44,17 +44,17 @@ class TestEditStatusRecord:
          ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
         (data_for_id.wrong_id_false, AllowedRecordStatuses.Created,
          ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
-        (data_for_id.right_id, AllowedRecordStatuses.wrong_status_string,
+        (data_for_id.correct_id, AllowedRecordStatuses.wrong_status_string,
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
-        (data_for_id.right_id, AllowedRecordStatuses.wrong_status_none,
+        (data_for_id.correct_id, AllowedRecordStatuses.wrong_status_none,
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
-        (data_for_id.right_id, AllowedRecordStatuses.wrong_status_empty,
+        (data_for_id.correct_id, AllowedRecordStatuses.wrong_status_empty,
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
-        (data_for_id.right_id, AllowedRecordStatuses.wrong_status_boolean,
+        (data_for_id.correct_id, AllowedRecordStatuses.wrong_status_boolean,
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
-        (data_for_id.right_id, AllowedRecordStatuses.wrong_status_integer,
+        (data_for_id.correct_id, AllowedRecordStatuses.wrong_status_integer,
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
-        (data_for_id.right_id, AllowedRecordStatuses.wrong_status_float,
+        (data_for_id.correct_id, AllowedRecordStatuses.wrong_status_float,
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
     ])
     def test_edit_status_record_wrong(self, record_id, status, error_loc, error_type, error_msg):

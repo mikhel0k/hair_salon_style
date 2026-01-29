@@ -11,12 +11,12 @@ class TestCreateUser:
     phone = Phone()
 
     @pytest.mark.parametrize("phone", [
-        phone.right_number_int,
-        phone.right_number_str_with_eight,
-        phone.right_number_str_with_seven,
-        phone.right_number_str_with_seven_without_plus
+        phone.correct_number_int,
+        phone.correct_number_str_with_eight,
+        phone.correct_number_str_with_seven,
+        phone.correct_number_str_with_seven_without_plus
     ])
-    def test_create_user_right(self, phone):
+    def test_create_user_correct(self, phone):
         user = UserCreate(phone_number=phone)
         assert isinstance(user, UserCreate)
         parsed = phonenumbers.parse(str(phone), "RU")
@@ -53,7 +53,7 @@ class TestCreateUser:
     ])
     def test_create_user_wrong(self, phone, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
-            specialization = UserCreate(phone_number=phone)
+            user = UserCreate(phone_number=phone)
         errors = error.value.errors()
         assert len(errors) == 1
         error = errors[0]

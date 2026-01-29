@@ -8,9 +8,9 @@ MAX_EMAIL_LENGTH = 50
 
 @dataclass
 class Status:
-    right_active = "ACTIVE"
-    right_vacation = "VACATION"
-    right_dismissed = "DISMISSED"
+    correct_active = "ACTIVE"
+    correct_vacation = "VACATION"
+    correct_dismissed = "DISMISSED"
     wrong_status_string = "string"
     wrong_status_none = None
     wrong_status_empty = ""
@@ -21,10 +21,10 @@ class Status:
 
 @dataclass
 class Name:
-    right_name: str = "Petr"
-    right_name_short: str = "a" * MIN_NAME_LENGTH
-    right_name_long: str = "a" * MAX_NAME_LENGTH
-    right_name_сyrillic: str = "Стрижка"
+    correct_name: str = "Petr"
+    correct_name_short: str = "a" * MIN_NAME_LENGTH
+    correct_name_long: str = "a" * MAX_NAME_LENGTH
+    correct_name_сyrillic: str = "Стрижка"
     wrong_name_long: str = "a" * (MAX_NAME_LENGTH + 1)
     wrong_name_short: str = "a" * (MIN_NAME_LENGTH - 1)
     wrong_name_int: int = 1
@@ -52,10 +52,10 @@ class Name:
 
 @dataclass
 class Phone:
-    right_number_str_with_seven = "+79009009090"
-    right_number_str_with_eight = "89009009090"
-    right_number_int = 89009009090
-    right_number_str_with_seven_without_plus = "79009009090"
+    correct_number_str_with_seven = "+79009009090"
+    correct_number_str_with_eight = "89009009090"
+    correct_number_int = 89009009090
+    correct_number_str_with_seven_without_plus = "79009009090"
     wrong_number_str_with_two_without_plus = "29009009090"
     wrong_number_str_with_five_without_plus = "59009009090"
     wrong_number_str_with_two_with_plus = "+29009009090"
@@ -73,10 +73,10 @@ class Phone:
 
 @dataclass
 class Email:
-    right_string_mail = "example@mail.ru"
-    right_string_gmail = "example@gmail.com"
-    right_string_yandex = "example@yandex.ru"
-    right_string_long = f"{"a"*(50-8)}@mail.ru"
+    correct_string_mail = "example@mail.ru"
+    correct_string_gmail = "example@gmail.com"
+    correct_string_yandex = "example@yandex.ru"
+    correct_string_long = f"{"a"*(50-8)}@mail.ru"
     wrong_string_without_dog = "examplemail.ru"
     wrong_string_without_email = "example@.ru"
     wrong_string_mail_without_dot = "example@mailru"

@@ -90,8 +90,8 @@ class ErrorTypes:
 
 @dataclass
 class DataForId:
-    right_id = 1
-    big_right_id = 1123124
+    correct_id = 1
+    big_correct_id = 1123124
     wrong_id_zero = 0
     wrong_negative_id = -1
     big_wrong_negative_id = -1123124

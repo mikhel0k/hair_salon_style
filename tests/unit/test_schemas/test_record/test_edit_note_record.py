@@ -12,9 +12,9 @@ class TestEditNoteRecord:
     status = AllowedRecordStatuses()
 
     @pytest.mark.parametrize("record_id",[
-        data_for_id.right_id, data_for_id.big_right_id,
+        data_for_id.correct_id, data_for_id.big_correct_id,
     ])
-    def test_edit_note_record_create(self, record_id):
+    def test_edit_note_record_correct(self, record_id):
         record = EditRecordNote(
             id=record_id
         )
