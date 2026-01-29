@@ -143,7 +143,7 @@ def upgrade() -> None:
                 "id": "1",
                 "master_id": None,
                 "username": "I_am_admin",
-                "password": get_password_hash("zxc-123"),
+                "password": get_password_hash("Zxc-q123"),
                 "is_master": False,
                 "is_admin": True,
                 "is_active": True

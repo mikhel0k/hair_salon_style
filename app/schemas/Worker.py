@@ -1,39 +1,20 @@
 from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, StrictInt, ConfigDict
-
-from app.schemas.Master import MasterResponse
+from pydantic import BaseModel, Field, StrictInt
 
 
 class WorkerBase(BaseModel):
     master_id: Annotated[Optional[StrictInt], Field(None, ge=1, description="Master ID")]
-    username: Annotated[str, Field(..., description="Username of worker")]
+    username: Annotated[str, Field(..., min_length=3, max_length=30, description="Username of worker")]
 
 
 class WorkerCreate(WorkerBase):
-    password: Annotated[str, Field(..., description="Password of worker")]
-    is_master: Annotated[bool, Field(..., description="Is master?")]
-    is_admin: Annotated[bool, Field(..., description="Is admin?")]
-    is_active: Annotated[bool, Field(..., description="Is active?")]
-
-
-class WorkerResponseInner(WorkerBase):
-    id: Annotated[Optional[StrictInt], Field(None, description="Worker ID")]
-    password: Annotated[str, Field(..., description="Password of worker")]
-    is_master: Annotated[bool, Field(..., description="Is master?")]
-    is_admin: Annotated[bool, Field(..., description="Is admin?")]
-    is_active: Annotated[bool, Field(..., description="Is active?")]
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class WorkerResponse(WorkerBase):
-    id: Annotated[Optional[StrictInt], Field(None, description="Worker ID")]
-    master: Annotated[Optional[MasterResponse], Field(None, description="Master ID")]
-
-    model_config = ConfigDict(from_attributes=True)
+    password: Annotated[str, Field(..., min_length=8, max_length=30, description="Password of worker")]
+    is_master: Annotated[bool, Field(..., strict=True, description="Is master?")]
+    is_admin: Annotated[bool, Field(..., strict=True, description="Is admin?")]
+    is_active: Annotated[bool, Field(..., strict=True, description="Is active?")]
 
 
 class Login(BaseModel):
-    username: Annotated[str, Field(..., description="Username of worker")]
-    password: Annotated[str, Field(..., description="Password of worker")]
+    username: Annotated[str, Field(..., min_length=3, max_length=30, description="Username of worker")]
+    password: Annotated[str, Field(..., min_length=8, max_length=30, description="Password of worker")]

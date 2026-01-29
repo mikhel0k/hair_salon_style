@@ -5,6 +5,7 @@ class ErrorMessages:
     STRING_TOO_LONG = "String should have at most 60 characters"
     STRING_TOO_LONG_30 = "String should have at most 30 characters"
     STRING_TOO_SHORT = "String should have at least 3 characters"
+    STRING_TOO_SHORT_8 = "String should have at least 8 characters"
     STRING_TYPE = "Input should be a valid string"
     STRING_EMPTY = "String should have at least 3 characters"
     STRING_SPACES = "String should have at least 3 characters"
@@ -63,12 +64,13 @@ class ErrorMessages:
     TO_EARLY = "Value error, Start time must be after 8 o`clock"
     TO_LATE = "Value error, End time must be before 20 o`clock"
     TO_SHORT = "Value error, Work time must be minimum 120 minutes"
-
+    BOOL_TYPE = "Input should be a valid boolean"
     LESS_THAN_EQUAL_5 = "Input should be less than or equal to 5"
 
 
 @dataclass
 class ErrorTypes:
+    BOOL_TYPE = "bool_type"
     STRING_TOO_LONG = "string_too_long"
     STRING_TOO_SHORT = "string_too_short"
     STRING_TYPE = "string_type"
