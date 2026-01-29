@@ -1,3 +1,7 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class Bool:
     correct_true = True
     correct_false = False
@@ -6,7 +10,7 @@ class Bool:
     wrong_float = 1.3
     wrong_none = None
 
-
+@dataclass
 class Name:
     correct_name = "correct"
     correct_name_short = "a" * 3
@@ -20,7 +24,7 @@ class Name:
     wrong_true = True
     wrong_int = 1
 
-
+@dataclass
 class Password:
     correct_password = "qwerty12345"
     correct_password_short = "a" * 8

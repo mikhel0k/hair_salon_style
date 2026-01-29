@@ -1,7 +1,9 @@
+from dataclasses import dataclass
+
 import pytest
 from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from alembic.config import Config
 from alembic import command
 
@@ -64,3 +66,7 @@ async def ac(test_engine) -> AsyncGenerator[AsyncClient, None]:
     ) as client:
         yield client
     app.dependency_overrides.clear()
+
+
+RIGHT_LOGIN = "I_am_admin"
+RIGHT_PASSWORD = "Zxc-q123"
