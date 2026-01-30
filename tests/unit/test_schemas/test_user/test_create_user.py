@@ -3,12 +3,14 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.User import UserCreate
-from conftest import Phone
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_user.conftest import Phone
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes
+
+phone = Phone()
 
 
 class TestCreateUser:
-    phone = Phone()
 
     @pytest.mark.parametrize("phone", [
         phone.correct_number_int,
@@ -52,11 +54,6 @@ class TestCreateUser:
          ("phone_number",), ErrorTypes.VALUE_ERROR, ErrorMessages.EMPTY_PHONE),
     ])
     def test_create_user_wrong(self, phone, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            user = UserCreate(phone_number=phone)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            UserCreate(phone_number=phone)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

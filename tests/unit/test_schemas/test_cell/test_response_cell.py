@@ -5,15 +5,17 @@ from pydantic import ValidationError
 
 from app.models import Cell
 from app.schemas.Cell import CellResponse
-from conftest import Time, Status, Date
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_cell.conftest import Time, Status, Date
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+time = Time()
+status = Status()
+date = Date()
+data_for_id = DataForId()
 
 
 class TestResponseCell:
-    time = Time()
-    status = Status()
-    date = Date()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize("cell, date, time, status, master_id, cell_id", [
         (Cell(date=date.correct_today, time=time.correct_morning, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
@@ -74,11 +76,11 @@ class TestResponseCell:
         (Cell(date=date.wrong_type_float, time=time.correct_morning, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
          ("date",), ErrorTypes.DATE_FROM_DATETIME_INEXACT, ErrorMessages.WRONG_DATE),
         (Cell(date=date.wrong_type_boolean, time=time.correct_morning, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
-         ("date",), ErrorTypes.DATE_TIPE, ErrorMessages.VALID_DATE),
+         ("date",), ErrorTypes.DATE_TYPE, ErrorMessages.VALID_DATE),
         (Cell(date=date.wrong_type_empty, time=time.correct_morning, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
          ("date",), ErrorTypes.DATE_FROM_DATETIME_PARSING, ErrorMessages.SHORT_DATE),
         (Cell(date=date.wrong_type_none, time=time.correct_morning, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
-         ("date",), ErrorTypes.DATE_TIPE, ErrorMessages.VALID_DATE),
+         ("date",), ErrorTypes.DATE_TYPE, ErrorMessages.VALID_DATE),
         (Cell(date=date.correct_today, time=time.wrong_time_string, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
          ("time",), ErrorTypes.TIME_PARSING, ErrorMessages.SHORT_TIME),
         (Cell(date=date.correct_today, time=time.wrong_time_boolean, status=status.correct_free, master_id=data_for_id.correct_id, id=data_for_id.correct_id),
@@ -133,11 +135,6 @@ class TestResponseCell:
          ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
     ])
     def test_response_cell_wrong(self, cell, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            cell = CellResponse.model_validate(cell)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            CellResponse.model_validate(cell)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

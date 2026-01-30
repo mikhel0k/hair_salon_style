@@ -2,18 +2,20 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.Specialization import SpecializationCreate
-from conftest import Name
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_specialization.conftest import Name
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes
+
+name = Name()
 
 
 class TestCreateSpecialization:
-    name = Name()
 
     @pytest.mark.parametrize("name", [
         name.correct_name,
         name.correct_name_short,
         name.correct_name_long,
-        name.correct_name_сyrillic,
+        name.correct_name_cyrillic,
     ])
     def test_create_specialization_correct(self, name):
         specialization = SpecializationCreate(name=name)
@@ -46,11 +48,6 @@ class TestCreateSpecialization:
         (name.wrong_underscore_and_space_adjacent, ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.WRONG_SPACE_AND_UNDERSCORE_ADJACENT),
     ])
     def test_create_specialization_wrong(self, name_value, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            specialization = SpecializationCreate(name=name_value)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            SpecializationCreate(name=name_value)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

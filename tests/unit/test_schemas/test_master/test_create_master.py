@@ -3,22 +3,24 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.Master import MasterCreate
-from conftest import Name, Phone, Email, Status
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_master.conftest import Name, Phone, Email, Status
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+phone = Phone()
+email = Email()
+status = Status()
+data_for_id = DataForId()
 
 
 class TestCreateMaster:
-    name = Name()
-    phone = Phone()
-    email = Email()
-    status = Status()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize("specialization_id, name, phone, email, status", [
         (data_for_id.correct_id, name.correct_name, phone.correct_number_str_with_eight, email.correct_string_mail, status.correct_active),
         (data_for_id.correct_id, name.correct_name_short, phone.correct_number_str_with_eight, email.correct_string_mail, status.correct_active),
         (data_for_id.correct_id, name.correct_name_long, phone.correct_number_str_with_eight, email.correct_string_mail, status.correct_active),
-        (data_for_id.correct_id, name.correct_name_сyrillic, phone.correct_number_str_with_eight, email.correct_string_mail, status.correct_active),
+        (data_for_id.correct_id, name.correct_name_cyrillic, phone.correct_number_str_with_eight, email.correct_string_mail, status.correct_active),
         (data_for_id.correct_id, name.correct_name, phone.correct_number_str_with_seven, email.correct_string_mail, status.correct_active),
         (data_for_id.correct_id, name.correct_name, phone.correct_number_int, email.correct_string_mail, status.correct_active),
         (data_for_id.correct_id, name.correct_name, phone.correct_number_str_with_seven_without_plus, email.correct_string_mail, status.correct_active),
@@ -214,9 +216,6 @@ class TestCreateMaster:
              status.correct_active, data_for_id.wrong_negative_id,
              ("specialization_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
             (name.correct_name, phone.correct_number_str_with_eight, email.correct_string_mail,
-             status.correct_active, data_for_id.wrong_negative_id,
-             ("specialization_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
-            (name.correct_name, phone.correct_number_str_with_eight, email.correct_string_mail,
              status.correct_active, data_for_id.wrong_id_str,
              ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
             (name.correct_name, phone.correct_number_str_with_eight, email.correct_string_mail,
@@ -234,18 +233,28 @@ class TestCreateMaster:
         ]
     )
     def test_create_master_wrong(self, name, phone, email, status, specialization_id, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            master = MasterCreate(
+        with pytest.raises(ValidationError) as exc_info:
+            MasterCreate(
                 specialization_id=specialization_id,
                 name=name,
                 phone=phone,
                 email=email,
                 status=status,
             )
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)
+
+    def test_create_master_multiple_validation_errors(self):
+        with pytest.raises(ValidationError) as exc_info:
+            MasterCreate(
+                specialization_id=data_for_id.correct_id,
+                name=name.wrong_name_short,
+                phone=phone.wrong_number_empty,
+                email=email.correct_string_mail,
+                status=status.correct_active,
+            )
+        errors = exc_info.value.errors()
+        assert len(errors) >= 2
+        error_locs = {e["loc"] for e in errors}
+        assert ("name",) in error_locs
+        assert ("phone",) in error_locs
 

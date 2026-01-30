@@ -3,22 +3,24 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.Master import MasterUpdate
-from conftest import Name, Phone, Email, Status
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_master.conftest import Name, Phone, Email, Status
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+phone = Phone()
+email = Email()
+status = Status()
+data_for_id = DataForId()
 
 
 class TestUpdateMaster:
-    name = Name()
-    phone = Phone()
-    email = Email()
-    status = Status()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize("specialization_id, name, phone, email, status", [
         (data_for_id.correct_id, name.correct_name, phone.correct_number_str_with_eight, email.correct_string_mail, Status.correct_active),
         (data_for_id.correct_id, name.correct_name_short, phone.correct_number_str_with_eight, email.correct_string_mail, Status.correct_active),
         (data_for_id.correct_id, name.correct_name_long, phone.correct_number_str_with_eight, email.correct_string_mail, Status.correct_active),
-        (data_for_id.correct_id, name.correct_name_сyrillic, phone.correct_number_str_with_eight, email.correct_string_mail, Status.correct_active),
+        (data_for_id.correct_id, name.correct_name_cyrillic, phone.correct_number_str_with_eight, email.correct_string_mail, Status.correct_active),
         (data_for_id.correct_id, name.correct_name, phone.correct_number_str_with_seven, email.correct_string_mail, Status.correct_active),
         (data_for_id.correct_id, name.correct_name, phone.correct_number_int, email.correct_string_mail, Status.correct_active),
         (data_for_id.correct_id, name.correct_name, phone.correct_number_str_with_eight, email.correct_string_gmail, Status.correct_active),
@@ -68,7 +70,7 @@ class TestUpdateMaster:
              ("name",), ErrorTypes.STRING_TOO_SHORT, ErrorMessages.STRING_TOO_SHORT),
             (name.wrong_name_int, phone.correct_number_str_with_eight, email.correct_string_mail,
              status.correct_active, data_for_id.correct_id,
-             ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.VAIT_STRING), #1111111
+             ("name",), ErrorTypes.VALUE_ERROR, ErrorMessages.FIELD_MUST_BE_STRING),
             (name.wrong_name_empty, phone.correct_number_str_with_eight, email.correct_string_mail,
              status.correct_active, data_for_id.correct_id,
              ("name",), ErrorTypes.STRING_TOO_SHORT, ErrorMessages.STRING_TOO_SHORT),
@@ -231,17 +233,12 @@ class TestUpdateMaster:
         ]
     )
     def test_update_master_wrong(self, name, phone, email, status, specialization_id, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            master = MasterUpdate(
+        with pytest.raises(ValidationError) as exc_info:
+            MasterUpdate(
                 specialization_id=specialization_id,
                 name=name,
                 phone=phone,
                 email=email,
                 status=status,
             )
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

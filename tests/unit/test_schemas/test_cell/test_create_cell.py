@@ -4,15 +4,17 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.Cell import CellCreate
-from conftest import Time, Status, Date
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_cell.conftest import Time, Status, Date
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+time = Time()
+status = Status()
+date = Date()
+data_for_id = DataForId()
 
 
 class TestCreateCell:
-    time = Time()
-    status = Status()
-    date = Date()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize("date, time, status, master_id", [
         (date.correct_today ,time.correct_morning , status.correct_free, data_for_id.correct_id),
@@ -59,11 +61,11 @@ class TestCreateCell:
         (date.wrong_type_float, time.correct_morning, status.correct_free, data_for_id.correct_id,
          ("date",), ErrorTypes.DATE_FROM_DATETIME_INEXACT , ErrorMessages.WRONG_DATE ),
         (date.wrong_type_boolean, time.correct_morning, status.correct_free, data_for_id.correct_id,
-         ("date",), ErrorTypes.DATE_TIPE , ErrorMessages.VALID_DATE ),
+         ("date",), ErrorTypes.DATE_TYPE , ErrorMessages.VALID_DATE ),
         (date.wrong_type_empty, time.correct_morning, status.correct_free, data_for_id.correct_id,
          ("date",), ErrorTypes.DATE_FROM_DATETIME_PARSING , ErrorMessages.SHORT_DATE ),
         (date.wrong_type_none, time.correct_morning, status.correct_free, data_for_id.correct_id,
-         ("date",), ErrorTypes.DATE_TIPE , ErrorMessages.VALID_DATE ),
+         ("date",), ErrorTypes.DATE_TYPE , ErrorMessages.VALID_DATE ),
         (date.correct_today, time.wrong_time_string, status.correct_free, data_for_id.correct_id,
          ("time",), ErrorTypes.TIME_PARSING , ErrorMessages.SHORT_TIME ),
         (date.correct_today, time.wrong_time_boolean, status.correct_free, data_for_id.correct_id,
@@ -102,11 +104,6 @@ class TestCreateCell:
          ("master_id",), ErrorTypes.INT_TYPE , ErrorMessages.INT_TYPE ),
     ])
     def test_create_cell_wrong(self, date, time, status, master_id, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            cell = CellCreate(master_id=master_id, date=date, time=time, status=status)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            CellCreate(master_id=master_id, date=date, time=time, status=status)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

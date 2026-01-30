@@ -33,7 +33,7 @@ class TestSpecializationServicesSchema:
          ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
         (data_for_id.wrong_id_float, [data_for_id.correct_id,],
          ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
-        (data_for_id.wrong_id_str, [data_for_id.correct_id,],
+        (data_for_id.wrong_id_none, [data_for_id.correct_id,],
          ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
         (data_for_id.wrong_id_true, [data_for_id.correct_id,],
          ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
@@ -72,10 +72,10 @@ class TestSpecializationServicesSchema:
     ])
     def test_specialization_services_schema_wrong(self, specialization_id, services_id, error_loc, error_type, error_msg):
         with pytest.raises(ValidationError) as error:
-            record = SpecializationServicesSchema(
-            specialization_id=specialization_id,
-            services_id=services_id
-        )
+            specialization_services = SpecializationServicesSchema(
+                specialization_id=specialization_id,
+                services_id=services_id
+            )
         errors = error.value.errors()
         assert len(errors) == 1
         error = errors[0]

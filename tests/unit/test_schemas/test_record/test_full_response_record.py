@@ -5,36 +5,27 @@ from pydantic import ValidationError
 
 from app.models import Record, Master, Service, Cell
 from app.schemas.Record import FullRecordResponse
-from conftest import AllowedRecordStatuses
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_record.conftest import AllowedRecordStatuses
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+data_for_id = DataForId()
+status = AllowedRecordStatuses()
+master = Master(
+    id=1, specialization_id=1, name="Petr",
+    phone="+79990009090", email="test@gmail.com", status="ACTIVE"
+)
+service = Service(
+    id=1, name="Haircut", price=499.99, duration_minutes=55,
+    description="Good haircut", category_id=1,
+)
+cell = Cell(
+    id=1, master_id=1, date=date.today(),
+    time=time(hour=10, minute=0, second=0), status="FREE"
+)
 
 
 class TestFullResponseRecord:
-    data_for_id = DataForId()
-    status = AllowedRecordStatuses()
-    master = Master(
-        id = 1,
-        specialization_id = 1,
-        name = "Petr",
-        phone = "+79990009090",
-        email = "test@gmail.com",
-        status = "ACTIVE"
-    )
-    service = Service(
-        id = 1,
-        name = "Haircut",
-        price = 499.99,
-        duration_minutes = 55,
-        description = "Good haircut",
-        category_id = 1,
-    )
-    cell = Cell(
-        id = 1,
-        master_id = 1,
-        date = date.today(),
-        time = time(hour=10, minute=0, second=0),
-        status = "FREE"
-    )
 
     @pytest.mark.parametrize("record, record_id, master_id, service_id, user_id, cell_id, status", [
         (Record(id=data_for_id.correct_id, master_id=data_for_id.correct_id, service_id=data_for_id.correct_id,
@@ -283,11 +274,6 @@ class TestFullResponseRecord:
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
     ])
     def test_response_record_wrong(self, record, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            record = FullRecordResponse.model_validate(record)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            FullRecordResponse.model_validate(record)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

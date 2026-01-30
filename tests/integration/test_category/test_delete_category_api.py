@@ -15,7 +15,7 @@ from httpx import AsyncClient
     ]
 )
 @pytest.mark.asyncio
-async def test_get_category_200(ac: AsyncClient, payload, token):
+async def test_delete_category_200(ac: AsyncClient, payload, token):
     created_ids = []
     for p in payload:
         res = await ac.post("/v1/category/", json=p, headers=token)
@@ -34,7 +34,7 @@ async def test_get_category_200(ac: AsyncClient, payload, token):
     ]
 )
 @pytest.mark.asyncio
-async def test_get_category_404(ac: AsyncClient, payload, del_ids, token):
+async def test_delete_category_404(ac: AsyncClient, payload, del_ids, token):
     for i in range(0, len(payload)):
         response = await ac.post("/v1/category/", json=payload[i], headers=token)
         assert response.status_code == 201
@@ -51,7 +51,7 @@ async def test_get_category_404(ac: AsyncClient, payload, del_ids, token):
     ]
 )
 @pytest.mark.asyncio
-async def test_get_category_401(ac: AsyncClient, payload, token):
+async def test_delete_category_401(ac: AsyncClient, payload, token):
     created_ids = []
     for p in payload:
         res = await ac.post("/v1/category/", json=p, headers=token)

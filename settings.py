@@ -1,11 +1,9 @@
 from dotenv import load_dotenv
 from pathlib import Path
-from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
-
-load_dotenv()
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=str(BASE_DIR / ".env"))
 
 
 class Settings(BaseSettings):
@@ -45,7 +43,7 @@ class Settings(BaseSettings):
         return (f"postgresql://{self.POSTGRES_USER_TEST}:{self.POSTGRES_PASSWORD_TEST}@"
                 f"{self.POSTGRES_HOST_TEST}:{self.POSTGRES_PORT_TEST}/{self.POSTGRES_DB_TEST}")
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = SettingsConfigDict(from_attributes=True)
 
 
 settings = Settings()

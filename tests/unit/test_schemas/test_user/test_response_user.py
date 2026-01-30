@@ -4,7 +4,7 @@ from pydantic import ValidationError
 
 from app.models import User
 from app.schemas.User import UserResponse
-from conftest import Phone
+from tests.unit.test_schemas.test_user.conftest import Phone
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
 
 

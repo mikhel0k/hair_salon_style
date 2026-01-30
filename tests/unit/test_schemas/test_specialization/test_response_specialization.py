@@ -3,19 +3,21 @@ from pydantic import ValidationError
 
 from app.schemas.Specialization import SpecializationResponse
 from app.models.Specialization import Specialization
-from conftest import Name
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_specialization.conftest import Name
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+data_for_id = DataForId()
 
 
 class TestResponseSpecialization:
-    name = Name()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize("specialization, name, specialization_id", [
         (Specialization(name=name.correct_name, id=data_for_id.correct_id), name.correct_name, data_for_id.correct_id),
         (Specialization(name=name.correct_name_short, id=data_for_id.correct_id), name.correct_name_short, data_for_id.correct_id),
         (Specialization(name=name.correct_name_long, id=data_for_id.correct_id), name.correct_name_long, data_for_id.correct_id),
-        (Specialization(name=name.correct_name_сyrillic, id=data_for_id.correct_id), name.correct_name_сyrillic, data_for_id.correct_id),
+        (Specialization(name=name.correct_name_cyrillic, id=data_for_id.correct_id), name.correct_name_cyrillic, data_for_id.correct_id),
         (Specialization(name=name.correct_name, id=data_for_id.big_correct_id), name.correct_name, data_for_id.big_correct_id),
     ])
     def test_response_specialization_correct(self, specialization, name, specialization_id):
@@ -89,11 +91,6 @@ class TestResponseSpecialization:
         ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
     ])
     def test_response_specialization_wrong(self, specialization, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            specialization = SpecializationResponse.model_validate(specialization)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            SpecializationResponse.model_validate(specialization)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

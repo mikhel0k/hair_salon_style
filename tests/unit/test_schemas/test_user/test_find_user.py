@@ -3,7 +3,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.User import UserFind
-from conftest import Phone
+from tests.unit.test_schemas.test_user.conftest import Phone
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes
 
 

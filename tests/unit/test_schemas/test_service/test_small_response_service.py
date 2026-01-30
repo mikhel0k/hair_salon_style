@@ -4,14 +4,16 @@ from pydantic import ValidationError
 
 from app.schemas.Service import ServiceResponseSmall
 from app.models.Service import Service
-from conftest import Name, Price
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_service.conftest import Name, Price
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+price = Price()
+data_for_id = DataForId()
 
 
 class TestResponseServiceSmall:
-    name = Name()
-    price = Price()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize(
         "service, service_id, name, price, description", [
@@ -21,8 +23,8 @@ class TestResponseServiceSmall:
              data_for_id.correct_id, name.correct_name_short, price.correct_price, "Some description"),
             (Service(id=data_for_id.correct_id, name=name.correct_name_long, price=price.correct_price, description="Some description"),
              data_for_id.correct_id, name.correct_name_long, price.correct_price, "Some description"),
-            (Service(id=data_for_id.correct_id, name=name.correct_name_сyrillic, price=price.correct_price, description="Some description"),
-             data_for_id.correct_id, name.correct_name_сyrillic, price.correct_price, "Some description"),
+            (Service(id=data_for_id.correct_id, name=name.correct_name_cyrillic, price=price.correct_price, description="Some description"),
+             data_for_id.correct_id, name.correct_name_cyrillic, price.correct_price, "Some description"),
             (Service(id=data_for_id.correct_id, name=name.correct_name, price=price.correct_price_small, description="Some description"),
              data_for_id.correct_id, name.correct_name, price.correct_price_small, "Some description"),
             (Service(id=data_for_id.correct_id, name=name.correct_name, price=price.correct_price_big, description="Some description"),
@@ -147,11 +149,6 @@ class TestResponseServiceSmall:
             error_type,
             error_msg,
     ):
-        with pytest.raises(ValidationError) as error:
-            service_response = ServiceResponseSmall.model_validate(service)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            ServiceResponseSmall.model_validate(service)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

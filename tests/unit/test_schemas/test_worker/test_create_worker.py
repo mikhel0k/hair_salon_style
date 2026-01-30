@@ -1,18 +1,18 @@
 import pytest
 from pydantic import ValidationError
 
-from conftest import Bool, Name, Password
+from app.schemas.Worker import WorkerCreate
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_worker.conftest import Bool, Name, Password
 from tests.unit.test_schemas.conftest_exceptions import DataForId, ErrorMessages, ErrorTypes
 
-from app.schemas.Worker import WorkerCreate
+bool_test = Bool()
+name_test = Name()
+password_test = Password()
+data_for_id = DataForId()
 
 
 class TestCreateWorker:
-    bool_test = Bool()
-    name_test = Name()
-    password_test = Password()
-    data_for_id = DataForId()
-
 
     @pytest.mark.parametrize(
         "master_id, username, password, is_master, is_admin, is_active",
@@ -177,8 +177,8 @@ class TestCreateWorker:
             error_type,
             error_msg
     ):
-        with pytest.raises(ValidationError) as error:
-            worker = WorkerCreate(
+        with pytest.raises(ValidationError) as exc_info:
+            WorkerCreate(
                 master_id=master_id,
                 username=username,
                 password=password,
@@ -186,9 +186,4 @@ class TestCreateWorker:
                 is_admin=is_admin,
                 is_active=is_active
             )
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error["msg"] == error_msg
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

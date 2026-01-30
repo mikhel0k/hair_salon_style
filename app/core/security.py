@@ -1,23 +1,24 @@
 from datetime import datetime, timedelta, timezone
 
-from passlib.context import CryptContext
+import bcrypt
 import jwt
 
 from settings import settings
 from starlette.responses import Response
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 JWT_PRIVATE_KEY = settings.JWT_PRIVATE_KEY.read_text()
 JWT_PUBLIC_KEY = settings.JWT_PUBLIC_KEY.read_text()
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"),
+        hashed_password.encode("utf-8"),
+    )
 
 
 def create_token(data_dict: dict) -> str:

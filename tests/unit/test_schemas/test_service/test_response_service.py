@@ -5,15 +5,17 @@ from pydantic import ValidationError
 
 from app.schemas.Service import ServiceResponse
 from app.models.Service import Service
-from conftest import Name, Price, Duration
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_service.conftest import Name, Price, Duration
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+price = Price()
+duration = Duration()
+data_for_id = DataForId()
 
 
 class TestResponseService:
-    name = Name()
-    price = Price()
-    duration = Duration()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize(
         "service, service_id, name, price, duration_minutes, category_id, description", [
@@ -27,10 +29,10 @@ class TestResponseService:
             (Service(id=data_for_id.correct_id, name=name.correct_name_long, price=price.correct_price, duration_minutes=duration.correct_duration,
                      category_id=data_for_id.correct_id, description="Some description"),
              data_for_id.correct_id, name.correct_name_long, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
-            (Service(id=data_for_id.correct_id, name=name.correct_name_сyrillic, price=price.correct_price,
+            (Service(id=data_for_id.correct_id, name=name.correct_name_cyrillic, price=price.correct_price,
                      duration_minutes=duration.correct_duration,
                      category_id=data_for_id.correct_id, description="Some description"),
-             data_for_id.correct_id, name.correct_name_сyrillic, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
+             data_for_id.correct_id, name.correct_name_cyrillic, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
             (Service(id=data_for_id.correct_id, name=name.correct_name, price=price.correct_price_small,
                      duration_minutes=duration.correct_duration,
                      category_id=data_for_id.correct_id, description="Some description"),
@@ -270,11 +272,6 @@ class TestResponseService:
             error_type,
             error_msg,
     ):
-        with pytest.raises(ValidationError) as error:
-            service_response = ServiceResponse.model_validate(service)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            ServiceResponse.model_validate(service)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

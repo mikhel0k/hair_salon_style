@@ -1,41 +1,32 @@
 import pytest
 from pydantic import ValidationError
 
-from conftest import Name, Password
+from app.schemas.Worker import Login
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_worker.conftest import Name, Password
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes
 
-from app.schemas.Worker import Login
+name_test = Name()
+password_test = Password()
 
 
-class TestCreateWorker:
-    name_test = Name()
-    password_test = Password()
-
+class TestLogin:
 
     @pytest.mark.parametrize(
         "username, password",
         [
-            (name_test.correct_name, password_test.correct_password),
-            (name_test.correct_name, password_test.correct_password),
             (name_test.correct_name, password_test.correct_password),
             (name_test.correct_name_short, password_test.correct_password),
             (name_test.correct_name_long, password_test.correct_password),
             (name_test.correct_name, password_test.correct_password_short),
             (name_test.correct_name, password_test.correct_password_long),
             (name_test.correct_name, password_test.correct_password_integers),
-            (name_test.correct_name, password_test.correct_password),
-            (name_test.correct_name, password_test.correct_password),
-            (name_test.correct_name, password_test.correct_password),
         ]
     )
-    def test_create_worker_correct(self, username, password):
-        worker = Login(
-            username=username,
-            password=password
-        )
-        assert worker.username == username
-        assert worker.password == password
-
+    def test_login_correct(self, username, password):
+        login = Login(username=username, password=password)
+        assert login.username == username
+        assert login.password == password
 
     @pytest.mark.parametrize(
         "username, password, error_loc, error_type, error_msg",
@@ -72,22 +63,7 @@ class TestCreateWorker:
                 ("password",), ErrorTypes.STRING_TOO_LONG, ErrorMessages.STRING_TOO_LONG_30),
         ]
     )
-    def test_create_worker_wrong(
-            self,
-            username,
-            password,
-            error_loc,
-            error_type,
-            error_msg
-    ):
-        with pytest.raises(ValidationError) as error:
-            worker = Login(
-                username=username,
-                password=password,
-            )
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error["msg"] == error_msg
+    def test_login_wrong(self, username, password, error_loc, error_type, error_msg):
+        with pytest.raises(ValidationError) as exc_info:
+            Login(username=username, password=password)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

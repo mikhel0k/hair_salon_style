@@ -3,41 +3,47 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.UserFlow import MakeRecord
-from conftest import Phone
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_record.conftest import Phone
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+phone = Phone()
+data_for_id = DataForId()
 
 
 class TestMakeRecord:
-    phone = Phone()
-    data_for_id = DataForId()
 
-    @pytest.mark.parametrize("phone, master_id, service_id, cell_id", [
+    @pytest.mark.parametrize("phone, master_id, service_id, cell_id, notes", [
         (phone.correct_number_int, data_for_id.correct_id,
-         data_for_id.correct_id, data_for_id.correct_id),
+         data_for_id.correct_id, data_for_id.correct_id, None),
         (phone.correct_number_str_with_eight, data_for_id.correct_id,
-         data_for_id.correct_id, data_for_id.correct_id),
+         data_for_id.correct_id, data_for_id.correct_id, None),
         (phone.correct_number_str_with_seven, data_for_id.correct_id,
-         data_for_id.correct_id, data_for_id.correct_id),
+         data_for_id.correct_id, data_for_id.correct_id, None),
         (phone.correct_number_str_with_seven_without_plus, data_for_id.correct_id,
-         data_for_id.correct_id, data_for_id.correct_id),
+         data_for_id.correct_id, data_for_id.correct_id, None),
         (phone.correct_number_int, data_for_id.big_correct_id,
-         data_for_id.correct_id, data_for_id.correct_id),
+         data_for_id.correct_id, data_for_id.correct_id, None),
         (phone.correct_number_int, data_for_id.correct_id,
-         data_for_id.big_correct_id, data_for_id.correct_id),
+         data_for_id.big_correct_id, data_for_id.correct_id, None),
         (phone.correct_number_int, data_for_id.correct_id,
-         data_for_id.correct_id, data_for_id.big_correct_id),
+         data_for_id.correct_id, data_for_id.big_correct_id, None),
+        (phone.correct_number_int, data_for_id.correct_id,
+         data_for_id.correct_id, data_for_id.correct_id, "Customer requested morning appointment"),
     ])
-    def test_make_record_correct(self, phone, master_id, service_id, cell_id):
+    def test_make_record_correct(self, phone, master_id, service_id, cell_id, notes):
         record = MakeRecord(
             phone_number=phone,
             master_id=master_id,
             service_id=service_id,
-            cell_id=cell_id
+            cell_id=cell_id,
+            notes=notes,
         )
         assert isinstance(record, MakeRecord)
         assert record.master_id == master_id
         assert record.service_id == service_id
         assert record.cell_id == cell_id
+        assert record.notes == notes
         parsed = phonenumbers.parse(str(phone), "RU")
         if phonenumbers.is_valid_number(parsed):
             assert record.phone_number == phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
@@ -156,16 +162,6 @@ class TestMakeRecord:
          ("cell_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
     ])
     def test_make_record_wrong(self, phone, master_id, service_id, cell_id, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            specialization = MakeRecord(
-                phone_number=phone,
-                master_id=master_id,
-                service_id=service_id,
-                cell_id=cell_id,
-            )
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            MakeRecord(phone_number=phone, master_id=master_id, service_id=service_id, cell_id=cell_id)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

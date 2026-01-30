@@ -3,13 +3,15 @@ from pydantic import ValidationError
 
 from app.models import Schedule
 from app.schemas.Schedule import ScheduleResponse
-from conftest import Time
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_schedule.conftest import Time
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+time_data = Time()
+data_for_id = DataForId()
 
 
 class TestResponseSchedule:
-    time_data = Time()
-    data_for_id = DataForId
 
     @pytest.mark.parametrize(
         """schedule_data, schedule_id,
@@ -1473,7 +1475,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1494,7 +1496,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1515,7 +1517,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1536,7 +1538,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1557,7 +1559,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1578,7 +1580,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1599,7 +1601,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_EARLY
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_EARLY
             ),
             (
                     Schedule(
@@ -1620,7 +1622,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -1641,7 +1643,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -1662,7 +1664,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -1683,7 +1685,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -1704,7 +1706,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -1725,7 +1727,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.correct_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -1746,7 +1748,7 @@ class TestResponseSchedule:
                         sunday_end=time_data.wrong_evening,
                         master_id=data_for_id.correct_id,
                     ),
-                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TO_LATE
+                    (), ErrorTypes.VALUE_ERROR, ErrorMessages.TOO_LATE
             ),
             (
                     Schedule(
@@ -3080,11 +3082,6 @@ class TestResponseSchedule:
             error_type,
             error_msg,
     ):
-        with pytest.raises(ValidationError) as error:
-            schedule = ScheduleResponse.model_validate(schedule)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            ScheduleResponse.model_validate(schedule)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

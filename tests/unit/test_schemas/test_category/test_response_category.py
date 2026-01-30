@@ -3,19 +3,20 @@ from pydantic import ValidationError
 
 from app.schemas.Category import CategoryResponse
 from app.models.Category import Category
-from conftest import Name
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_category.conftest import Name
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+data_for_id = DataForId()
 
 
 class TestResponseCategory:
-    name = Name()
-    data_for_id = DataForId()
-
     @pytest.mark.parametrize("category, name, category_id", [
         (Category(name=name.correct_name, id=data_for_id.correct_id), name.correct_name, data_for_id.correct_id),
         (Category(name=name.correct_name_short, id=data_for_id.correct_id), name.correct_name_short, data_for_id.correct_id),
         (Category(name=name.correct_name_long, id=data_for_id.correct_id), name.correct_name_long, data_for_id.correct_id),
-        (Category(name=name.correct_name_сyrillic, id=data_for_id.correct_id), name.correct_name_сyrillic, data_for_id.correct_id),
+        (Category(name=name.correct_name_cyrillic, id=data_for_id.correct_id), name.correct_name_cyrillic, data_for_id.correct_id),
         (Category(name=name.correct_name, id=data_for_id.big_correct_id), name.correct_name, data_for_id.big_correct_id),
     ])
     def test_response_category_correct(self, category, name, category_id):
@@ -30,6 +31,8 @@ class TestResponseCategory:
         (Category(name=name.wrong_name_long, id=data_for_id.correct_id),
          ("name",), ErrorTypes.STRING_TOO_LONG, ErrorMessages.STRING_TOO_LONG),
         (Category(name=name.wrong_name_int, id=data_for_id.correct_id),
+         ("name",), ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
+        (Category(name=name.wrong_name_none, id=data_for_id.correct_id),
          ("name",), ErrorTypes.STRING_TYPE, ErrorMessages.STRING_TYPE),
         (Category(name=name.wrong_name_spaces, id=data_for_id.correct_id),
          ("name",), ErrorTypes.STRING_TOO_SHORT, ErrorMessages.STRING_TOO_SHORT),
@@ -87,11 +90,6 @@ class TestResponseCategory:
          ("id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
     ])
     def test_response_category_wrong(self, category, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            category = CategoryResponse.model_validate(category)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            CategoryResponse.model_validate(category)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

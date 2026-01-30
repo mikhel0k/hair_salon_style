@@ -3,22 +3,24 @@ import pytest
 from pydantic import ValidationError
 
 from app.schemas.Service import ServiceUpdate
-from conftest import Name, Price, Duration
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_service.conftest import Name, Price, Duration
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+price = Price()
+duration = Duration()
+data_for_id = DataForId()
 
 
 class TestUpdateService:
-    name = Name()
-    price = Price()
-    duration = Duration()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize(
         "name, price, duration_minutes, category_id, description", [
             (name.correct_name, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
             (name.correct_name_short, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
             (name.correct_name_long, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
-            (name.correct_name_сyrillic, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
+            (name.correct_name_cyrillic, price.correct_price, duration.correct_duration, data_for_id.correct_id, "Some description"),
             (name.correct_name, price.correct_price_small, duration.correct_duration, data_for_id.correct_id, "Some description"),
             (name.correct_name, price.correct_price_big, duration.correct_duration, data_for_id.correct_id, "Some description"),
             (name.correct_name, price.correct_price_float, duration.correct_duration, data_for_id.correct_id, "Some description"),
@@ -171,17 +173,12 @@ class TestUpdateService:
             error_type,
             error_msg,
     ):
-        with pytest.raises(ValidationError) as error:
-            service = ServiceUpdate(
+        with pytest.raises(ValidationError) as exc_info:
+            ServiceUpdate(
                 name=name,
                 price=price,
                 duration_minutes=duration_minutes,
                 category_id=category_id,
                 description="Some description",
             )
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

@@ -3,13 +3,15 @@ from pydantic import ValidationError
 
 from app.models import Record
 from app.schemas.Record import RecordResponse
-from conftest import AllowedRecordStatuses
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_record.conftest import AllowedRecordStatuses
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+data_for_id = DataForId()
+status = AllowedRecordStatuses()
 
 
 class TestResponseRecord:
-    data_for_id = DataForId()
-    status = AllowedRecordStatuses()
 
     @pytest.mark.parametrize("record, id, master_id, service_id, user_id, cell_id, status", [
         (Record(id=data_for_id.correct_id, master_id=data_for_id.correct_id, service_id=data_for_id.correct_id,
@@ -200,11 +202,6 @@ class TestResponseRecord:
          ("status",), ErrorTypes.ENUM, ErrorMessages.ENUM_RECORD),
     ])
     def test_response_record_wrong(self, record, error_loc, error_type, error_msg):
-        with pytest.raises(ValidationError) as error:
-            record = RecordResponse.model_validate(record)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            RecordResponse.model_validate(record)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)

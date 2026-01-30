@@ -4,16 +4,18 @@ from pydantic import ValidationError
 
 from app.models import Master
 from app.schemas.Master import MasterResponse
-from conftest import Name, Phone, Email, Status
+from tests.unit.test_schemas.conftest import assert_single_validation_error
+from tests.unit.test_schemas.test_master.conftest import Name, Phone, Email, Status
 from tests.unit.test_schemas.conftest_exceptions import ErrorMessages, ErrorTypes, DataForId
+
+name = Name()
+phone = Phone()
+email = Email()
+status = Status()
+data_for_id = DataForId()
 
 
 class TestResponseMaster:
-    name = Name()
-    phone = Phone()
-    email = Email()
-    status = Status()
-    data_for_id = DataForId()
 
     @pytest.mark.parametrize("master_data, master_id, specialization_id, name, phone, email, status", [
         (Master(id=data_for_id.correct_id, specialization_id=data_for_id.correct_id, name=name.correct_name,
@@ -31,10 +33,10 @@ class TestResponseMaster:
                         status=status.correct_active),
          data_for_id.correct_id, data_for_id.correct_id, name.correct_name_long, phone.correct_number_str_with_eight,
          email.correct_string_mail, status.correct_active),
-        (Master(id=data_for_id.correct_id, specialization_id=data_for_id.correct_id, name=name.correct_name_сyrillic,
+        (Master(id=data_for_id.correct_id, specialization_id=data_for_id.correct_id, name=name.correct_name_cyrillic,
                         phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
                         status=status.correct_active),
-         data_for_id.correct_id, data_for_id.correct_id, name.correct_name_сyrillic, phone.correct_number_str_with_eight,
+         data_for_id.correct_id, data_for_id.correct_id, name.correct_name_cyrillic, phone.correct_number_str_with_eight,
          email.correct_string_mail, status.correct_active),
         (Master(id=data_for_id.correct_id, specialization_id=data_for_id.correct_id, name=name.correct_name,
                         phone=phone.correct_number_str_with_seven, email=email.correct_string_mail,
@@ -261,9 +263,6 @@ class TestResponseMaster:
              status=status.correct_active, specialization_id=data_for_id.wrong_negative_id, id=data_for_id.correct_id,),
              ("specialization_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
             (Master(name=name.correct_name, phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
-             status=status.correct_active, specialization_id=data_for_id.wrong_negative_id, id=data_for_id.correct_id,),
-             ("specialization_id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
-            (Master(name=name.correct_name, phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
              status=status.correct_active, specialization_id=data_for_id.wrong_id_str, id=data_for_id.correct_id,),
              ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
             (Master(name=name.correct_name, phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
@@ -280,9 +279,6 @@ class TestResponseMaster:
              ("specialization_id",), ErrorTypes.INT_TYPE, ErrorMessages.INT_TYPE),
             (Master(name=name.correct_name, phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
              status=status.correct_active, specialization_id=data_for_id.correct_id, id=data_for_id.wrong_id_zero,),
-             ("id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
-            (Master(name=name.correct_name, phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
-             status=status.correct_active, specialization_id=data_for_id.correct_id, id=data_for_id.wrong_negative_id,),
              ("id",), ErrorTypes.GREATER_THAN_EQUAL, ErrorMessages.ID_GREATER_ONE),
             (Master(name=name.correct_name, phone=phone.correct_number_str_with_eight, email=email.correct_string_mail,
              status=status.correct_active, specialization_id=data_for_id.correct_id, id=data_for_id.wrong_negative_id,),
@@ -311,12 +307,7 @@ class TestResponseMaster:
             error_type,
             error_msg
     ):
-        with pytest.raises(ValidationError) as error:
-            master = MasterResponse.model_validate(master_data)
-        errors = error.value.errors()
-        assert len(errors) == 1
-        error = errors[0]
-        assert error["loc"] == error_loc
-        assert error["type"] == error_type
-        assert error_msg in error["msg"]
+        with pytest.raises(ValidationError) as exc_info:
+            MasterResponse.model_validate(master_data)
+        assert_single_validation_error(exc_info.value.errors(), error_loc, error_type, error_msg)
 
