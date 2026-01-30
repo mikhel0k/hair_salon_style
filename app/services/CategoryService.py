@@ -24,20 +24,6 @@ async def create_category(
     return category_data
 
 
-async def get_category_by_id(
-        category_id: int,
-        session: AsyncSession
-):
-    category_from_db = await CategoryRepository.read_category(
-        category_id=category_id,
-        session=session,
-    )
-    if not category_from_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
-    category_data = CategoryResponse.model_validate(category_from_db)
-    return category_data
-
-
 async def get_categories_paginated(
         session: AsyncSession,
         skip: int = 0,
