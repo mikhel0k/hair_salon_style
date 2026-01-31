@@ -73,7 +73,7 @@ async def update_record_status_cancelled(
 ):
     data = EditRecordStatus(
         id=record_id,
-        status=AllowedRecordStatuses.Cancelled,
+        status=AllowedRecordStatuses.CANCELLED,
     )
     return await RecordService.update_status_to_cancelled(
         data=data,
@@ -93,7 +93,7 @@ async def update_record_status_confirmed(
 ):
     data = EditRecordStatus(
         id=record_id,
-        status=AllowedRecordStatuses.Confirmed,
+        status=AllowedRecordStatuses.CONFIRMED,
     )
     return await RecordService.update_status_to_completed_or_confirmed(
         master_id=master_data["sub"],
@@ -114,7 +114,7 @@ async def update_record_status_completed(
 ):
     data = EditRecordStatus(
         id=record_id,
-        status=AllowedRecordStatuses.Completed,
+        status=AllowedRecordStatuses.COMPLETED,
     )
     return await RecordService.update_status_to_completed_or_confirmed(
         master_id=master_data["sub"],

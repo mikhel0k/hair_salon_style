@@ -5,7 +5,14 @@ from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.schemas.Record import RecordResponse, FullRecordResponse, RecordUpdate, EditRecordStatus, EditRecordNote
+from app.schemas.Record import (
+    RecordResponse,
+    FullRecordResponse,
+    RecordUpdate,
+    EditRecordStatus,
+    EditRecordNote,
+    AllowedRecordStatuses,
+)
 from app.schemas.UserFlow import MakeRecord
 from app.schemas.User import UserFind, UserCreate
 from app.models.Record import Record
@@ -76,7 +83,6 @@ async def new_record(
         await session.commit()
     except Exception as e:
         await session.rollback()
-        print(f"ERROR: {e}")
         raise HTTPException(status_code=500, detail="Ошибка при сохранении бронирования")
 
     return RecordResponse.model_validate(record)
@@ -101,6 +107,8 @@ async def get_records_by_phone(
 
 async def update_record(record_id: int, data: RecordUpdate, session: AsyncSession):
     record = await RecordRepository.read_record_by_id(record_id, session)
+    if not record:
+        raise HTTPException(404, "Record not found")
 
     new_master_id = data.master_id or record.master_id
     new_service_id = data.service_id or record.service_id
@@ -113,9 +121,6 @@ async def update_record(record_id: int, data: RecordUpdate, session: AsyncSessio
             status_code=status.HTTP_409_CONFLICT,
             detail="Master not provides service"
         )
-
-    if not record:
-        raise HTTPException(404, "Record not found")
 
     old_cell_id = record.cell_id
     new_cell_id = data.cell_id or old_cell_id
@@ -187,7 +192,7 @@ async def update_status_to_cancelled(
         data: EditRecordStatus,
         session: AsyncSession
 ):
-    if data.status != "CANCELLED":
+    if data.status != AllowedRecordStatuses.CANCELLED:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Status not canceled"
@@ -215,8 +220,9 @@ async def update_status_to_cancelled(
         )
     service = await ServiceRepository.read_service_by_id(
         service_id=record.service_id,
+        session=session,
     )
-    old_cells_id = list(range(record.cell_id, record.cell_id + math.ceil(record.service.duration_minutes / 15)))
+    old_cells_id = list(range(record.cell_id, record.cell_id + math.ceil(service.duration_minutes / 15)))
     old_cells = await CellRepository.read_cells(old_cells_id, session)
     for cell in old_cells:
         if cell.master_id != record.master_id:
@@ -242,7 +248,7 @@ async def update_status_to_completed_or_confirmed(
         data: EditRecordStatus,
         session: AsyncSession
 ):
-    if data.status not in ["COMPLETED", "CONFIRMED"]:
+    if data.status not in (AllowedRecordStatuses.COMPLETED, AllowedRecordStatuses.CONFIRMED):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Status not canceled"
@@ -251,15 +257,15 @@ async def update_status_to_completed_or_confirmed(
         record_id=data.id,
         session=session
     )
-    if record.master_id != master_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Record is not this master"
-        )
     if not record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Record not found"
+        )
+    if record.master_id != master_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Record is not this master"
         )
     record.status = data.status
     try:
