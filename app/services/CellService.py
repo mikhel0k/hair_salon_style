@@ -1,13 +1,17 @@
+import logging
+import math
+from datetime import date, timedelta, datetime
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import date, timedelta, datetime
-import math
 
 from app.models import Cell
 from app.repositories import ScheduleRepository, CellRepository, ServiceRepository, MasterRepository
 from app.schemas.Cell import CellCreate, CellResponse
 from app.schemas.Schedule import ScheduleResponse
+
+logger = logging.getLogger(__name__)
 
 DAYS_IN_WEEK = [
     "monday",
@@ -23,9 +27,17 @@ async def make_cells(
         master_id,
         session: AsyncSession,
 ):
-    schedule_in_db = await ScheduleRepository.read_schedule_by_master_id(master_id=master_id, session=session)
+    logger.debug("make_cells: master_id=%s", master_id)
+    schedule_in_db = await ScheduleRepository.read_schedule_by_master_id(
+        master_id=master_id,
+        session=session,
+    )
     if not schedule_in_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        logger.info("make_cells: schedule not found, master_id=%s", master_id)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Schedule not found",
+        )
     schedule = ScheduleResponse.model_validate(schedule_in_db)
     cells = []
     today = date.today()
@@ -57,10 +69,21 @@ async def make_cells(
     try:
         await CellRepository.create_cells(sells_list=cells, session=session)
         await session.commit()
-    except IntegrityError as e:
+    except IntegrityError:
         await session.rollback()
+        logger.info("make_cells: conflict, master_id=%s", master_id)
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Cell with this data already exists")
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cell with this data already exists",
+        )
+    except Exception as e:
+        await session.rollback()
+        logger.exception("make_cells: unexpected error, master_id=%s", master_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) from e
+    logger.info("Cells created: master_id=%s, count=%s", master_id, len(cells))
 
 
 
@@ -87,9 +110,13 @@ async def get_days_with_empty_cells_by_service_id_and_master_id(
         session=session,
         service_id=service_id,
     ):
+        logger.info(
+            "get_days_with_empty_cells: master not provides service, master_id=%s, service_id=%s",
+            master_id, service_id,
+        )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Master not provides service"
+            detail="Master not provides service",
         )
     cells = await CellRepository.read_cells_by_master_id(
         master_id = master_id,
@@ -101,10 +128,14 @@ async def get_days_with_empty_cells_by_service_id_and_master_id(
         }
     service = await ServiceRepository.read_service_by_id(service_id=service_id, session=session)
     if not service:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
-    required_slots = math.ceil(service.duration_minutes/15)
-    response=[]
-    for l in range(len(cells)-required_slots):
+        logger.info("get_days_with_empty_cells: service not found, service_id=%s", service_id)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Service not found",
+        )
+    required_slots = math.ceil(service.duration_minutes / 15)
+    response = []
+    for l in range(len(cells) - required_slots):
         if cells[l].date in response:
             continue
         if cells[l].status == "FREE" and cells[l].date == cells[l+required_slots].date:
@@ -127,22 +158,31 @@ async def get_ids_with_empty_cells_by_service_id_master_id_in_date(
         session=session,
         service_id=service_id,
     ):
+        logger.info(
+            "get_ids_with_empty_cells: master not provides service, master_id=%s, service_id=%s",
+            master_id, service_id,
+        )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Master not provides service"
+            detail="Master not provides service",
         )
     cells = await CellRepository.read_cells_by_master_id_and_date(
-        cell_date = record_date,
-        master_id = master_id,
-        session = session
+        cell_date=record_date,
+        master_id=master_id,
+        session=session,
     )
     if not cells:
-        return {
-            "message" : "No free cells found",
-        }
-    service = await ServiceRepository.read_service_by_id(service_id=service_id, session=session)
+        return {"message": "No free cells found"}
+    service = await ServiceRepository.read_service_by_id(
+        service_id=service_id,
+        session=session,
+    )
     if not service:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service not found")
+        logger.info("get_ids_with_empty_cells: service not found, service_id=%s", service_id)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Service not found",
+        )
     required_slots = math.ceil(service.duration_minutes/15)
     response=[]
     l, r = 0, required_slots

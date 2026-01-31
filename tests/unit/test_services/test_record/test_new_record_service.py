@@ -108,7 +108,7 @@ class TestNewRecordService:
 
             mock_session.rollback.assert_called_once()
             assert exc.value.status_code == 500
-            assert "Ошибка" in exc.value.detail
+            assert exc.value.detail == "Internal server error"
 
     async def test_new_record_cell_occupied_409(self):
         mock_session = AsyncMock()

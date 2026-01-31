@@ -1,24 +1,15 @@
-2026-01-31 15:49:36 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 15:54:07 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 15:54:20 | INFO     | app.api.v1.endpoints.Auth | Login with data username='I_am_admin' password='Zxc-q123'
-2026-01-31 15:55:23 | INFO     | app.api.v1.endpoints.Auth | Login with data username='I_am_admin' password='Zxc-q123'
-2026-01-31 15:59:14 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 15:59:36 | INFO     | app.repositories.CategoryRepository | Category created: id=6, name=Фыв
-2026-01-31 16:01:28 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 16:01:33 | INFO     | app.repositories.CategoryRepository | Category created: id=7, name=Zxc
-2026-01-31 16:02:10 | INFO     | app.repositories.CategoryRepository | Category created: id=8, name=Haircut
-2026-01-31 16:02:41 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 16:03:40 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 16:03:45 | INFO     | app.repositories.CategoryRepository | Category created: id=10, name=Haircut
-2026-01-31 16:03:50 | INFO     | app.repositories.CategoryRepository | Category deleted: id=10, name=Haircut
-2026-01-31 16:06:15 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 16:06:30 | INFO     | app.repositories.CategoryRepository | Category created: id=11, name=Haircut
-2026-01-31 16:07:11 | INFO     | root | >>> LOGGING CONFIGURED <<<
-2026-01-31 16:09:50 | INFO     | root | >>> LOGGING CONFIGURED (level=INFO) <<<
-2026-01-31 16:10:02 | INFO     | app.repositories.CategoryRepository | Category created: id=13, name=Qwe
-2026-01-31 16:11:30 | INFO     | root | >>> LOGGING CONFIGURED (level=INFO) <<<
-2026-01-31 16:11:52 | INFO     | root | >>> LOGGING CONFIGURED (level=INFO) <<<
-2026-01-31 16:12:21 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
-2026-01-31 16:14:20 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
-2026-01-31 17:33:07 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
-2026-01-31 17:37:14 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
+2026-01-31 18:21:48 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
+2026-01-31 18:39:11 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
+2026-01-31 18:41:16 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<
+2026-01-31 18:41:21 | DEBUG    | app.services.AuthService | Login attempt: username=I_am_admin
+2026-01-31 18:41:22 | INFO     | app.services.AuthService | Login successful: user_id=1, username=I_am_admin, is_admin=True, is_active=True
+2026-01-31 18:41:22 | INFO     | app.api.v1.endpoints.Auth | Login with data username='I_am_admin' password='Zxc-q123'
+2026-01-31 18:41:40 | DEBUG    | app.services.CategoryService | create_category: name=Haircut
+2026-01-31 18:41:40 | INFO     | app.services.CategoryService | create_category: conflict, name=Haircut
+2026-01-31 18:41:51 | DEBUG    | app.services.CategoryService | delete_category: category_id=11
+2026-01-31 18:41:51 | INFO     | app.services.CategoryService | Category deleted: id=11, name=Haircut
+2026-01-31 18:41:53 | DEBUG    | app.services.CategoryService | delete_category: category_id=13
+2026-01-31 18:41:53 | INFO     | app.services.CategoryService | Category deleted: id=13, name=Qwe
+2026-01-31 18:41:56 | DEBUG    | app.services.CategoryService | create_category: name=Haircut
+2026-01-31 18:41:56 | INFO     | app.services.CategoryService | Category created: id=15, name=Haircut
+2026-01-31 18:42:41 | INFO     | root | >>> LOGGING CONFIGURED (level=DEBUG) <<<

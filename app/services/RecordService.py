@@ -1,3 +1,4 @@
+import logging
 import math
 from datetime import date
 
@@ -18,6 +19,8 @@ from app.schemas.User import UserFind, UserCreate
 from app.models.Record import Record
 from app.repositories import RecordRepository, ServiceRepository, CellRepository, MasterRepository
 from app.repositories import UserRepository
+
+logger = logging.getLogger(__name__)
 
 
 async def new_record(
@@ -81,10 +84,21 @@ async def new_record(
     try:
         record = await RecordRepository.create_record(record, session)
         await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        logger.info("new_record: conflict, master_id=%s, service_id=%s, cell_id=%s", data.master_id, data.service_id, data.cell_id)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Record conflict",
+        )
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=500, detail="Ошибка при сохранении бронирования")
-
+        logger.exception("new_record: unexpected error, master_id=%s, service_id=%s", data.master_id, data.service_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) from e
+    logger.info("Record created: id=%s, master_id=%s, user_id=%s", record.id, record.master_id, record.user_id)
     return RecordResponse.model_validate(record)
 
 
@@ -94,9 +108,10 @@ async def get_records_by_phone(
 ):
     user_find = await UserRepository.read_user_by_phone(user=user, session=session)
     if not user_find:
+        logger.info("get_records_by_phone: user not found, phone=%s", user.phone_number)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            detail="User not found",
         )
     records = await RecordRepository.read_records_by_user_id(
         user_id=user_find.id,
@@ -108,7 +123,11 @@ async def get_records_by_phone(
 async def update_record(record_id: int, data: RecordUpdate, session: AsyncSession):
     record = await RecordRepository.read_record_by_id(record_id, session)
     if not record:
-        raise HTTPException(404, "Record not found")
+        logger.info("update_record: not found, record_id=%s", record_id)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Record not found",
+        )
 
     new_master_id = data.master_id or record.master_id
     new_service_id = data.service_id or record.service_id
@@ -199,20 +218,21 @@ async def update_status_to_cancelled(
         )
     record = await RecordRepository.read_record_by_id(
         record_id=data.id,
-        session=session
+        session=session,
     )
     if not record:
+        logger.info("update_status_to_cancelled: not found, record_id=%s", data.id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Record not found"
+            detail="Record not found",
         )
     record.status = data.status
     try:
         await RecordRepository.update_record(
             record=record,
-            session=session
+            session=session,
         )
-    except IntegrityError as e:
+    except IntegrityError:
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -255,26 +275,31 @@ async def update_status_to_completed_or_confirmed(
         )
     record = await RecordRepository.read_record_by_id(
         record_id=data.id,
-        session=session
+        session=session,
     )
     if not record:
+        logger.info("update_status_to_completed_or_confirmed: not found, record_id=%s", data.id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Record not found"
+            detail="Record not found",
         )
     if record.master_id != master_id:
+        logger.info(
+            "update_status_to_completed_or_confirmed: record not this master, record_id=%s, master_id=%s",
+            data.id, master_id,
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Record is not this master"
+            detail="Record is not this master",
         )
     record.status = data.status
     try:
         await RecordRepository.update_record(
             record=record,
-            session=session
+            session=session,
         )
         await session.commit()
-    except IntegrityError as e:
+    except IntegrityError:
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -290,21 +315,22 @@ async def update_note_record(
 ):
     record = await RecordRepository.read_record_by_id(
         record_id=data.id,
-        session=session
+        session=session,
     )
     if not record:
+        logger.info("update_note_record: not found, record_id=%s", data.id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Record not found"
+            detail="Record not found",
         )
     record.notes = data.notes
     try:
         await RecordRepository.update_record(
             record=record,
-            session=session
+            session=session,
         )
         await session.commit()
-    except IntegrityError as e:
+    except IntegrityError:
         await session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

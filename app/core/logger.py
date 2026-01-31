@@ -7,6 +7,9 @@ from settings import settings
 
 LOG_DIR = Path(__file__).resolve().parent.parent.parent / "logs"
 
+logging.getLogger("asyncio").setLevel(logging.WARNING)
+logging.getLogger("faker").setLevel(logging.WARNING)
+
 
 def setup_logging() -> None:
     """Настройка логирования. Вызывать при старте приложения."""
@@ -29,7 +32,8 @@ def setup_logging() -> None:
         backupCount=5,
         encoding="utf-8",
     )
-    file_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter    )
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
     root = logging.getLogger()
     root.handlers.clear()
@@ -37,6 +41,5 @@ def setup_logging() -> None:
     root.addHandler(console)
     root.addHandler(file_handler)
     logging.getLogger("uvicorn.access").setLevel(logging.INFO)
-    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
     logging.info(">>> LOGGING CONFIGURED (level=%s) <<<", level)
