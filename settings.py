@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     POSTGRES_HOST_TEST: str
     POSTGRES_PORT_TEST: int
 
+    LOG_LEVEL: str
+
     JWT_PRIVATE_KEY: Path = BASE_DIR / "jwt_tokens" / "jwt-private.pem"
     JWT_PUBLIC_KEY: Path = BASE_DIR / "jwt_tokens" / "jwt-public.pem"
     ALGORITHM: str = "RS256"

@@ -1,7 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+import logging
 
+logger = logging.getLogger(__name__)
 from app.models import Specialization, Service
 from app.schemas.Specialization import SpecializationCreate
 
@@ -14,6 +16,7 @@ async def create_specialization(
     session.add(specialization)
     await session.flush()
     await session.refresh(specialization)
+    logger.info("Specialization created: id=%s, name=%s", specialization.id, specialization.name)
     return specialization
 
 
@@ -23,6 +26,7 @@ async def read_specialization(
 ):
     stmt = select(Specialization).options(selectinload(Specialization.services)).where(Specialization.id == specialization_id)
     specialization = await session.execute(stmt)
+    logger.debug("Specialization read: id=%s, name=%s", specialization.id, specialization.name)
     return specialization.scalars().one_or_none()
 
 
@@ -33,4 +37,5 @@ async def read_specializations(
 ):
     stmt = select(Specialization).offset(skip).limit(limit)
     specializations = await session.execute(stmt)
+    logger.debug("Specializations read: %s", len(specializations.scalars().all()))
     return specializations.scalars().all()

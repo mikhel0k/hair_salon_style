@@ -1,6 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import date
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.models import Cell
 
@@ -12,6 +15,7 @@ async def create_cell(
     session.add(cell)
     await session.flush()
     await session.refresh(cell)
+    logger.info("Cell created: id=%s, master_id=%s, date=%s, time=%s, status=%s", cell.id, cell.master_id, cell.date, cell.time, cell.status)
     return cell
 
 
@@ -21,6 +25,7 @@ async def create_cells(
 ):
     session.add_all(sells_list)
     await session.flush()
+    logger.info("Cells created: %s", len(sells_list))
 
 
 async def read_cell(
@@ -28,6 +33,7 @@ async def read_cell(
         session: AsyncSession
 ) -> Cell | None:
     cell = await session.get(Cell, cell_id)
+    logger.debug("Cell read: id=%s, master_id=%s, date=%s, time=%s, status=%s", cell.id, cell.master_id, cell.date, cell.time, cell.status)
     return cell
 
 
@@ -37,6 +43,7 @@ async def read_cells(
 ):
     stmt = select(Cell).where(Cell.id.in_(cells_id)).with_for_update()
     cells = await session.execute(stmt)
+    logger.debug("Cells read: %s", len(cells.scalars().all()))
     return cells.scalars().all()
 
 
@@ -49,6 +56,7 @@ async def read_free_cells_by_master_id_and_date(
                               Cell.master_id == master_id,
                               Cell.status == 'free')
     cells = await session.execute(stmt)
+    logger.debug("Cells read: %s", len(cells.scalars().all()))
     return cells.scalars().all()
 
 
@@ -71,6 +79,7 @@ async def read_cells_by_master_id(
         Cell.master_id == master_id,
     )
     cells = await session.execute(stmt)
+    logger.debug("Cells read: %s", len(cells.scalars().all()))
     return cells.scalars().all()
 
 
@@ -81,6 +90,7 @@ async def update_cell(
     session.add(cell)
     await session.flush()
     await session.refresh(cell)
+    logger.info("Cell updated: id=%s, master_id=%s, date=%s, time=%s, status=%s", cell.id, cell.master_id, cell.date, cell.time, cell.status)
     return cell
 
 
@@ -90,3 +100,4 @@ async def update_cells(
 ):
     session.add_all(cells)
     await session.flush()
+    logger.info("Cells updated: %s", len(cells))

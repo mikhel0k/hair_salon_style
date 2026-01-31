@@ -6,8 +6,11 @@ from app.core import get_session, set_auth_token
 from app.core.dependencies import is_user_admin
 from app.schemas.Worker import WorkerCreate, Login
 from app.services import AuthService
+import logging
+
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -42,4 +45,5 @@ async def login(
         session=session,
     )
     set_auth_token(response, token)
+    logger.info(f"Login with data {login_data}")
     return {"status": "success"}

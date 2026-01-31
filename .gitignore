@@ -41,7 +41,6 @@ Thumbs.db
 *.iml
 *.ipr
 
-*.swp\
 *__pycache__/
 *.env
 
