@@ -1,10 +1,13 @@
 from datetime import datetime, timedelta, timezone
+import logging
 
 import bcrypt
 import jwt
 
 from settings import settings
 from starlette.responses import Response
+
+logger = logging.getLogger(__name__)
 
 JWT_PRIVATE_KEY = settings.JWT_PRIVATE_KEY.read_text()
 JWT_PUBLIC_KEY = settings.JWT_PUBLIC_KEY.read_text()
@@ -21,9 +24,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 
-def create_token(data_dict: dict) -> str:
+def create_token(data_dict: dict, duration: int = 30) -> str:
     data = data_dict.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=duration)
     data.update({"exp": expire})
     return jwt.encode(data, JWT_PRIVATE_KEY, algorithm=settings.ALGORITHM)
 
@@ -32,12 +35,12 @@ def decode_token(token: str) -> dict:
     return jwt.decode(token, JWT_PUBLIC_KEY, algorithms=[settings.ALGORITHM,])
 
 
-def set_auth_token(response: Response, token: str):
+def set_auth_token(response: Response, token: str, key: str, max_age: int):
     response.set_cookie(
-        key="access_token",
+        key=key,
         value=token,
         httponly=True,
         samesite="lax",
         secure=True,
-        max_age=1800
+        max_age=max_age
     )

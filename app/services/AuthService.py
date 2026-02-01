@@ -46,8 +46,12 @@ async def registration(
         "is_admin": worker_in_db.is_admin,
         "is_active": worker_in_db.is_active,
     }
+    refresh_data = {
+        "sub": str(worker.id),
+    }
     try:
         token = create_token(data)
+        refresh_token = create_token(refresh_data, duration=60 * 60 * 24 * 30)
     except Exception as e:
         logger.exception("registration: token creation error, user_id=%s", worker_in_db.id)
         raise HTTPException(
@@ -55,11 +59,10 @@ async def registration(
             detail="Internal server error",
         ) from e
     logger.info("Registration successful: user_id=%s, username=%s", worker_in_db.id, worker_in_db.username)
-    return token
+    return token, refresh_token
 
 
 def _login_401():
-    """Единое сообщение для клиента — не раскрываем причину (безопасность)."""
     return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Worker login or password is incorrect",
@@ -119,8 +122,12 @@ async def login(
         "is_admin": worker.is_admin,
         "is_active": worker.is_active,
     }
+    refresh_data = {
+        "sub": str(worker.id),
+    }
     try:
         token = create_token(data)
+        refresh_token = create_token(refresh_data, duration=60 * 60 * 24 * 30)
     except Exception as e:
         logger.exception(
             "Login failed: token creation error, user_id=%s, username=%s",
@@ -139,4 +146,4 @@ async def login(
         worker.is_admin,
         worker.is_active,
     )
-    return token
+    return token, refresh_token

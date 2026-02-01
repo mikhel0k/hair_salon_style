@@ -23,11 +23,12 @@ async def registration(
         admin_user = Depends(is_user_admin),
         session: AsyncSession = Depends(get_session)
 ):
-    token = await AuthService.registration(
+    token, refresh_token = await AuthService.registration(
         worker_data=worker_data,
         session=session,
     )
-    set_auth_token(response, token)
+    set_auth_token(response, token, "access_token")
+    set_auth_token(response, refresh_token, "refresh_token")
     return {"status": "success"}
 
 
@@ -40,10 +41,11 @@ async def login(
         response: Response,
         session: AsyncSession = Depends(get_session)
 ):
-    token = await AuthService.login(
+    token, refresh_token = await AuthService.login(
         login_data=login_data,
         session=session,
     )
-    set_auth_token(response, token)
+    set_auth_token(response, token, "access_token", 1800)
+    set_auth_token(response, refresh_token, "refresh_token", 60 * 60 * 24 * 30)
     logger.info(f"Login with data {login_data}")
     return {"status": "success"}
