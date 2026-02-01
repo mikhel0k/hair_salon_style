@@ -27,14 +27,17 @@ class TestRegistrationAuthService:
         mock_worker_in_db.is_admin = False
         mock_worker_in_db.is_active = True
 
+        mock_redis = MagicMock()
         with patch("app.services.AuthService.get_password_hash", return_value="hashed"), \
                 patch("app.services.AuthService.create_token", return_value="jwt_token"), \
                 patch("app.repositories.WorkerRepository.create_worker", new_callable=AsyncMock, return_value=mock_worker_in_db) as mock_create:
-            result = await registration(worker_data, mock_session)
+            result = await registration(worker_data, mock_session, mock_redis)
 
             mock_create.assert_called_once()
             mock_session.commit.assert_called_once()
-            assert result == "jwt_token"
+            token, refresh_token = result
+            assert token == "jwt_token"
+            assert refresh_token == "jwt_token"
 
     async def test_registration_integrity_error_409(self):
         mock_session = AsyncMock()
@@ -47,10 +50,11 @@ class TestRegistrationAuthService:
             is_active=True,
         )
 
+        mock_redis = MagicMock()
         with patch("app.services.AuthService.get_password_hash", return_value="hashed"), \
                 patch("app.repositories.WorkerRepository.create_worker", new_callable=AsyncMock, side_effect=IntegrityError(None, None, None)):
             with pytest.raises(HTTPException) as exc:
-                await registration(worker_data, mock_session)
+                await registration(worker_data, mock_session, mock_redis)
 
             mock_session.rollback.assert_called_once()
             assert exc.value.status_code == 409
@@ -71,20 +75,24 @@ class TestLoginAuthService:
         mock_worker.is_active = True
         mock_worker.password = "hashed"
 
+        mock_redis = MagicMock()
         with patch("app.repositories.WorkerRepository.get_worker_by_username", new_callable=AsyncMock, return_value=mock_worker), \
                 patch("app.services.AuthService.verify_password", return_value=True), \
                 patch("app.services.AuthService.create_token", return_value="jwt_token"):
-            result = await login(login_data, mock_session)
+            result = await login(login_data, mock_session, mock_redis)
 
-            assert result == "jwt_token"
+            token, refresh_token = result
+            assert token == "jwt_token"
+            assert refresh_token == "jwt_token"
 
     async def test_login_user_not_found_401(self):
         mock_session = AsyncMock()
         login_data = Login(username="unknown", password="qwerty123")
 
+        mock_redis = MagicMock()
         with patch("app.repositories.WorkerRepository.get_worker_by_username", new_callable=AsyncMock, return_value=None):
             with pytest.raises(HTTPException) as exc:
-                await login(login_data, mock_session)
+                await login(login_data, mock_session, mock_redis)
 
             assert exc.value.status_code == 401
             assert "incorrect" in exc.value.detail.lower()
@@ -100,10 +108,11 @@ class TestLoginAuthService:
         mock_worker.is_active = True
         mock_worker.password = "hashed"
 
+        mock_redis = MagicMock()
         with patch("app.repositories.WorkerRepository.get_worker_by_username", new_callable=AsyncMock, return_value=mock_worker), \
                 patch("app.services.AuthService.verify_password", return_value=False):
             with pytest.raises(HTTPException) as exc:
-                await login(login_data, mock_session)
+                await login(login_data, mock_session, mock_redis)
 
             assert exc.value.status_code == 401
             assert "incorrect" in exc.value.detail.lower()

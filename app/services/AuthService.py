@@ -2,9 +2,10 @@ import logging
 import uuid
 
 from fastapi import HTTPException, status
+from redis import Redis
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.redis import get_redis
+
 from app.core.security import (
     get_password_hash,
     create_token,
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 async def registration(
         worker_data: WorkerCreate,
         session: AsyncSession,
+        redis_client: Redis,
 ):
     logger.debug("registration: username=%s", worker_data.username)
     worker_data.password = get_password_hash(worker_data.password)
@@ -59,7 +61,6 @@ async def registration(
         "sub": str(worker_in_db.id),
         "jti": jti,
     }
-    redis_client = get_redis()
     redis_client.set(
         f"refresh_token:{worker_in_db.id}:{jti}",
         "1",
@@ -131,6 +132,7 @@ async def get_new_access_token(
 async def login(
         login_data: Login,
         session: AsyncSession,
+        redis_client: Redis,
 ):
     logger.debug("Login attempt: username=%s", login_data.username)
 
@@ -189,7 +191,6 @@ async def login(
     try:
         token = create_token(data, duration=ACCESS_TOKEN_DURATION_MIN)
         refresh_token = create_token(refresh_data, duration=REFRESH_TOKEN_DURATION_MIN)
-        redis_client = get_redis()
         redis_client.set(
             f"refresh_token:{worker.id}:{jti}",
             "1",

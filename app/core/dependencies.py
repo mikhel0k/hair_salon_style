@@ -8,7 +8,6 @@ from app.core.security import decode_token, ACCESS_TOKEN_COOKIE_MAX_AGE, REFRESH
 from app.services import AuthService
 from app.core.database import get_session
 from app.core import set_token
-from app.core.redis import get_redis
 
 
 async def get_worker(
@@ -30,7 +29,7 @@ async def get_worker(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Invalid token",
                 )
-            redis_client = get_redis()
+            redis_client = request.app.state.redis
             redis_key = f"refresh_token:{user_id}:{jti}"
             if not redis_client.exists(redis_key):
                 raise HTTPException(

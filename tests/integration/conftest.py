@@ -1,6 +1,7 @@
 import pytest
 from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
+from redis import Redis
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from alembic.config import Config
 from alembic import command
@@ -57,13 +58,24 @@ async def ac(test_engine) -> AsyncGenerator[AsyncClient, None]:
         async with session_factory() as session:
             yield session
 
+    redis_client = Redis(
+        host=settings.REDIS_HOST,
+        port=settings.REDIS_PORT,
+        db=0,
+        decode_responses=True,
+    )
+    app.state.redis = redis_client
+
     app.dependency_overrides[get_session] = override_get_session
-    async with AsyncClient(
-            transport=ASGITransport(app=app),
-            base_url="http://test"
-    ) as client:
-        yield client
-    app.dependency_overrides.clear()
+    try:
+        async with AsyncClient(
+                transport=ASGITransport(app=app),
+                base_url="http://test"
+        ) as client:
+            yield client
+    finally:
+        redis_client.close()
+        app.dependency_overrides.clear()
 
 CORRECT_LOGIN = "I_am_admin"
 CORRECT_PASSWORD = "Zxc-q123"

@@ -18,7 +18,10 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD_TEST: str
     POSTGRES_HOST_TEST: str
     POSTGRES_PORT_TEST: int
-    
+
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+
     LOG_LEVEL: str
 
     JWT_PRIVATE_KEY: Path = BASE_DIR / "jwt_tokens" / "jwt-private.pem"
