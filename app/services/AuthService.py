@@ -1,10 +1,18 @@
 import logging
+import uuid
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.core.security import get_password_hash, create_token, verify_password
+from app.core.redis import get_redis
+from app.core.security import (
+    get_password_hash,
+    create_token,
+    verify_password,
+    ACCESS_TOKEN_DURATION_MIN,
+    REFRESH_TOKEN_DURATION_MIN,
+    REFRESH_TOKEN_COOKIE_MAX_AGE,
+)
 from app.models.Worker import Worker
 from app.schemas.Worker import WorkerCreate, Login
 from app.repositories import WorkerRepository
@@ -46,12 +54,20 @@ async def registration(
         "is_admin": worker_in_db.is_admin,
         "is_active": worker_in_db.is_active,
     }
+    jti = str(uuid.uuid4())
     refresh_data = {
-        "sub": str(worker.id),
+        "sub": str(worker_in_db.id),
+        "jti": jti,
     }
+    redis_client = get_redis()
+    redis_client.set(
+        f"refresh_token:{worker_in_db.id}:{jti}",
+        "1",
+        ex=REFRESH_TOKEN_COOKIE_MAX_AGE,
+    )
     try:
-        token = create_token(data)
-        refresh_token = create_token(refresh_data, duration=60 * 60 * 24 * 30)
+        token = create_token(data, duration=ACCESS_TOKEN_DURATION_MIN)
+        refresh_token = create_token(refresh_data, duration=REFRESH_TOKEN_DURATION_MIN)
     except Exception as e:
         logger.exception("registration: token creation error, user_id=%s", worker_in_db.id)
         raise HTTPException(
@@ -67,6 +83,49 @@ def _login_401():
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Worker login or password is incorrect",
     )
+
+
+async def get_new_access_token(
+        data: dict,
+        session: AsyncSession,
+):
+    worker = await WorkerRepository.get_worker(
+        worker_id=int(data["sub"]),
+        session=session,
+    )
+    if not worker:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Worker not found",
+        )
+    data_dict = {
+        "sub": str(worker.id),
+        "master_id": worker.master_id,
+        "is_master": worker.is_master,
+        "is_admin": worker.is_admin,
+        "is_active": worker.is_active,
+    }
+    try:
+        token = create_token(data_dict, duration=ACCESS_TOKEN_DURATION_MIN)
+    except Exception as e:
+        logger.exception(
+            "Login failed: token creation error, user_id=%s, username=%s",
+            worker.id,
+            worker.username,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) from e
+
+    logger.info(
+        "Token refreshed successful: user_id=%s, username=%s, is_admin=%s, is_active=%s",
+        worker.id,
+        worker.username,
+        worker.is_admin,
+        worker.is_active,
+    )
+    return token
 
 
 async def login(
@@ -122,12 +181,20 @@ async def login(
         "is_admin": worker.is_admin,
         "is_active": worker.is_active,
     }
+    jti = str(uuid.uuid4())
     refresh_data = {
         "sub": str(worker.id),
+        "jti": jti,
     }
     try:
-        token = create_token(data)
-        refresh_token = create_token(refresh_data, duration=60 * 60 * 24 * 30)
+        token = create_token(data, duration=ACCESS_TOKEN_DURATION_MIN)
+        refresh_token = create_token(refresh_data, duration=REFRESH_TOKEN_DURATION_MIN)
+        redis_client = get_redis()
+        redis_client.set(
+            f"refresh_token:{worker.id}:{jti}",
+            "1",
+            ex=REFRESH_TOKEN_COOKIE_MAX_AGE,
+        )
     except Exception as e:
         logger.exception(
             "Login failed: token creation error, user_id=%s, username=%s",

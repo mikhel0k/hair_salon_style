@@ -2,15 +2,14 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import Response
 
-from app.core import get_session, set_auth_token
+from app.core import get_session, set_token
+from app.core.security import ACCESS_TOKEN_COOKIE_MAX_AGE, REFRESH_TOKEN_COOKIE_MAX_AGE
 from app.core.dependencies import is_user_admin
 from app.schemas.Worker import WorkerCreate, Login
 from app.services import AuthService
-import logging
 
 
 router = APIRouter()
-logger = logging.getLogger(__name__)
 
 
 @router.post(
@@ -27,8 +26,8 @@ async def registration(
         worker_data=worker_data,
         session=session,
     )
-    set_auth_token(response, token, "access_token")
-    set_auth_token(response, refresh_token, "refresh_token")
+    set_token(response, token, "access_token", ACCESS_TOKEN_COOKIE_MAX_AGE)
+    set_token(response, refresh_token, "refresh_token", REFRESH_TOKEN_COOKIE_MAX_AGE)
     return {"status": "success"}
 
 
@@ -45,7 +44,6 @@ async def login(
         login_data=login_data,
         session=session,
     )
-    set_auth_token(response, token, "access_token", 1800)
-    set_auth_token(response, refresh_token, "refresh_token", 60 * 60 * 24 * 30)
-    logger.info(f"Login with data {login_data}")
+    set_token(response, token, "access_token", ACCESS_TOKEN_COOKIE_MAX_AGE)
+    set_token(response, refresh_token, "refresh_token", REFRESH_TOKEN_COOKIE_MAX_AGE)
     return {"status": "success"}

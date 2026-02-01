@@ -9,6 +9,12 @@ from starlette.responses import Response
 
 logger = logging.getLogger(__name__)
 
+# Токены: duration в минутах, max_age для cookie в секундах
+ACCESS_TOKEN_DURATION_MIN = 30
+REFRESH_TOKEN_DURATION_MIN = 30 * 24 * 60  # 30 дней
+ACCESS_TOKEN_COOKIE_MAX_AGE = 30 * 60  # 30 мин в секундах
+REFRESH_TOKEN_COOKIE_MAX_AGE = 30 * 24 * 60 * 60  # 30 дней в секундах
+
 JWT_PRIVATE_KEY = settings.JWT_PRIVATE_KEY.read_text()
 JWT_PUBLIC_KEY = settings.JWT_PUBLIC_KEY.read_text()
 
@@ -35,7 +41,7 @@ def decode_token(token: str) -> dict:
     return jwt.decode(token, JWT_PUBLIC_KEY, algorithms=[settings.ALGORITHM,])
 
 
-def set_auth_token(response: Response, token: str, key: str, max_age: int):
+def set_token(response: Response, token: str, key: str, max_age: int):
     response.set_cookie(
         key=key,
         value=token,
