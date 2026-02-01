@@ -19,7 +19,7 @@ class UserSchema(BaseModel):
             if phonenumbers.is_valid_number(parsed):
                 return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
             raise ValueError('Invalid phone')
-        except:
+        except Exception:
             raise ValueError('Invalid phone format')
 
 

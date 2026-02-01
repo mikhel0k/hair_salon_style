@@ -32,7 +32,7 @@ def setup_logging() -> None:
         backupCount=5,
         encoding="utf-8",
     )
-    file_handler.setFormatter(formatter    )
+    file_handler.setFormatter(formatter)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
     root = logging.getLogger()

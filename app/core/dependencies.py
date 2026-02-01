@@ -15,7 +15,7 @@ async def get_worker(
         data = decode_token(token)
         try:
             master_id = int(data.get("master_id"))
-        except:
+        except (TypeError, ValueError):
             master_id = None
         return {
             "sub": int(data.get("sub")),
