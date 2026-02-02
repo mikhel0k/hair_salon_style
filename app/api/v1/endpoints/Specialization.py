@@ -60,3 +60,18 @@ async def get_specialization_by_id(
         session=session,
     )
 
+
+@router.delete(
+    "/{specialization_id}/",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_specialization(
+        specialization_id: int,
+        admin_user=Depends(is_user_admin),
+        session: AsyncSession = Depends(get_session),
+):
+    await SpecializationService.delete_specialization(
+        specialization_id=specialization_id,
+        session=session,
+    )
+

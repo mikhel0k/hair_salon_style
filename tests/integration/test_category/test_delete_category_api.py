@@ -44,6 +44,31 @@ async def test_delete_category_404(ac: AsyncClient, payload, del_ids, token):
         assert response.status_code == 404
 
 
+@pytest.mark.asyncio
+async def test_delete_category_409_has_linked_services(ac: AsyncClient, token):
+    """Удаление категории с привязанными услугами возвращает 409."""
+    res_cat = await ac.post("/v1/category/", json={"name": "Haircut"}, headers=token)
+    assert res_cat.status_code == 201
+    category_id = res_cat.json()["id"]
+
+    res_svc = await ac.post(
+        "/v1/service/",
+        json={
+            "name": "Mens haircut",
+            "price": 500,
+            "duration_minutes": 30,
+            "category_id": category_id,
+            "description": "Classic haircut",
+        },
+        headers=token,
+    )
+    assert res_svc.status_code == 201
+
+    response = await ac.delete(f"/v1/category/{category_id}/", headers=token)
+    assert response.status_code == 409
+    assert "linked services" in response.json()["detail"].lower()
+
+
 @pytest.mark.parametrize(
     "payload",
     [

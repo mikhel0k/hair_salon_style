@@ -1,4 +1,4 @@
-from sqlalchemy import select, exists
+from sqlalchemy import select, exists, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -31,6 +31,15 @@ async def read_master(
 ):
     master = await session.get(Master, master_id)
     return master
+
+
+async def count_masters_by_specialization_id(
+        specialization_id: int,
+        session: AsyncSession,
+) -> int:
+    stmt = select(func.count(Master.id)).where(Master.specialization_id == specialization_id)
+    result = await session.execute(stmt)
+    return result.scalar() or 0
 
 
 async def read_masters_by_service_id(

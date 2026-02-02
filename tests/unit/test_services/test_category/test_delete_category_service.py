@@ -16,7 +16,8 @@ class TestDeleteCategoryService:
         mock_category_db = AsyncMock()
         mock_category_db.id = category_id
 
-        with patch("app.repositories.CategoryRepository.read_category", return_value=mock_category_db) as mock_read, \
+        with patch("app.repositories.ServiceRepository.count_services_by_category_id", new_callable=AsyncMock, return_value=0), \
+                patch("app.repositories.CategoryRepository.read_category", return_value=mock_category_db) as mock_read, \
                 patch("app.repositories.CategoryRepository.delete_category", return_value=None) as mock_delete:
             await delete_category(category_id, mock_session)
 
@@ -36,17 +37,32 @@ class TestDeleteCategoryService:
             assert exc.value.detail == "Category not found"
             mock_session.commit.assert_not_called()
 
-    async def test_delete_category_integrity_error(self):
+    async def test_delete_category_409_has_linked_services(self):
         mock_session = AsyncMock()
         category_id = 1
         mock_category_db = AsyncMock()
 
         with patch("app.repositories.CategoryRepository.read_category", return_value=mock_category_db), \
+                patch("app.repositories.ServiceRepository.count_services_by_category_id", new_callable=AsyncMock, return_value=3):
+            with pytest.raises(HTTPException) as exc:
+                await delete_category(category_id, mock_session)
+
+            assert exc.value.status_code == 409
+            assert "linked services" in exc.value.detail
+            mock_session.commit.assert_not_called()
+
+    async def test_delete_category_integrity_error(self):
+        mock_session = AsyncMock()
+        category_id = 1
+        mock_category_db = AsyncMock()
+
+        with patch("app.repositories.ServiceRepository.count_services_by_category_id", new_callable=AsyncMock, return_value=0), \
+                patch("app.repositories.CategoryRepository.read_category", return_value=mock_category_db), \
                 patch("app.repositories.CategoryRepository.delete_category",
                       side_effect=IntegrityError(None, None, None)):
             with pytest.raises(HTTPException) as exc:
                 await delete_category(category_id, mock_session)
 
             assert exc.value.status_code == 409
-            assert exc.value.detail == "Something went wrong"
+            assert "linked services" in exc.value.detail or "constraints" in exc.value.detail
             mock_session.rollback.assert_called_once()

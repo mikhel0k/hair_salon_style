@@ -34,3 +34,11 @@ async def read_specializations(
     stmt = select(Specialization).offset(skip).limit(limit)
     specializations = await session.execute(stmt)
     return specializations.scalars().all()
+
+
+async def delete_specialization(
+        specialization: Specialization,
+        session: AsyncSession,
+):
+    await session.delete(specialization)
+    await session.flush()

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Service
@@ -31,6 +31,15 @@ async def read_service_by_id(
 ):
     service = await session.get(Service, service_id)
     return service
+
+
+async def count_services_by_category_id(
+        category_id: int,
+        session: AsyncSession,
+) -> int:
+    stmt = select(func.count(Service.id)).where(Service.category_id == category_id)
+    result = await session.execute(stmt)
+    return result.scalar() or 0
 
 
 async def read_services_by_category_id(

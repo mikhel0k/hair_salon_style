@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.schemas.Category import CategoryCreate, CategoryResponse
-from app.repositories import CategoryRepository
+from app.repositories import CategoryRepository, ServiceRepository
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +67,16 @@ async def delete_category(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Category not found",
         )
+    services_count = await ServiceRepository.count_services_by_category_id(
+        category_id=category_id,
+        session=session,
+    )
+    if services_count > 0:
+        logger.info("delete_category: category has linked services, category_id=%s", category_id)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cannot delete category: it has linked services. Remove or reassign services first.",
+        )
     try:
         await CategoryRepository.delete_category(
             category=category_from_db,
@@ -78,7 +88,7 @@ async def delete_category(
         logger.info("delete_category: conflict, category_id=%s", category_id)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Something went wrong",
+            detail="Category has linked services or other constraints.",
         )
     except Exception as e:
         await session.rollback()

@@ -37,3 +37,13 @@ async def delete_connection(
     )
     await session.execute(stmt)
 
+
+async def delete_all_by_specialization_id(
+        specialization_id: int,
+        session: AsyncSession,
+):
+    stmt = delete(SpecializationService).where(
+        SpecializationService.specialization_id == specialization_id,
+    )
+    await session.execute(stmt)
+
