@@ -13,7 +13,7 @@ data_for_id = DataForId()
 status = AllowedRecordStatuses()
 master = Master(
     id=1, specialization_id=1, name="Petr",
-    phone="+79990009090", email="test@gmail.com", status="ACTIVE"
+    status="ACTIVE"
 )
 service = Service(
     id=1, name="Haircut", price=499.99, duration_minutes=55,

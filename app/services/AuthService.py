@@ -1,5 +1,9 @@
 import logging
 import uuid
+import secrets
+import string
+import json
+import asyncio
 
 from fastapi import HTTPException, status
 from redis import Redis
@@ -13,9 +17,11 @@ from app.core.security import (
     ACCESS_TOKEN_DURATION_MIN,
     REFRESH_TOKEN_DURATION_MIN,
     REFRESH_TOKEN_COOKIE_MAX_AGE,
+    send_code_email_gmail,
 )
+from settings import settings
 from app.models.Worker import Worker
-from app.schemas.Worker import WorkerCreate, Login
+from app.schemas.Worker import WorkerCreate, Login, LoginConfirm
 from app.repositories import WorkerRepository
 
 logger = logging.getLogger(__name__)
@@ -129,7 +135,44 @@ async def get_new_access_token(
     return token
 
 
-async def login(
+async def login_confirm(
+        login_data: LoginConfirm,
+        session: AsyncSession,
+        redis_client: Redis,
+):
+    try:
+        logger.info("Login trying: code=%s, jti=%s", login_data.code, login_data.jti)
+        data = redis_client.get(f"login_confirm: {login_data.code}, {login_data.jti}")
+        redis_client.delete(f"login_confirm: {login_data.code}, {login_data.jti}")
+    except Exception as e:
+        logger.exception("Login trying: Redis error, code=%s, jti=%s", login_data.code, login_data.jti)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) from e
+    
+    if not data:
+        logger.info("Login failed: code or jti not found, code=%s, jti=%s", login_data.code, login_data.jti)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Login code or JTI not found",
+        )
+    data = json.loads(data)
+    access_token = create_token(data, duration=ACCESS_TOKEN_DURATION_MIN)
+    refresh_token = create_token({
+        "sub": data["sub"],
+        "jti": login_data.jti,
+    }, duration=REFRESH_TOKEN_DURATION_MIN)
+    redis_client.set(
+        f"refresh_token:{data['sub']}:{login_data.jti}",
+        "1",
+        ex=REFRESH_TOKEN_COOKIE_MAX_AGE,
+    )
+    logger.info("Login successful: user_id=%s, jti=%s", data["sub"], login_data.jti)
+    return access_token, refresh_token
+
+
+async def try_login(
         login_data: Login,
         session: AsyncSession,
         redis_client: Redis,
@@ -184,34 +227,19 @@ async def login(
         "is_active": worker.is_active,
     }
     jti = str(uuid.uuid4())
-    refresh_data = {
-        "sub": str(worker.id),
-        "jti": jti,
-    }
-    try:
-        token = create_token(data, duration=ACCESS_TOKEN_DURATION_MIN)
-        refresh_token = create_token(refresh_data, duration=REFRESH_TOKEN_DURATION_MIN)
-        redis_client.set(
-            f"refresh_token:{worker.id}:{jti}",
-            "1",
-            ex=REFRESH_TOKEN_COOKIE_MAX_AGE,
-        )
-    except Exception as e:
-        logger.exception(
-            "Login failed: token creation error, user_id=%s, username=%s",
-            worker.id,
-            worker.username,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
-        ) from e
-
-    logger.info(
-        "Login successful: user_id=%s, username=%s, is_admin=%s, is_active=%s",
-        worker.id,
-        worker.username,
-        worker.is_admin,
-        worker.is_active,
+    code = "".join(secrets.choice(string.digits) for _ in range(6))
+    ttl = 60 * 5
+    logger.info("Login confirm: code=%s, jti=%s, data=%s", code, jti, data)
+    redis_client.set(
+        f"login_confirm: {code}, {jti}",
+        json.dumps(data),
+        ex=ttl,
     )
-    return token, refresh_token
+    redis_client.set(f"login_confirm_jti:{jti}", code, ex=ttl)
+    if worker.email and settings.SEND_LOGIN_CODE_EMAIL:
+        await asyncio.to_thread(
+            send_code_email_gmail,
+            worker.email,
+            code,
+        )
+    return jti

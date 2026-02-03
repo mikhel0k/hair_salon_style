@@ -10,11 +10,9 @@ async def specialization_id(ac: AsyncClient, token):
     return response.json()["id"]
 
 
-def master_payload(specialization_id, name="Petr", phone="+79009009090", email="petr@mail.ru", status="ACTIVE"):
+def master_payload(specialization_id, name="Petr", status="ACTIVE"):
     return {
         "specialization_id": specialization_id,
         "name": name,
-        "phone": phone,
-        "email": email,
         "status": status,
     }

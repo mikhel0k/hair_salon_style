@@ -17,8 +17,6 @@ async def master_id(ac: AsyncClient, token, specialization_id):
         json={
             "specialization_id": specialization_id,
             "name": "Petr",
-            "phone": "+79009009090",
-            "email": "petr@mail.ru",
             "status": "ACTIVE",
         },
         headers=token,

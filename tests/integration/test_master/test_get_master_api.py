@@ -13,7 +13,7 @@ from tests.integration.test_master.conftest import master_payload
 async def test_get_masters_200(ac: AsyncClient, token, specialization_id, count):
     names = ["Petr", "Ivan"]
     for i in range(count):
-        p = master_payload(specialization_id, name=names[i], email=f"user{i}@mail.ru")
+        p = master_payload(specialization_id, name=names[i])
         response = await ac.post("/v1/master/", json=p, headers=token)
         assert response.status_code == status.HTTP_201_CREATED
 

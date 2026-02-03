@@ -19,8 +19,6 @@ class TestUpdateMasterService:
         mock_master_db.id = master_id
         mock_master_db.name = "New Name"
         mock_master_db.specialization_id = 1
-        mock_master_db.phone = "+79009009090"
-        mock_master_db.email = "petr@mail.ru"
         mock_master_db.status = "ACTIVE"
 
         with patch("app.repositories.MasterRepository.read_master", new_callable=AsyncMock, return_value=mock_master_db) as mock_read, \

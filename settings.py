@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     JWT_PUBLIC_KEY: Path = BASE_DIR / "jwt_tokens" / "jwt-public.pem"
     ALGORITHM: str = "RS256"
 
+    LOGIN_FOR_GMAIL: str
+    PASSWORD_FOR_GMAIL: str
+
+    SEND_LOGIN_CODE_EMAIL: bool = True
+
     @property
     def DATABASE_URL(self) -> str:
         return (f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"

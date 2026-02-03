@@ -11,7 +11,7 @@ from app.schemas.Master import AllowedMasterStatuses
 
 
 def _full_record_obj():
-    master = type("M", (), {"id": 1, "name": "Petr", "specialization_id": 1, "phone": "+79009009090", "email": "petr@mail.ru", "status": AllowedMasterStatuses.ACTIVE})()
+    master = type("M", (), {"id": 1, "name": "Petr", "specialization_id": 1, "status": AllowedMasterStatuses.ACTIVE})()
     service = type("S", (), {"id": 1, "name": "Haircut", "price": Decimal("500"), "description": "Cut"})()
 
     class CellObj:

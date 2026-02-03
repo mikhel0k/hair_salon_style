@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from tests.unit.test_schemas.test_master.conftest import Phone, Email
+
 
 @dataclass
 class Bool:

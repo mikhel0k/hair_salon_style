@@ -7,7 +7,7 @@ from app.core import get_session, set_token
 from app.core.redis import get_redis
 from app.core.security import ACCESS_TOKEN_COOKIE_MAX_AGE, REFRESH_TOKEN_COOKIE_MAX_AGE
 from app.core.dependencies import is_user_admin
-from app.schemas.Worker import WorkerCreate, Login
+from app.schemas.Worker import WorkerCreate, Login, LoginConfirm
 from app.services import AuthService
 
 
@@ -45,11 +45,27 @@ async def login(
         session: AsyncSession = Depends(get_session),
         redis_client: Redis = Depends(get_redis),
 ):
-    token, refresh_token = await AuthService.login(
+    return await AuthService.try_login(
         login_data=login_data,
         session=session,
         redis_client=redis_client,
     )
-    set_token(response, token, "access_token", ACCESS_TOKEN_COOKIE_MAX_AGE)
+
+@router.post(
+    "/login/confirm/",
+    status_code=status.HTTP_200_OK,
+)
+async def login_confirm(
+        login_data: LoginConfirm,
+        response: Response,
+        session: AsyncSession = Depends(get_session),
+        redis_client: Redis = Depends(get_redis),
+):
+    access_token, refresh_token = await AuthService.login_confirm(
+        login_data=login_data,
+        session=session,
+        redis_client=redis_client,
+    )
+    set_token(response, access_token, "access_token", ACCESS_TOKEN_COOKIE_MAX_AGE)
     set_token(response, refresh_token, "refresh_token", REFRESH_TOKEN_COOKIE_MAX_AGE)
     return {"status": "success"}

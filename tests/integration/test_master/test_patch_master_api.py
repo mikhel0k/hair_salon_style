@@ -18,7 +18,6 @@ async def master_id(ac: AsyncClient, token, specialization_id):
     [
         {"name": "New name"},
         {"status": "VACATION"},
-        {"email": "new@mail.ru"},
     ],
 )
 @pytest.mark.asyncio

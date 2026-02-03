@@ -8,6 +8,7 @@ from .endpoints.Schedule import router as schedule_router
 from .endpoints.Cell import router as cell_router
 from .endpoints.Record import router as record_router
 from .endpoints.Auth import router as auth_router
+from .endpoints.Report import router as report_router
 
 
 router = APIRouter()
@@ -22,6 +23,7 @@ endpoints = [
     (cell_router, "/cell", ["cell"]),
     (record_router, "/record", ["record"]),
     (auth_router, "/auth", ["auth"]),
+    (report_router, "/report", ["report"]),
 ]
 
 for endpoint, prefix, tags in endpoints:

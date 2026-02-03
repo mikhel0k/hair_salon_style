@@ -15,8 +15,6 @@ class TestCreateMasterService:
         master_in = MasterCreate(
             specialization_id=1,
             name="Petr",
-            phone="+79009009090",
-            email="petr@mail.ru",
             status="ACTIVE",
         )
 
@@ -24,8 +22,6 @@ class TestCreateMasterService:
         mock_master_db.id = 1
         mock_master_db.name = "Petr"
         mock_master_db.specialization_id = 1
-        mock_master_db.phone = "+79009009090"
-        mock_master_db.email = "petr@mail.ru"
         mock_master_db.status = "ACTIVE"
 
         with patch("app.repositories.MasterRepository.create_master") as mock_repo, \
@@ -45,8 +41,6 @@ class TestCreateMasterService:
         master_in = MasterCreate(
             specialization_id=1,
             name="Petr",
-            phone="+79009009090",
-            email="petr@mail.ru",
             status="ACTIVE",
         )
 

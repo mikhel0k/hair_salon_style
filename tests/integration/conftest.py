@@ -1,3 +1,7 @@
+import os
+
+os.environ.setdefault("SEND_LOGIN_CODE_EMAIL", "false")
+
 import pytest
 from typing import AsyncGenerator
 from httpx import AsyncClient, ASGITransport
@@ -82,8 +86,22 @@ CORRECT_PASSWORD = "Zxc-q123"
 
 
 @pytest.fixture
-async def token(ac: AsyncClient):
+def redis_client(ac: AsyncClient):
+    """Redis из app.state. Получить код по jti после try_login: redis_client.get(f'login_confirm_jti:{jti}')."""
+    return app.state.redis
+
+
+@pytest.fixture
+async def token(ac: AsyncClient, redis_client):
+    """Логин по паролю -> код из Redis -> login_confirm -> access_token в cookie."""
     login_payload = {"username": CORRECT_LOGIN, "password": CORRECT_PASSWORD}
-    response = await ac.post("/v1/auth/login/", json=login_payload)
-    token = response.cookies.get("access_token")
-    return {"Cookie": f"access_token={token}"}
+    resp_login = await ac.post("/v1/auth/login/", json=login_payload)
+    assert resp_login.status_code == 200, resp_login.text
+    jti = resp_login.json()
+    code = redis_client.get(f"login_confirm_jti:{jti}")
+    assert code, "Код не найден в Redis (login_confirm_jti)"
+    resp_confirm = await ac.post("/v1/auth/login/confirm/", json={"code": code, "jti": jti})
+    assert resp_confirm.status_code == 200, resp_confirm.text
+    access_token = resp_confirm.cookies.get("access_token")
+    assert access_token
+    return {"Cookie": f"access_token={access_token}"}

@@ -8,10 +8,10 @@ from tests.integration.test_master.conftest import master_payload
 @pytest.mark.parametrize(
     "payload",
     [
-        [{"name": "Petr", "phone": "+79009009090", "email": "petr@mail.ru", "status": "ACTIVE", "specialization_id": 1}],
+        [{"name": "Petr", "status": "ACTIVE", "specialization_id": 1}],
         [
-            {"name": "Petr", "phone": "+79009009090", "email": "petr@mail.ru", "status": "ACTIVE", "specialization_id": 1},
-            {"name": "Ivan", "phone": "89005553535", "email": "ivan@gmail.com", "status": "VACATION", "specialization_id": 1},
+            {"name": "Petr", "status": "ACTIVE", "specialization_id": 1},
+            {"name": "Ivan", "status": "VACATION", "specialization_id": 1},
         ],
     ],
 )
@@ -29,10 +29,8 @@ async def test_post_master_201(ac: AsyncClient, payload, token, specialization_i
 @pytest.mark.parametrize(
     "payload, message_part",
     [
-        ({"name": "ab", "phone": "+79009009090", "email": "petr@mail.ru", "status": "ACTIVE", "specialization_id": 1}, "at least 3"),
-        ({"name": "Petr", "phone": "123", "email": "petr@mail.ru", "status": "ACTIVE", "specialization_id": 1}, "Invalid phone"),
-        ({"name": "Petr", "phone": "+79009009090", "email": "bad", "status": "ACTIVE", "specialization_id": 1}, "valid"),
-        ({"name": "Petr", "phone": "+79009009090", "email": "petr@mail.ru", "status": "ACTIVE", "specialization_id": -1}, "greater than or equal to 1"),
+        ({"name": "ab", "status": "ACTIVE", "specialization_id": 1}, "at least 3"),
+        ({"name": "Petr", "status": "ACTIVE", "specialization_id": -1}, "greater than or equal to 1"),
     ],
 )
 @pytest.mark.asyncio
@@ -54,12 +52,13 @@ async def test_post_master_422(ac: AsyncClient, payload, message_part, token, sp
 
 @pytest.mark.asyncio
 async def test_post_master_409(ac: AsyncClient, token, specialization_id):
+    """После переноса phone/email в workers у Master нет unique на этих полях — два мастера с одинаковыми данными создаются (201)."""
     p = master_payload(specialization_id)
     response = await ac.post("/v1/master/", json=p, headers=token)
     assert response.status_code == status.HTTP_201_CREATED
-    response = await ac.post("/v1/master/", json=p, headers=token)
-    assert response.status_code == status.HTTP_409_CONFLICT
-    assert "Master with this data already exists" in response.json()["detail"]
+    response2 = await ac.post("/v1/master/", json=p, headers=token)
+    assert response2.status_code == status.HTTP_201_CREATED
+    assert response.json()["id"] != response2.json()["id"]
 
 
 @pytest.mark.asyncio

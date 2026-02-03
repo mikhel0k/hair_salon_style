@@ -3,49 +3,64 @@ from pydantic import ValidationError
 
 from app.schemas.Worker import WorkerCreate
 from tests.unit.test_schemas.conftest import assert_single_validation_error
-from tests.unit.test_schemas.test_worker.conftest import Bool, Name, Password
+from tests.unit.test_schemas.test_worker.conftest import Bool, Name, Password, Phone, Email
 from tests.unit.test_schemas.conftest_exceptions import DataForId, ErrorMessages, ErrorTypes
 
 bool_test = Bool()
 name_test = Name()
 password_test = Password()
+phone_test = Phone()
+email_test = Email()
 data_for_id = DataForId()
 
 
 class TestCreateWorker:
 
     @pytest.mark.parametrize(
-        "master_id, username, password, is_master, is_admin, is_active",
+        "master_id, username, password, phone, email, is_master, is_admin, is_active",
         [
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.wrong_id_none, name_test.correct_name, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.big_correct_id, name_test.correct_name, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name_short, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name_long, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password_short,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password_long,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password_integers,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_false, bool_test.correct_true, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_false, bool_test.correct_true),
             (data_for_id.correct_id, name_test.correct_name, password_test.correct_password,
+                phone_test.correct_number_str_with_eight, email_test.correct_string_mail,
                 bool_test.correct_true, bool_test.correct_true, bool_test.correct_false),
         ]
     )
-    def test_create_worker_correct(self, master_id, username, password, is_master, is_admin, is_active):
+    def test_create_worker_correct(self, master_id, username, password, phone, email, is_master, is_admin, is_active):
         worker = WorkerCreate(
             master_id=master_id,
             username=username,
             password=password,
+            phone=phone,
+            email=email,
             is_master=is_master,
             is_admin=is_admin,
             is_active=is_active
@@ -53,6 +68,8 @@ class TestCreateWorker:
         assert worker.master_id == master_id
         assert worker.username == username
         assert worker.password == password
+        assert worker.phone
+        assert worker.email == email
         assert worker.is_master == is_master
         assert worker.is_admin == is_admin
         assert worker.is_active == is_active
@@ -182,6 +199,8 @@ class TestCreateWorker:
                 master_id=master_id,
                 username=username,
                 password=password,
+                phone=phone_test.correct_number_str_with_eight,
+                email=email_test.correct_string_mail,
                 is_master=is_master,
                 is_admin=is_admin,
                 is_active=is_active

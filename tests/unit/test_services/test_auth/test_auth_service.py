@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
-from app.services.AuthService import registration, login
+from app.services.AuthService import registration, try_login
 from app.schemas.Worker import WorkerCreate, Login
 
 
@@ -15,6 +15,8 @@ class TestRegistrationAuthService:
         worker_data = WorkerCreate(
             username="worker1",
             password="secret123",
+            phone="+79009009090",
+            email="worker1@mail.ru",
             master_id=None,
             is_master=False,
             is_admin=False,
@@ -44,6 +46,8 @@ class TestRegistrationAuthService:
         worker_data = WorkerCreate(
             username="worker1",
             password="secret123",
+            phone="+79009009090",
+            email="worker1@mail.ru",
             master_id=None,
             is_master=False,
             is_admin=False,
@@ -74,16 +78,17 @@ class TestLoginAuthService:
         mock_worker.is_admin = True
         mock_worker.is_active = True
         mock_worker.password = "hashed"
+        mock_worker.email = "admin@mail.ru"
 
         mock_redis = MagicMock()
         with patch("app.repositories.WorkerRepository.get_worker_by_username", new_callable=AsyncMock, return_value=mock_worker), \
                 patch("app.services.AuthService.verify_password", return_value=True), \
-                patch("app.services.AuthService.create_token", return_value="jwt_token"):
-            result = await login(login_data, mock_session, mock_redis)
+                patch("app.services.AuthService.send_code_email_gmail"):
+            result = await try_login(login_data, mock_session, mock_redis)
 
-            token, refresh_token = result
-            assert token == "jwt_token"
-            assert refresh_token == "jwt_token"
+            assert result is not None
+            assert isinstance(result, str)
+            assert len(result) == 36  # uuid4
 
     async def test_login_user_not_found_401(self):
         mock_session = AsyncMock()
@@ -92,7 +97,7 @@ class TestLoginAuthService:
         mock_redis = MagicMock()
         with patch("app.repositories.WorkerRepository.get_worker_by_username", new_callable=AsyncMock, return_value=None):
             with pytest.raises(HTTPException) as exc:
-                await login(login_data, mock_session, mock_redis)
+                await try_login(login_data, mock_session, mock_redis)
 
             assert exc.value.status_code == 401
             assert "incorrect" in exc.value.detail.lower()
@@ -107,12 +112,13 @@ class TestLoginAuthService:
         mock_worker.is_admin = True
         mock_worker.is_active = True
         mock_worker.password = "hashed"
+        mock_worker.email = "admin@mail.ru"
 
         mock_redis = MagicMock()
         with patch("app.repositories.WorkerRepository.get_worker_by_username", new_callable=AsyncMock, return_value=mock_worker), \
                 patch("app.services.AuthService.verify_password", return_value=False):
             with pytest.raises(HTTPException) as exc:
-                await login(login_data, mock_session, mock_redis)
+                await try_login(login_data, mock_session, mock_redis)
 
             assert exc.value.status_code == 401
             assert "incorrect" in exc.value.detail.lower()

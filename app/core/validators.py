@@ -1,7 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 import phonenumbers
+
+REPORT_DATE_FORMATS = ("%Y-%m-%d", "%Y.%m.%d", "%d-%m-%Y", "%d.%m.%Y")
 
 
 def name_validator(value: Any):
@@ -60,3 +62,29 @@ def date_validator(value: Any):
     if value < date.today():
         raise ValueError("Date cannot be in the past")
     return value
+
+
+def parse_report_date(value: Any) -> date:
+    """
+    Парсит строку даты для отчёта. Поддерживает:
+    YYYY-MM-DD (ISO), YYYY.MM.DD, DD-MM-YYYY, DD.MM.YYYY.
+    """
+    if isinstance(value, date):
+        return value
+    if not isinstance(value, str):
+        raise ValueError("Date must be a string or date")
+    value = value.strip()
+    last_error = None
+    for fmt in REPORT_DATE_FORMATS:
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError as e:
+            last_error = e
+            continue
+    if last_error and "day" in str(last_error).lower():
+        raise ValueError(
+            "Invalid date (e.g. day is out of range for month, like 31 February)"
+        ) from last_error
+    raise ValueError(
+        "Invalid date format. Use YYYY-MM-DD, YYYY.MM.DD, DD-MM-YYYY or DD.MM.YYYY"
+    ) from last_error

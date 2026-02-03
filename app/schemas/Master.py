@@ -1,11 +1,11 @@
 from enum import Enum
 from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from pydantic import BaseModel, Field, ConfigDict
 from pydantic import field_validator, StrictInt
 
 from app.schemas.Specialization import SpecializationResponse
-from app.core.validators import phone_validator, name_validator
+from app.core.validators import name_validator
 
 
 class AllowedMasterStatuses(str, Enum):
@@ -27,28 +27,6 @@ class MasterBase(BaseModel):
             "Valeria"
         ]
     )]
-    phone: Annotated[str, Field(
-        ...,
-        min_length=8,
-        max_length=15,
-        description="Phone number of the master",
-        examples=[
-            "+79990001010",
-            "88005553535",
-            "89876543210"
-        ]
-    )]
-    email: Annotated[EmailStr, Field(
-        ...,
-        min_length=8,
-        max_length=50,
-        description="Email address of the master",
-        examples=[
-            "example@mail.ru",
-            "example@gmail.com",
-            "example@yandex.ru"
-        ]
-    )]
     status: Annotated[AllowedMasterStatuses, Field(
         AllowedMasterStatuses.ACTIVE,
         description="Status of the master",
@@ -58,11 +36,6 @@ class MasterBase(BaseModel):
     @classmethod
     def validate_name(cls, v):
         return name_validator(v)
-
-    @field_validator("phone", mode="before")
-    @classmethod
-    def validate_phone_number(cls, v):
-        return phone_validator(v)
 
     model_config = ConfigDict(str_strip_whitespace=True)
 
@@ -94,28 +67,6 @@ class MasterUpdate(BaseModel):
             "Valeria"
         ]
     )]
-    phone: Annotated[Optional[str], Field(
-        None,
-        min_length=8,
-        max_length=15,
-        description="Phone number of the master",
-        examples=[
-            "+79990001010",
-            "88005553535",
-            "89876543210"
-        ]
-    )]
-    email: Annotated[Optional[EmailStr], Field(
-        None,
-        min_length=8,
-        max_length=50,
-        description="Email address of the master",
-        examples=[
-            "example@mail.ru",
-            "example@gmail.com",
-            "example@yandex.ru"
-        ]
-    )]
     status: Annotated[Optional[AllowedMasterStatuses], Field(
         None,
         description="Status of the master",
@@ -126,11 +77,4 @@ class MasterUpdate(BaseModel):
     def validate_name(cls, v):
         if v:
             return name_validator(v)
-        return v
-
-    @field_validator("phone", mode="before")
-    @classmethod
-    def validate_phone_number(cls, v):
-        if v:
-            return phone_validator(v)
         return v

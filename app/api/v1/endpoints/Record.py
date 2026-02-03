@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -88,15 +88,20 @@ async def update_record_status_cancelled(
 )
 async def update_record_status_confirmed(
         record_id: int,
-        master_data = Depends(is_user_master),
+        master_data=Depends(is_user_master),
         session: AsyncSession = Depends(get_session)
 ):
+    if master_data["master_id"] is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Master profile not linked",
+        )
     data = EditRecordStatus(
         id=record_id,
         status=AllowedRecordStatuses.CONFIRMED,
     )
     return await RecordService.update_status_to_completed_or_confirmed(
-        master_id=master_data["sub"],
+        master_id=master_data["master_id"],
         data=data,
         session=session
     )
@@ -109,15 +114,20 @@ async def update_record_status_confirmed(
 )
 async def update_record_status_completed(
         record_id: int,
-        master_data = Depends(is_user_master),
+        master_data=Depends(is_user_master),
         session: AsyncSession = Depends(get_session)
 ):
+    if master_data["master_id"] is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Master profile not linked",
+        )
     data = EditRecordStatus(
         id=record_id,
         status=AllowedRecordStatuses.COMPLETED,
     )
     return await RecordService.update_status_to_completed_or_confirmed(
-        master_id=master_data["sub"],
+        master_id=master_data["master_id"],
         data=data,
         session=session
     )
@@ -149,8 +159,13 @@ async def read_records_by_master_id_and_time_interval(
         master_data=Depends(is_user_master),
         session: AsyncSession=Depends(get_session)
 ):
+    if master_data["master_id"] is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Master profile not linked",
+        )
     return await RecordService.read_records_by_master_id_and_time_interval(
-        master_id=master_data["sub"],
+        master_id=master_data["master_id"],
         start_time=start_time,
         end_time=end_time,
         session=session

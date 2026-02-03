@@ -48,6 +48,31 @@ async def read_records_by_master_id_and_time_interval(
     return records.scalars().all()
 
 
+async def read_records_by_master_id_and_time_interval_for_report(
+        master_id: int,
+        date_start: date,
+        date_end: date,
+        session: AsyncSession,
+):
+    """Записи мастера за период с подгрузкой service, cell, user для формирования отчёта."""
+    stmt = (
+        select(Record)
+        .join(Cell)
+        .where(
+            Record.master_id == master_id,
+            between(Cell.date, date_start, date_end),
+        )
+        .options(
+            joinedload(Record.service),
+            joinedload(Record.cell),
+            joinedload(Record.user),
+        )
+        .order_by(Record.id.asc())
+    )
+    result = await session.execute(stmt)
+    return result.unique().scalars().all()
+
+
 async def read_records_by_servise_id(
         servise_id: int,
         session: AsyncSession,
